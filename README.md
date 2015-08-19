@@ -1,2 +1,2 @@
 # spider_lib
-Pholcus中公开维护的spider规则库。
+Pholcus 中公开维护的spider规则库。
