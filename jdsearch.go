@@ -29,17 +29,17 @@ import (
 
 // 其他包
 import (
-	// "fmt"
-	"math"
+// "fmt"
+// "math"
 )
 
 func init() {
-	BaiduSearch.AddMenu()
+	JDSearch.AddMenu()
 }
 
-var BaiduSearch = &Spider{
-	Name:        "百度搜索",
-	Description: "百度搜索结果 [www.baidu.com]",
+var JDSearch = &Spider{
+	Name:        "京东搜索",
+	Description: "京东搜索结果 [search.jd.com]",
 	Keyword:     CAN_ADD,
 	// Pausetime: [2]uint{uint(3000), uint(1000)},
 	// Optional: &Optional{},
@@ -54,8 +54,10 @@ var BaiduSearch = &Spider{
 			"生成请求": &Rule{
 				AidFunc: func(self *Spider, aid map[string]interface{}) interface{} {
 					for loop := aid["loop"].([2]int); loop[0] < loop[1]; loop[0]++ {
-						self.AddQueue(map[string]interface{}{
-							"Url":  "http://www.baidu.com/s?ie=utf-8&nojc=1&wd=" + self.GetKeyword() + "&rn=50&pn=" + strconv.Itoa(50*loop[0]),
+						self.BulkAddQueue([]string{
+							"http://search.jd.com/Search?keyword=" + self.GetKeyword() + "&enc=utf-8&qrst=1&rt=1&stop=1&click=&psort=&page=" + strconv.Itoa(2*loop[0]+2),
+							"http://search.jd.com/Search?keyword=" + self.GetKeyword() + "&enc=utf-8&qrst=1&rt=1&stop=1&click=&psort=&page=" + strconv.Itoa(2*loop[0]+1),
+						}, map[string]interface{}{
 							"Rule": aid["Rule"],
 						})
 					}
@@ -63,11 +65,13 @@ var BaiduSearch = &Spider{
 				},
 				ParseFunc: func(self *Spider, resp *context.Response) {
 					query := resp.GetDom()
-					total1 := query.Find(".nums").Text()
-					re, _ := regexp.Compile(`[\D]*`)
-					total1 = re.ReplaceAllString(total1, "")
-					total2, _ := strconv.Atoi(total1)
-					total := int(math.Ceil(float64(total2) / 50))
+
+					total1 := query.Find("#top_pagi span.text").Text()
+
+					re, _ := regexp.Compile(`[\d]+$`)
+					total1 = re.FindString(total1)
+					total, _ := strconv.Atoi(total1)
+
 					if total > self.MaxPage {
 						total = self.MaxPage
 					} else if total == 0 {
@@ -85,32 +89,47 @@ var BaiduSearch = &Spider{
 				//注意：有无字段语义和是否输出数据必须保持一致
 				OutFeild: []string{
 					"标题",
-					"内容",
-					"不完整URL",
-					"百度跳转",
+					"价格",
+					"评论数",
+					"星级",
+					"链接",
 				},
 				ParseFunc: func(self *Spider, resp *context.Response) {
 					query := resp.GetDom()
-					query.Find("#content_left .c-container").Each(func(i int, s *goquery.Selection) {
 
-						title := s.Find(".t").Text()
-						content := s.Find(".c-abstract").Text()
-						href, _ := s.Find(".t >a").Attr("href")
-						tar := s.Find(".g").Text()
+					query.Find("#plist .list-h:nth-child(1) > li").Each(func(i int, s *goquery.Selection) {
+						// 获取标题
+						a := s.Find(".p-name a")
+						title := a.Text()
 
 						re, _ := regexp.Compile("\\<[\\S\\s]+?\\>")
 						// title = re.ReplaceAllStringFunc(title, strings.ToLower)
-						// content = re.ReplaceAllStringFunc(content, strings.ToLower)
+						title = re.ReplaceAllString(title, " ")
+						title = strings.Trim(title, " \t\n")
 
-						title = re.ReplaceAllString(title, "")
-						content = re.ReplaceAllString(content, "")
+						// 获取价格
+						price, _ := s.Find("strong[data-price]").First().Attr("data-price")
+
+						// 获取评论数
+						e := s.Find(".extra").First()
+						discuss := e.Find("a").First().Text()
+						re, _ = regexp.Compile(`[\d]+`)
+						discuss = re.FindString(discuss)
+
+						// 获取星级
+						level, _ := e.Find(".star span[id]").First().Attr("class")
+						level = re.FindString(level)
+
+						// 获取URL
+						url, _ := a.Attr("href")
 
 						// 结果存入Response中转
 						resp.AddItem(map[string]interface{}{
-							self.OutFeild(resp, 0): strings.Trim(title, " \t\n"),
-							self.OutFeild(resp, 1): strings.Trim(content, " \t\n"),
-							self.OutFeild(resp, 2): tar,
-							self.OutFeild(resp, 3): href,
+							self.OutFeild(resp, 0): title,
+							self.OutFeild(resp, 1): price,
+							self.OutFeild(resp, 2): discuss,
+							self.OutFeild(resp, 3): level,
+							self.OutFeild(resp, 4): url,
 						})
 					})
 				},

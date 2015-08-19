@@ -49,7 +49,7 @@ var FileTest = &Spider{
 			self.AddQueue(map[string]interface{}{"Url": "https://github.com/henrylee2cn/pholcus", "Rule": "Pholcus页面"})
 		},
 
-		Nodes: map[string]*Rule{
+		Trunk: map[string]*Rule{
 
 			"百度图片": &Rule{
 				ParseFunc: func(self *Spider, resp *context.Response) {

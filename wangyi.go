@@ -49,7 +49,7 @@ var Wangyi = &Spider{
 			self.AddQueue(map[string]interface{}{"Url": "http://news.163.com/rank/", "Rule": "排行榜主页"})
 		},
 
-		Nodes: map[string]*Rule{
+		Trunk: map[string]*Rule{
 
 			"排行榜主页": &Rule{
 				ParseFunc: func(self *Spider, resp *context.Response) {
@@ -148,11 +148,11 @@ var Wangyi = &Spider{
 
 					// 结果存入Response中转
 					resp.AddItem(map[string]interface{}{
-						self.GetOutFeild(resp, 0): title,
-						self.GetOutFeild(resp, 1): content,
-						self.GetOutFeild(resp, 2): resp.GetTemp("top"),
-						self.GetOutFeild(resp, 3): resp.GetTemp("newsType"),
-						self.GetOutFeild(resp, 4): release,
+						self.OutFeild(resp, 0): title,
+						self.OutFeild(resp, 1): content,
+						self.OutFeild(resp, 2): resp.GetTemp("top"),
+						self.OutFeild(resp, 3): resp.GetTemp("newsType"),
+						self.OutFeild(resp, 4): release,
 					})
 				},
 			},

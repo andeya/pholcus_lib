@@ -83,17 +83,16 @@ var GoogleSearch = &Spider{
 			})
 		},
 
-		Nodes: map[string]*Rule{
+		Trunk: map[string]*Rule{
 
 			"获取总页数": &Rule{
 				AidFunc: func(self *Spider, aid map[string]interface{}) interface{} {
-					self.LoopAddQueue(
-						aid["loop"].([2]int),
-						func(i int) []string {
-							return []string{aid["urlBase"].(string) + strconv.Itoa(10*i)}
-						},
-						aid["req"].(map[string]interface{}),
-					)
+					for loop := aid["loop"].([2]int); loop[0] < loop[1]; loop[0]++ {
+						self.AddQueue(map[string]interface{}{
+							"Url":  aid["urlBase"].(string) + strconv.Itoa(10*loop[0]),
+							"Rule": aid["Rule"],
+						})
+					}
 					return nil
 				},
 				ParseFunc: func(self *Spider, resp *context.Response) {
@@ -114,15 +113,13 @@ var GoogleSearch = &Spider{
 						return
 					}
 					// 调用指定规则下辅助函数
-					self.AidRule("获取总页数", map[string]interface{}{
+					self.Aid("获取总页数", map[string]interface{}{
 						"loop":    [2]int{1, total},
 						"urlBase": resp.GetTemp("baseUrl"),
-						"req": map[string]interface{}{
-							"Rule": "搜索结果",
-						},
+						"Rule":    "搜索结果",
 					})
 					// 用指定规则解析响应流
-					self.CallRule("搜索结果", resp)
+					self.Parse("搜索结果", resp)
 				},
 			},
 
@@ -142,9 +139,9 @@ var GoogleSearch = &Spider{
 						title := t.Text()
 						content := s.Find(".st").Text()
 						resp.AddItem(map[string]interface{}{
-							self.GetOutFeild(resp, 0): title,
-							self.GetOutFeild(resp, 1): content,
-							self.GetOutFeild(resp, 2): href,
+							self.OutFeild(resp, 0): title,
+							self.OutFeild(resp, 1): content,
+							self.OutFeild(resp, 2): href,
 						})
 					})
 				},

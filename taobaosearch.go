@@ -45,24 +45,20 @@ var TaobaoSearch = &Spider{
 	// Optional: &Optional{},
 	UseCookie: false,
 	RuleTree: &RuleTree{
-		// Spread: []string{},
 		Root: func(self *Spider) {
-			self.AidRule("生成请求", map[string]interface{}{"loop": [2]int{0, 1}, "Rule": "生成请求"})
+			self.Aid("生成请求", map[string]interface{}{"loop": [2]int{0, 1}, "Rule": "生成请求"})
 		},
 
-		Nodes: map[string]*Rule{
+		Trunk: map[string]*Rule{
 
 			"生成请求": &Rule{
 				AidFunc: func(self *Spider, aid map[string]interface{}) interface{} {
-					self.LoopAddQueue(
-						aid["loop"].([2]int),
-						func(i int) []string {
-							return []string{"http://s.taobao.com/search?q=" + self.GetKeyword() + "&ie=utf8&cps=yes&app=vproduct&cd=false&v=auction&tab=all&vlist=1&bcoffset=1&s=" + strconv.Itoa(i*44)}
-						},
-						map[string]interface{}{
-							"Rule": aid["Rule"].(string),
-						},
-					)
+					for loop := aid["loop"].([2]int); loop[0] < loop[1]; loop[0]++ {
+						self.AddQueue(map[string]interface{}{
+							"Url":  "http://s.taobao.com/search?q=" + self.GetKeyword() + "&ie=utf8&cps=yes&app=vproduct&cd=false&v=auction&tab=all&vlist=1&bcoffset=1&s=" + strconv.Itoa(loop[0]*44),
+							"Rule": aid["Rule"],
+						})
+					}
 					return nil
 				},
 				ParseFunc: func(self *Spider, resp *context.Response) {
@@ -93,9 +89,9 @@ var TaobaoSearch = &Spider{
 
 					Log.Printf(" ********************** 淘宝关键词 [%v] 的搜索结果共有 %v 页，计划抓取 %v 页 **********************", self.GetKeyword(), maxPage, self.GetMaxPage())
 					// 调用指定规则下辅助函数
-					self.AidRule("生成请求", map[string]interface{}{"loop": [2]int{1, self.GetMaxPage()}, "Rule": "搜索结果"})
+					self.Aid("生成请求", map[string]interface{}{"loop": [2]int{1, self.GetMaxPage()}, "Rule": "搜索结果"})
 					// 用指定规则解析响应流
-					self.CallRule("搜索结果", resp)
+					self.Parse("搜索结果", resp)
 				},
 			},
 
@@ -132,11 +128,11 @@ var TaobaoSearch = &Spider{
 								"Url":  "http:" + info["detail_url"].(string),
 								"Rule": "商品详情",
 								"Temp": map[string]interface{}{
-									self.ShowOutFeild("商品详情", 0): info["raw_title"],
-									self.ShowOutFeild("商品详情", 1): info["view_price"],
-									self.ShowOutFeild("商品详情", 2): info["view_sales"],
-									self.ShowOutFeild("商品详情", 3): info["nick"],
-									self.ShowOutFeild("商品详情", 4): info["item_loc"],
+									self.OutFeild("商品详情", 0): info["raw_title"],
+									self.OutFeild("商品详情", 1): info["view_price"],
+									self.OutFeild("商品详情", 2): info["view_sales"],
+									self.OutFeild("商品详情", 3): info["nick"],
+									self.OutFeild("商品详情", 4): info["item_loc"],
 								},
 								"Priority": 1,
 								// "Referer":  resp.GetUrl(),

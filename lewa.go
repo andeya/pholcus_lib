@@ -48,7 +48,7 @@ var Lewa = &Spider{
 			self.AddQueue(map[string]interface{}{"Url": "http://accounts.lewaos.com/", "Rule": "登录页"})
 		},
 
-		Nodes: map[string]*Rule{
+		Trunk: map[string]*Rule{
 
 			"登录页": &Rule{
 				ParseFunc: func(self *Spider, resp *context.Response) {
@@ -82,7 +82,7 @@ var Lewa = &Spider{
 				ParseFunc: func(self *Spider, resp *context.Response) {
 					// 结果存入Response中转
 					resp.AddItem(map[string]interface{}{
-						self.GetOutFeild(resp, 0): resp.GetText(),
+						self.OutFeild(resp, 0): resp.GetText(),
 					})
 				},
 			},
