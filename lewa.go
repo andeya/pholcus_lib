@@ -3,7 +3,7 @@ package spider_lib
 // 基础包
 import (
 	// "github.com/PuerkitoBio/goquery" //DOM解析
-	"github.com/henrylee2cn/pholcus/crawl/downloader/context" //必需
+	"github.com/henrylee2cn/pholcus/downloader/context" //必需
 	// . "github.com/henrylee2cn/pholcus/reporter"           //信息输出
 	. "github.com/henrylee2cn/pholcus/spider"        //必需
 	. "github.com/henrylee2cn/pholcus/spider/common" //选用
