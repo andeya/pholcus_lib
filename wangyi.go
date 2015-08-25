@@ -2,35 +2,30 @@ package spider_lib
 
 // 基础包
 import (
-	"github.com/PuerkitoBio/goquery"                    //DOM解析
-	"github.com/henrylee2cn/pholcus/downloader/context" //必需
+	"github.com/PuerkitoBio/goquery"                        //DOM解析
+	"github.com/henrylee2cn/pholcus/app/downloader/context" //必需
 	// . "github.com/henrylee2cn/pholcus/reporter"               //信息输出
-	. "github.com/henrylee2cn/pholcus/spider" //必需
-	// . "github.com/henrylee2cn/pholcus/spider/common" //选用
-)
+	. "github.com/henrylee2cn/pholcus/app/spider" //必需
+	// . "github.com/henrylee2cn/pholcus/app/spider/common" //选用
 
-// 设置header包
-import (
-// "net/http" //http.Header
-)
+	// net包
+	// "net/http" //设置http.Header
+	// "net/url"
 
-// 编码包
-import (
-// "encoding/xml"
-// "encoding/json"
-)
+	// 编码包
 
-// 字符串处理包
-import (
+	// "encoding/xml"
+	// "encoding/json"
+
+	// 字符串处理包
 	"regexp"
 	// "strconv"
 	"strings"
-)
 
-// 其他包
-import (
-// "fmt"
-// "math"
+	// 其他包
+	// "fmt"
+	// "math"
+	// "time"
 )
 
 func init() {
@@ -41,17 +36,16 @@ var Wangyi = &Spider{
 	Name:        "网易新闻",
 	Description: "网易排行榜新闻，含点击/跟帖排名 [Auto Page] [news.163.com/rank]",
 	// Pausetime: [2]uint{uint(3000), uint(1000)},
-	// Optional: &Optional{},
+	// Keyword:   CAN_ADD,
 	UseCookie: false,
 	RuleTree: &RuleTree{
-		// Spread: []string{},
 		Root: func(self *Spider) {
 			self.AddQueue(map[string]interface{}{"Url": "http://news.163.com/rank/", "Rule": "排行榜主页"})
 		},
 
 		Trunk: map[string]*Rule{
 
-			"排行榜主页": &Rule{
+			"排行榜主页": {
 				ParseFunc: func(self *Spider, resp *context.Response) {
 					query := resp.GetDom()
 					query.Find(".subNav a").Each(func(i int, s *goquery.Selection) {
@@ -62,7 +56,7 @@ var Wangyi = &Spider{
 				},
 			},
 
-			"新闻排行榜": &Rule{
+			"新闻排行榜": {
 				ParseFunc: func(self *Spider, resp *context.Response) {
 					topTit := []string{
 						"1小时前点击排行",
@@ -108,7 +102,7 @@ var Wangyi = &Spider{
 				},
 			},
 
-			"热点新闻": &Rule{
+			"热点新闻": {
 				//注意：有无字段语义和是否输出数据必须保持一致
 				OutFeild: []string{
 					"标题",

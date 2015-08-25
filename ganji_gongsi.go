@@ -2,35 +2,29 @@ package spider_lib
 
 // 基础包
 import (
-	"github.com/PuerkitoBio/goquery"                    //DOM解析
-	"github.com/henrylee2cn/pholcus/downloader/context" //必需
+	"github.com/PuerkitoBio/goquery"                        //DOM解析
+	"github.com/henrylee2cn/pholcus/app/downloader/context" //必需
 	// . "github.com/henrylee2cn/pholcus/reporter"               //信息输出
-	. "github.com/henrylee2cn/pholcus/spider" //必需
-	// . "github.com/henrylee2cn/pholcus/spider/common"          //选用
-)
+	. "github.com/henrylee2cn/pholcus/app/spider" //必需
+	// . "github.com/henrylee2cn/pholcus/app/spider/common"          //选用
 
-// 设置header包
-import (
-// "net/http" //http.Header
-)
+	// net包
+	// "net/http" //设置http.Header
+	// "net/url"
 
-// 编码包
-import (
-// "encoding/xml"
-// "encoding/json"
-)
+	// 编码包
+	// "encoding/xml"
+	// "encoding/json"
 
-// 字符串处理包
-import (
+	// 字符串处理包
 	// "regexp"
 	"strconv"
 	"strings"
-)
 
-// 其他包
-import (
-// "fmt"
-// "math"
+	// 其他包
+	// "fmt"
+	// "math"
+	// "time"
 )
 
 func init() {
@@ -40,9 +34,8 @@ func init() {
 var GanjiGongsi = &Spider{
 	Name:        "企业名录-赶集网",
 	Description: "企业名录-深圳-赶集网 [www.ganji.com/gongsi]",
-	// Keyword:     CAN_ADD,
 	// Pausetime: [2]uint{uint(3000), uint(1000)},
-	// Optional: &Optional{},
+	// Keyword:   CAN_ADD,
 	UseCookie: false,
 	RuleTree: &RuleTree{
 		Root: func(self *Spider) {
@@ -55,7 +48,7 @@ var GanjiGongsi = &Spider{
 
 		Trunk: map[string]*Rule{
 
-			"请求列表": &Rule{
+			"请求列表": {
 				ParseFunc: func(self *Spider, resp *context.Response) {
 					curr := resp.GetTemp("p").(int)
 					if resp.GetDom().Find(".linkOn span").Text() != strconv.Itoa(curr) {
@@ -72,7 +65,7 @@ var GanjiGongsi = &Spider{
 				},
 			},
 
-			"获取列表": &Rule{
+			"获取列表": {
 				ParseFunc: func(self *Spider, resp *context.Response) {
 					resp.GetDom().
 						Find(".com-list-2 table a").
@@ -86,7 +79,7 @@ var GanjiGongsi = &Spider{
 				},
 			},
 
-			"输出结果": &Rule{
+			"输出结果": {
 				//注意：有无字段语义和是否输出数据必须保持一致
 				OutFeild: []string{
 					"公司",
@@ -154,7 +147,7 @@ var GanjiGongsi = &Spider{
 				},
 			},
 
-			"联系方式": &Rule{
+			"联系方式": {
 				ParseFunc: func(self *Spider, resp *context.Response) {
 					resp.AddFile(resp.GetTemp("n").(string))
 				},

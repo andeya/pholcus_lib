@@ -3,34 +3,28 @@ package spider_lib
 // 基础包
 import (
 	// "github.com/PuerkitoBio/goquery"                          //DOM解析
-	"github.com/henrylee2cn/pholcus/downloader/context" //必需
-	. "github.com/henrylee2cn/pholcus/spider"           //必需
-	// . "github.com/henrylee2cn/pholcus/spider/common" //选用
+	"github.com/henrylee2cn/pholcus/app/downloader/context" //必需
+	. "github.com/henrylee2cn/pholcus/app/spider"           //必需
+	// . "github.com/henrylee2cn/pholcus/app/spider/common" //选用
 	// . "github.com/henrylee2cn/pholcus/reporter"
-)
 
-// 设置header包
-import (
-// "net/http" //http.Header
-)
+	// net包
+	// "net/http" //设置http.Header
+	// "net/url"
 
-// 编码包
-import (
-// "encoding/xml"
-//"encoding/json"
-)
+	// 编码包
+	// "encoding/xml"
+	//"encoding/json"
 
-// 字符串处理包
-import (
-//"regexp"
-// "strconv"
-//	"strings"
-)
+	// 字符串处理包
+	//"regexp"
+	// "strconv"
+	//	"strings"
 
-// 其他包
-import (
-// "fmt"
-// "math"
+	// 其他包
+	// "fmt"
+	// "math"
+	// "time"
 )
 
 func init() {
@@ -41,7 +35,7 @@ var FileTest = &Spider{
 	Name:        "文件下载测试",
 	Description: "文件下载测试",
 	// Pausetime: [2]uint{uint(3000), uint(1000)},
-	// Optional: &Optional{},
+	// Keyword:   CAN_ADD,
 	UseCookie: false,
 	RuleTree: &RuleTree{
 		Root: func(self *Spider) {
@@ -51,12 +45,12 @@ var FileTest = &Spider{
 
 		Trunk: map[string]*Rule{
 
-			"百度图片": &Rule{
+			"百度图片": {
 				ParseFunc: func(self *Spider, resp *context.Response) {
 					resp.AddFile("baidu")
 				},
 			},
-			"Pholcus页面": &Rule{
+			"Pholcus页面": {
 				ParseFunc: func(self *Spider, resp *context.Response) {
 					resp.AddFile()
 				},

@@ -2,35 +2,29 @@ package spider_lib
 
 // 基础包
 import (
-	"github.com/PuerkitoBio/goquery"                    //DOM解析
-	"github.com/henrylee2cn/pholcus/downloader/context" //必需
+	"github.com/PuerkitoBio/goquery"                        //DOM解析
+	"github.com/henrylee2cn/pholcus/app/downloader/context" //必需
 	// . "github.com/henrylee2cn/pholcus/reporter"               //信息输出
-	. "github.com/henrylee2cn/pholcus/spider" //必需
-	// . "github.com/henrylee2cn/pholcus/spider/common" //选用
-)
+	. "github.com/henrylee2cn/pholcus/app/spider" //必需
+	// . "github.com/henrylee2cn/pholcus/app/spider/common" //选用
 
-// 设置header包
-import (
-// "net/http" //http.Header
-)
+	// net包
+	// "net/http" //设置http.Header
+	// "net/url"
 
-// 编码包
-import (
-// "encoding/xml"
-// "encoding/json"
-)
+	// 编码包
+	// "encoding/xml"
+	// "encoding/json"
 
-// 字符串处理包
-import (
+	// 字符串处理包
 	"regexp"
 	"strconv"
 	"strings"
-)
 
-// 其他包
-import (
-// "fmt"
-// "math"
+	// 其他包
+	// "fmt"
+	// "math"
+	// "time"
 )
 
 func init() {
@@ -41,7 +35,7 @@ var Miyabaobei = &Spider{
 	Name:        "蜜芽宝贝",
 	Description: "蜜芽宝贝商品数据 [Auto Page] [www.miyabaobei.com]",
 	// Pausetime: [2]uint{uint(3000), uint(1000)},
-	// Optional: &Optional{},
+	// Keyword:   CAN_ADD,
 	UseCookie: false,
 	RuleTree: &RuleTree{
 		Root: func(self *Spider) {
@@ -50,7 +44,7 @@ var Miyabaobei = &Spider{
 
 		Trunk: map[string]*Rule{
 
-			"获取版块URL": &Rule{
+			"获取版块URL": {
 				ParseFunc: func(self *Spider, resp *context.Response) {
 					query := resp.GetDom()
 					lis := query.Find(".ccon")
@@ -74,7 +68,7 @@ var Miyabaobei = &Spider{
 				},
 			},
 
-			"生成请求": &Rule{
+			"生成请求": {
 				AidFunc: func(self *Spider, aid map[string]interface{}) interface{} {
 					req := aid["req"].(map[string]interface{})
 					for loop := aid["loop"].([2]int); loop[0] < loop[1]; loop[0]++ {
@@ -111,7 +105,7 @@ var Miyabaobei = &Spider{
 				},
 			},
 
-			"商品列表": &Rule{
+			"商品列表": {
 				//注意：有无字段语义和是否输出数据必须保持一致
 				OutFeild: []string{
 					"标题",

@@ -3,34 +3,28 @@ package spider_lib
 // 基础包
 import (
 	// "github.com/PuerkitoBio/goquery" //DOM解析
-	"github.com/henrylee2cn/pholcus/downloader/context" //必需
+	"github.com/henrylee2cn/pholcus/app/downloader/context" //必需
 	// . "github.com/henrylee2cn/pholcus/reporter"           //信息输出
-	. "github.com/henrylee2cn/pholcus/spider"        //必需
-	. "github.com/henrylee2cn/pholcus/spider/common" //选用
-)
+	. "github.com/henrylee2cn/pholcus/app/spider"        //必需
+	. "github.com/henrylee2cn/pholcus/app/spider/common" //选用
 
-import (
-// "net/http" //http.Header
-// "net/url"
-)
+	// net包
+	// "net/http" //设置http.Header
+	// "net/url"
 
-// 编码包
-import (
-// "encoding/xml"
-// "encoding/json"
-)
+	// 编码包
+	// "encoding/xml"
+	// "encoding/json"
 
-// 字符串处理包
-import (
-// "regexp"
-// "strconv"
-// "strings"
-)
+	// 字符串处理包
+	// "regexp"
+	// "strconv"
+	// "strings"
 
-// 其他包
-import (
-// "fmt"
-// "math"
+	// 其他包
+	// "fmt"
+	// "math"
+	// "time"
 )
 
 func init() {
@@ -41,7 +35,7 @@ var Lewa = &Spider{
 	Name:        "乐蛙登录测试",
 	Description: "乐蛙登录测试 [Auto Page] [http://accounts.lewaos.com]",
 	// Pausetime: [2]uint{uint(3000), uint(1000)},
-	// Optional: &Optional{},
+	// Keyword:   CAN_ADD,
 	UseCookie: true,
 	RuleTree: &RuleTree{
 		Root: func(self *Spider) {
@@ -50,7 +44,7 @@ var Lewa = &Spider{
 
 		Trunk: map[string]*Rule{
 
-			"登录页": &Rule{
+			"登录页": {
 				ParseFunc: func(self *Spider, resp *context.Response) {
 					// self.AddQueue(map[string]interface{}{
 					// 	"Url":    "http://accounts.lewaos.com",
@@ -74,7 +68,7 @@ var Lewa = &Spider{
 					}).Submit()
 				},
 			},
-			"登录后": &Rule{
+			"登录后": {
 				//注意：有无字段语义和是否输出数据必须保持一致
 				OutFeild: []string{
 					"全部",

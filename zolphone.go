@@ -1,36 +1,30 @@
 package spider_lib
 
-// 基础包
 import (
-	"github.com/PuerkitoBio/goquery"                    //DOM解析
-	"github.com/henrylee2cn/pholcus/downloader/context" //必需
+	// 基础包
+	"github.com/PuerkitoBio/goquery"                        //DOM解析
+	"github.com/henrylee2cn/pholcus/app/downloader/context" //必需
 	// . "github.com/henrylee2cn/pholcus/reporter"           //信息输出
-	. "github.com/henrylee2cn/pholcus/spider" //必需
-	// . "github.com/henrylee2cn/pholcus/spider/common" //选用
-)
+	. "github.com/henrylee2cn/pholcus/app/spider" //必需
+	// . "github.com/henrylee2cn/pholcus/app/spider/common" //选用
 
-// 设置header包
-import (
-// "net/http" //http.Header
-)
+	// net包
+	// "net/http" //设置http.Header
+	// "net/url"
 
-// 编码包
-import (
-// "encoding/xml"
-//"encoding/json"
-)
+	// 编码包
+	// "encoding/xml"
+	// "encoding/json"
 
-// 字符串处理包
-import (
-	//"regexp"
+	// 字符串处理包
+	// "regexp"
 	"strconv"
-	//	"strings"
-)
+	// "strings"
 
-// 其他包
-import (
-// "fmt"
-// "math"
+	// 其他包
+	// "fmt"
+	// "math"
+	// "time"
 )
 
 func init() {
@@ -41,17 +35,16 @@ var Zolphone = &Spider{
 	Name:        "中关村手机",
 	Description: "中关村苹果手机数据 [Auto Page] [bbs.zol.com.cn/sjbbs/d544_p]",
 	// Pausetime: [2]uint{uint(3000), uint(1000)},
-	// Optional: &Optional{},
+	// Keyword:   CAN_ADD,
 	UseCookie: false,
 	RuleTree: &RuleTree{
-		// Spread: []string{},
 		Root: func(self *Spider) {
 			self.Aid("生成请求", map[string]interface{}{"loop": [2]int{1, 950}, "Rule": "生成请求"})
 		},
 
 		Trunk: map[string]*Rule{
 
-			"生成请求": &Rule{
+			"生成请求": {
 				AidFunc: func(self *Spider, aid map[string]interface{}) interface{} {
 					for loop := aid["loop"].([2]int); loop[0] < loop[1]; loop[0]++ {
 						self.AddQueue(map[string]interface{}{
@@ -72,7 +65,7 @@ var Zolphone = &Spider{
 				},
 			},
 
-			"获取结果": &Rule{
+			"获取结果": {
 				//注意：有无字段语义和是否输出数据必须保持一致
 				OutFeild: []string{
 					"机型",
