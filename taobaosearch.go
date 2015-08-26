@@ -34,9 +34,8 @@ func init() {
 var TaobaoSearch = &Spider{
 	Name:        "淘宝搜索",
 	Description: "淘宝天猫搜索结果 [s.taobao.com]",
-	Keyword:     CAN_ADD,
 	// Pausetime: [2]uint{uint(3000), uint(1000)},
-	// Keyword:   CAN_ADD,
+	Keyword:   USE,
 	UseCookie: false,
 	RuleTree: &RuleTree{
 		Root: func(self *Spider) {

@@ -47,9 +47,8 @@ var googleIp = []string{
 var GoogleSearch = &Spider{
 	Name:        "谷歌搜索",
 	Description: "谷歌搜索结果 [www.google.com镜像]",
-	Keyword:     CAN_ADD,
 	// Pausetime: [2]uint{uint(3000), uint(1000)},
-	// Keyword:   CAN_ADD,
+	Keyword:   USE,
 	UseCookie: false,
 	RuleTree: &RuleTree{
 		Root: func(self *Spider) {

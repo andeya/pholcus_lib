@@ -34,9 +34,8 @@ func init() {
 var JDSearch = &Spider{
 	Name:        "京东搜索",
 	Description: "京东搜索结果 [search.jd.com]",
-	Keyword:     CAN_ADD,
 	// Pausetime: [2]uint{uint(3000), uint(1000)},
-	// Keyword:   CAN_ADD,
+	Keyword:   USE,
 	UseCookie: false,
 	RuleTree: &RuleTree{
 		Root: func(self *Spider) {
