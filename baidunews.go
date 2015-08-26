@@ -66,7 +66,7 @@ var BaiduNews = &Spider{
 	Name:        "百度RSS新闻",
 	Description: "百度RSS新闻，实现轮询更新 [Auto Page] [news.baidu.com]",
 	// Pausetime: [2]uint{uint(3000), uint(1000)},
-	// Keyword:     CAN_ADD,
+	// Keyword:     USE,
 	UseCookie: false,
 	RuleTree: &RuleTree{
 		Root: func(self *Spider) {

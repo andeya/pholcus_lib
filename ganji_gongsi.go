@@ -35,7 +35,7 @@ var GanjiGongsi = &Spider{
 	Name:        "企业名录-赶集网",
 	Description: "企业名录-深圳-赶集网 [www.ganji.com/gongsi]",
 	// Pausetime: [2]uint{uint(3000), uint(1000)},
-	// Keyword:   CAN_ADD,
+	// Keyword:   USE,
 	UseCookie: false,
 	RuleTree: &RuleTree{
 		Root: func(self *Spider) {

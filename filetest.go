@@ -35,7 +35,7 @@ var FileTest = &Spider{
 	Name:        "文件下载测试",
 	Description: "文件下载测试",
 	// Pausetime: [2]uint{uint(3000), uint(1000)},
-	// Keyword:   CAN_ADD,
+	// Keyword:   USE,
 	UseCookie: false,
 	RuleTree: &RuleTree{
 		Root: func(self *Spider) {

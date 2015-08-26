@@ -35,7 +35,7 @@ var Zolphone = &Spider{
 	Name:        "中关村手机",
 	Description: "中关村苹果手机数据 [Auto Page] [bbs.zol.com.cn/sjbbs/d544_p]",
 	// Pausetime: [2]uint{uint(3000), uint(1000)},
-	// Keyword:   CAN_ADD,
+	// Keyword:   USE,
 	UseCookie: false,
 	RuleTree: &RuleTree{
 		Root: func(self *Spider) {

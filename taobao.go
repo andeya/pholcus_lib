@@ -37,7 +37,7 @@ var Taobao = &Spider{
 	Name:        "淘宝数据",
 	Description: "淘宝天猫商品数据 [Auto Page] [http://list.taobao.com/]",
 	// Pausetime: [2]uint{uint(3000), uint(1000)},
-	// Keyword:   CAN_ADD,
+	// Keyword:   USE,
 	UseCookie: false,
 	RuleTree: &RuleTree{
 		Root: func(self *Spider) {

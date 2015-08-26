@@ -35,7 +35,7 @@ var Zolslab = &Spider{
 	Name:        "中关村平板",
 	Description: "中关村平板数据 [Auto Page] [bbs.zol.com.cn/sjbbs/d544_p]",
 	// Pausetime: [2]uint{uint(3000), uint(1000)},
-	// Keyword:   CAN_ADD,
+	// Keyword:   USE,
 	UseCookie: false,
 	RuleTree: &RuleTree{
 		Root: func(self *Spider) {

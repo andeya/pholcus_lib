@@ -36,7 +36,7 @@ var Shunfenghaitao = &Spider{
 	Name:        "顺丰海淘",
 	Description: "顺丰海淘商品数据 [Auto Page] [www.sfht.com]",
 	// Pausetime: [2]uint{uint(3000), uint(1000)},
-	// Keyword:   CAN_ADD,
+	// Keyword:   USE,
 	UseCookie: false,
 	RuleTree: &RuleTree{
 		Root: func(self *Spider) {
