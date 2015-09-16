@@ -92,6 +92,13 @@ var BaiduNews = &Spider{
 			},
 			"XML": {
 				ParseFunc: func(self *Spider, resp *context.Response) {
+					src := resp.GetTemp("src").(string)
+					defer func() {
+						// 循环请求
+						rss_BaiduNews.Wait(src)
+						self.Aid("LOOP", map[string]interface{}{"loop": src})
+					}()
+
 					page := GBKToUTF8(resp.GetText())
 					page = strings.TrimLeft(page, `<?xml version="1.0" encoding="gb2312"?>`)
 					re, _ := regexp.Compile(`\<[\/]?rss\>`)
@@ -103,10 +110,7 @@ var BaiduNews = &Spider{
 						return
 					}
 
-					src := resp.GetTemp("src").(string)
-
 					for _, v := range content.Item {
-
 						self.AddQueue(map[string]interface{}{
 							"Url":  v.Link,
 							"Rule": "新闻详情",
@@ -119,10 +123,6 @@ var BaiduNews = &Spider{
 							},
 						})
 					}
-
-					// 循环请求
-					rss_BaiduNews.Wait(src)
-					self.Aid("LOOP", map[string]interface{}{"loop": src})
 				},
 			},
 
