@@ -6,7 +6,7 @@ import (
 	"github.com/henrylee2cn/pholcus/app/downloader/context" //必需
 	. "github.com/henrylee2cn/pholcus/app/spider"           //必需
 	// . "github.com/henrylee2cn/pholcus/app/spider/common" //选用
-	// . "github.com/henrylee2cn/pholcus/reporter"
+	// "github.com/henrylee2cn/pholcus/logs"
 
 	// net包
 	// "net/http" //设置http.Header

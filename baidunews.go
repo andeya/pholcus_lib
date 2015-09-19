@@ -6,7 +6,7 @@ import (
 	"github.com/henrylee2cn/pholcus/app/downloader/context" //必需
 	. "github.com/henrylee2cn/pholcus/app/spider"           //必需
 	. "github.com/henrylee2cn/pholcus/app/spider/common"    //选用
-	. "github.com/henrylee2cn/pholcus/reporter"             //信息输出
+	"github.com/henrylee2cn/pholcus/logs"                   //信息输出
 
 	// net包
 	"net/http" //设置http.Header
@@ -106,7 +106,7 @@ var BaiduNews = &Spider{
 
 					content := new(BaiduNewsData)
 					if err := xml.Unmarshal([]byte(page), content); err != nil {
-						Log.Println(err)
+						logs.Log.Error("%v", err)
 						return
 					}
 

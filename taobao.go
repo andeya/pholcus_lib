@@ -6,7 +6,7 @@ import (
 	"github.com/henrylee2cn/pholcus/app/downloader/context" //必需
 	. "github.com/henrylee2cn/pholcus/app/spider"           //必需
 	. "github.com/henrylee2cn/pholcus/app/spider/common"    //选用
-	. "github.com/henrylee2cn/pholcus/reporter"             //信息输出
+	"github.com/henrylee2cn/pholcus/logs"                   //信息输出
 
 	// net包
 	// "net/http" //设置http.Header
@@ -104,7 +104,7 @@ var Taobao = &Spider{
 					total = strings.Trim(total, " \t\n")
 					totalPage, _ := strconv.Atoi(total)
 					if total == "0" {
-						Log.Printf("[消息提示：| 任务：%v | 关键词：%v | 规则：%v] 没有抓取到任何数据！!!\n", self.GetName(), self.GetKeyword(), resp.GetRuleName())
+						logs.Log.Critical("[消息提示：| 任务：%v | 关键词：%v | 规则：%v] 没有抓取到任何数据！!!\n", self.GetName(), self.GetKeyword(), resp.GetRuleName())
 					} else {
 						self.Aid("生成请求", map[string]interface{}{
 							"loop":    [2]int{1, totalPage},
@@ -126,11 +126,11 @@ var Taobao = &Spider{
 					infos := map[string]interface{}{}
 					err := json.Unmarshal([]byte(j), &infos)
 					if err != nil {
-						Log.Printf("商品列表解析错误： %v\n", err)
+						logs.Log.Error("商品列表解析错误： %v\n", err)
 						return
 					}
 					if infos["mallItemList"] == nil {
-						Log.Println("商品列表解析错误： 内容不存在！")
+						logs.Log.Error("商品列表解析错误： 内容不存在！")
 						return
 					}
 					for _, item := range infos["mallItemList"].([]interface{}) {
@@ -221,11 +221,11 @@ var Taobao = &Spider{
 
 					infos := map[string]interface{}{}
 					if err := json.Unmarshal([]byte(j), &infos); err != nil {
-						Log.Printf("商品评论解析错误： %v\n", err)
+						logs.Log.Error("商品评论解析错误： %v\n", err)
 						return
 					}
 					if infos["comments"] == nil || infos["maxPage"] == nil || infos["currentPageNum"] == nil {
-						Log.Println("商品评论解析错误： 内容不存在！")
+						logs.Log.Error("商品评论解析错误： 内容不存在！")
 						return
 					}
 					discussSlice := infos["comments"].([]interface{})

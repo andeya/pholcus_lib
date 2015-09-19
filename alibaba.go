@@ -6,7 +6,7 @@ import (
 	"github.com/henrylee2cn/pholcus/app/downloader/context" //必需
 	. "github.com/henrylee2cn/pholcus/app/spider"           //必需
 	. "github.com/henrylee2cn/pholcus/app/spider/common"    //选用
-	. "github.com/henrylee2cn/pholcus/reporter"             //信息输出
+	"github.com/henrylee2cn/pholcus/logs"                   //信息输出
 
 	// net包
 	"net/http" //设置http.Header
@@ -61,7 +61,7 @@ var AlibabaProduct = &Spider{
 					pageTag := query.Find("#sm-pagination div[data-total-page]")
 					// 跳转
 					if len(pageTag.Nodes) == 0 {
-						Log.Printf("[消息提示：| 任务：%v | 关键词：%v | 规则：%v] 由于跳转AJAX问题，目前只能每个子类抓取 1 页……\n", self.GetName(), self.GetKeyword(), resp.GetRuleName())
+						logs.Log.Critical("[消息提示：| 任务：%v | 关键词：%v | 规则：%v] 由于跳转AJAX问题，目前只能每个子类抓取 1 页……\n", self.GetName(), self.GetKeyword(), resp.GetRuleName())
 						query.Find(".sm-floorhead-typemore a").Each(func(i int, s *goquery.Selection) {
 							if href, ok := s.Attr("href"); ok {
 								self.AddQueue(map[string]interface{}{
@@ -79,7 +79,7 @@ var AlibabaProduct = &Spider{
 					if total > self.MaxPage {
 						total = self.MaxPage
 					} else if total == 0 {
-						Log.Printf("[消息提示：| 任务：%v | 关键词：%v | 规则：%v] 没有抓取到任何数据！！！\n", self.GetName(), self.GetKeyword(), resp.GetRuleName())
+						logs.Log.Critical("[消息提示：| 任务：%v | 关键词：%v | 规则：%v] 没有抓取到任何数据！！！\n", self.GetName(), self.GetKeyword(), resp.GetRuleName())
 						return
 					}
 

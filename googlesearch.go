@@ -5,7 +5,7 @@ import (
 	"github.com/PuerkitoBio/goquery"                        //DOM解析
 	"github.com/henrylee2cn/pholcus/app/downloader/context" //必需
 	. "github.com/henrylee2cn/pholcus/app/spider"           //必需
-	. "github.com/henrylee2cn/pholcus/reporter"             //信息输出
+	"github.com/henrylee2cn/pholcus/logs"                   //信息输出
 	// . "github.com/henrylee2cn/pholcus/app/spider/common"          //选用
 
 	// net包
@@ -54,7 +54,7 @@ var GoogleSearch = &Spider{
 		Root: func(self *Spider) {
 			var url string
 			var success bool
-			Log.Println("正在查找可用的Google镜像，该过程可能需要几分钟……")
+			logs.Log.Critical("正在查找可用的Google镜像，该过程可能需要几分钟……")
 			for _, ip := range googleIp {
 				url = "http://" + ip + "/search?q=" + self.GetKeyword() + "&newwindow=1&biw=1600&bih=398&start="
 				if _, err := goquery.NewDocument(url); err == nil {
@@ -63,10 +63,10 @@ var GoogleSearch = &Spider{
 				}
 			}
 			if !success {
-				Log.Println("没有可用的Google镜像IP！！")
+				logs.Log.Critical("没有可用的Google镜像IP！！")
 				return
 			}
-			Log.Println("开始Google搜索……")
+			logs.Log.Critical("开始Google搜索……")
 			self.AddQueue(map[string]interface{}{
 				"Url":  url,
 				"Rule": "获取总页数",
@@ -91,18 +91,16 @@ var GoogleSearch = &Spider{
 				ParseFunc: func(self *Spider, resp *context.Response) {
 					query := resp.GetDom()
 					txt := query.Find("#resultStats").Text()
-					Log.Println("总页数txt：", txt)
 					re, _ := regexp.Compile(`,+`)
 					txt = re.ReplaceAllString(txt, "")
 					re, _ = regexp.Compile(`[\d]+`)
 					txt = re.FindString(txt)
 					num, _ := strconv.Atoi(txt)
-					Log.Println("总页数：", num)
 					total := int(math.Ceil(float64(num) / 10))
 					if total > self.MaxPage {
 						total = self.MaxPage
 					} else if total == 0 {
-						Log.Printf("[消息提示：| 任务：%v | 关键词：%v | 规则：%v] 没有抓取到任何数据！!!\n", self.GetName(), self.GetKeyword(), resp.GetRuleName())
+						logs.Log.Critical("[消息提示：| 任务：%v | 关键词：%v | 规则：%v] 没有抓取到任何数据！!!\n", self.GetName(), self.GetKeyword(), resp.GetRuleName())
 						return
 					}
 					// 调用指定规则下辅助函数

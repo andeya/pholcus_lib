@@ -5,7 +5,7 @@ import (
 	"github.com/PuerkitoBio/goquery"                        //DOM解析
 	"github.com/henrylee2cn/pholcus/app/downloader/context" //必需
 	. "github.com/henrylee2cn/pholcus/app/spider"           //必需
-	. "github.com/henrylee2cn/pholcus/reporter"             //信息输出
+	"github.com/henrylee2cn/pholcus/logs"                   //信息输出
 	// . "github.com/henrylee2cn/pholcus/app/spider/common"          //选用
 
 	// net包
@@ -64,7 +64,7 @@ var BaiduSearch = &Spider{
 					if total > self.MaxPage {
 						total = self.MaxPage
 					} else if total == 0 {
-						Log.Printf("[消息提示：| 任务：%v | 关键词：%v | 规则：%v] 没有抓取到任何数据！!!\n", self.GetName(), self.GetKeyword(), resp.GetRuleName())
+						logs.Log.Critical("[消息提示：| 任务：%v | 关键词：%v | 规则：%v] 没有抓取到任何数据！!!\n", self.GetName(), self.GetKeyword(), resp.GetRuleName())
 						return
 					}
 					// 调用指定规则下辅助函数

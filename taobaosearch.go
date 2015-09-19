@@ -6,7 +6,7 @@ import (
 	"github.com/henrylee2cn/pholcus/app/downloader/context" //必需
 	. "github.com/henrylee2cn/pholcus/app/spider"           //必需
 	. "github.com/henrylee2cn/pholcus/app/spider/common"    //选用
-	. "github.com/henrylee2cn/pholcus/reporter"             //信息输出
+	"github.com/henrylee2cn/pholcus/logs"                   //信息输出
 
 	// net包
 	// "net/http" //设置http.Header
@@ -58,7 +58,7 @@ var TaobaoSearch = &Spider{
 					query := resp.GetDom()
 					src := query.Find("script").Text()
 					if strings.Contains(src, "抱歉！没有找到与") {
-						Log.Printf(" ********************** 淘宝关键词 [%v] 的搜索结果不存在！ ********************** ", self.GetKeyword())
+						logs.Log.Critical(" ********************** 淘宝关键词 [%v] 的搜索结果不存在！ ********************** ", self.GetKeyword())
 						return
 					}
 
@@ -76,11 +76,11 @@ var TaobaoSearch = &Spider{
 					if self.GetMaxPage() > maxPage || self.GetMaxPage() == 0 {
 						self.SetMaxPage(maxPage)
 					} else if self.GetMaxPage() == 0 {
-						Log.Printf("[消息提示：| 任务：%v | 关键词：%v | 规则：%v] 没有抓取到任何数据！!!\n", self.GetName(), self.GetKeyword(), resp.GetRuleName())
+						logs.Log.Critical("[消息提示：| 任务：%v | 关键词：%v | 规则：%v] 没有抓取到任何数据！!!\n", self.GetName(), self.GetKeyword(), resp.GetRuleName())
 						return
 					}
 
-					Log.Printf(" ********************** 淘宝关键词 [%v] 的搜索结果共有 %v 页，计划抓取 %v 页 **********************", self.GetKeyword(), maxPage, self.GetMaxPage())
+					logs.Log.Critical(" ********************** 淘宝关键词 [%v] 的搜索结果共有 %v 页，计划抓取 %v 页 **********************", self.GetKeyword(), maxPage, self.GetMaxPage())
 					// 调用指定规则下辅助函数
 					self.Aid("生成请求", map[string]interface{}{"loop": [2]int{1, self.GetMaxPage()}, "Rule": "搜索结果"})
 					// 用指定规则解析响应流
@@ -113,7 +113,7 @@ var TaobaoSearch = &Spider{
 					err := json.Unmarshal([]byte(src), &infos)
 
 					if err != nil {
-						Log.Printf("error is %v\n", err)
+						logs.Log.Error("error is %v\n", err)
 						return
 					} else {
 						for _, info := range infos {
@@ -185,7 +185,7 @@ var TaobaoSearch = &Spider{
 						err := json.Unmarshal([]byte(d), &infos)
 
 						if err != nil {
-							Log.Printf("error is %v\n", err)
+							logs.Log.Error("error is %v\n", err)
 							return
 						} else {
 							for _, info := range infos {

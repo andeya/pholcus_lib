@@ -5,7 +5,7 @@ import (
 	"github.com/PuerkitoBio/goquery"                        //DOM解析
 	"github.com/henrylee2cn/pholcus/app/downloader/context" //必需
 	. "github.com/henrylee2cn/pholcus/app/spider"           //必需
-	. "github.com/henrylee2cn/pholcus/reporter"             //信息输出
+	"github.com/henrylee2cn/pholcus/logs"                   //信息输出
 	// . "github.com/henrylee2cn/pholcus/app/spider/common"          //选用
 
 	// net包
@@ -84,7 +84,7 @@ var Hollandandbarrett = &Spider{
 					total = strings.Trim(total, " \t\n")
 
 					if total == "0" {
-						Log.Printf("[消息提示：| 任务：%v | 关键词：%v | 规则：%v] 没有抓取到任何数据！!!\n", self.GetName(), self.GetKeyword(), resp.GetRuleName())
+						logs.Log.Critical("[消息提示：| 任务：%v | 关键词：%v | 规则：%v] 没有抓取到任何数据！!!\n", self.GetName(), self.GetKeyword(), resp.GetRuleName())
 					} else {
 
 						self.AddQueue(
@@ -121,7 +121,7 @@ var Hollandandbarrett = &Spider{
 					err := json.Unmarshal([]byte(src), &infos)
 
 					if err != nil {
-						Log.Printf("error is %v\n", err)
+						logs.Log.Error("error is %v\n", err)
 						return
 					} else {
 						for _, info1 := range infos["contents"].([]interface{})[0].(map[string]interface{})["mainContent"].([]interface{})[0].(map[string]interface{})["records"].([]interface{}) {
