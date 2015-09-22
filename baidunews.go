@@ -47,7 +47,7 @@ var rss_BaiduNews = NewRSS(map[string]string{
 	"科技最新":  "http://news.baidu.com/n?cmd=4&class=technnews&tn=rss",
 	"社会最新":  "http://news.baidu.com/n?cmd=4&class=socianews&tn=rss",
 },
-	[]int{5, 10, 20, 30, 45, 60},
+	[]float64{5, 10, 20, 30, 45, 60},
 )
 
 type BaiduNewsData struct {
@@ -83,14 +83,14 @@ var BaiduNews = &Spider{
 
 					self.AddQueue(map[string]interface{}{
 						"Url":    v + "#" + time.Now().String(),
-						"Rule":   "XML",
+						"Rule":   "XML列表页",
 						"Header": http.Header{"Content-Type": []string{"text/html", "charset=GB2312"}},
 						"Temp":   map[string]interface{}{"src": k},
 					})
 					return nil
 				},
 			},
-			"XML": {
+			"XML列表页": {
 				ParseFunc: func(self *Spider, resp *context.Response) {
 					src := resp.GetTemp("src").(string)
 					defer func() {
@@ -138,7 +138,7 @@ var BaiduNews = &Spider{
 				},
 				ParseFunc: func(self *Spider, resp *context.Response) {
 					// RSS标记更新
-					rss_BaiduNews.Updata(resp.GetTemp("src").(string))
+					rss_BaiduNews.Update(resp.GetTemp("src").(string))
 
 					title := resp.GetTemp("title").(string)
 
