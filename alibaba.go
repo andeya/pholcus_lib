@@ -49,7 +49,7 @@ var AlibabaProduct = &Spider{
 					keyword := EncodeString(self.GetKeyword(), "GBK")
 					for loop := aid["loop"].([2]int); loop[0] < loop[1]; loop[0]++ {
 						self.AddQueue(map[string]interface{}{
-							"Url":    "http://s.1688.com/selloffer/offer_search.htm?enableAsync=false&earseDirect=false&button_click=top&pageSize=60&n=y&offset=3&fromSycm=y&uniqfield=pic_tag_id&keywords=" + keyword + "&beginPage=" + strconv.Itoa(loop[0]+1),
+							"Url":    "http://s.1688.com/selloffer/offer_search.htm?enableAsync=false&earseDirect=false&button_click=top&pageSize=60&n=y&offset=3&uniqfield=pic_tag_id&keywords=" + keyword + "&beginPage=" + strconv.Itoa(loop[0]+1),
 							"Rule":   aid["Rule"],
 							"Header": http.Header{"Content-Type": []string{"text/html", "charset=GBK"}},
 						})
