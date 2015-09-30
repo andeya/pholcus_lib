@@ -39,7 +39,11 @@ var BaiduSearch = &Spider{
 	UseCookie: false,
 	RuleTree: &RuleTree{
 		Root: func(self *Spider) {
-			self.Aid("生成请求", map[string]interface{}{"loop": [2]int{0, 1}, "Rule": "生成请求"})
+			var bol bool
+			if self.MaxPage > 1 {
+				bol = true
+			}
+			self.Aid("生成请求", map[string]interface{}{"loop": [2]int{0, 1}, "Rule": "生成请求", "Duplicatable": bol})
 		},
 
 		Trunk: map[string]*Rule{
@@ -48,8 +52,9 @@ var BaiduSearch = &Spider{
 				AidFunc: func(self *Spider, aid map[string]interface{}) interface{} {
 					for loop := aid["loop"].([2]int); loop[0] < loop[1]; loop[0]++ {
 						self.AddQueue(map[string]interface{}{
-							"Url":  "http://www.baidu.com/s?ie=utf-8&nojc=1&wd=" + self.GetKeyword() + "&rn=50&pn=" + strconv.Itoa(50*loop[0]),
-							"Rule": aid["Rule"],
+							"Url":          "http://www.baidu.com/s?ie=utf-8&nojc=1&wd=" + self.GetKeyword() + "&rn=50&pn=" + strconv.Itoa(50*loop[0]),
+							"Rule":         aid["Rule"],
+							"Duplicatable": aid["Duplicatable"],
 						})
 					}
 					return nil
