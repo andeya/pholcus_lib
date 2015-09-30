@@ -106,7 +106,7 @@ var BaiduNews = &Spider{
 
 					content := new(BaiduNewsData)
 					if err := xml.Unmarshal([]byte(page), content); err != nil {
-						logs.Log.Error("%v", err)
+						logs.Log.Error("XML列表页: %v", err)
 						return
 					}
 
