@@ -28,7 +28,7 @@ import (
 )
 
 func init() {
-	Taobao.AddMenu()
+	Taobao.Register()
 }
 
 var cookies_Taobao = SplitCookies("mt=ci%3D-1_0; swfstore=35673; thw=cn; cna=fcr5DRDmwnQCAT2QxZSu3Db6; sloc=%E8%BE%BD%E5%AE%81; _tb_token_=XLlMHhT9BI8IzeA; ck1=; v=0; uc3=nk2=symxAo6NBazVq7cY2z0%3D&id2=UU23CgHxOwgwgA%3D%3D&vt3=F8dAT%2BCFEEyTLicOBEc%3D&lg2=U%2BGCWk%2F75gdr5Q%3D%3D; existShop=MTQzNDM1NDcyNg%3D%3D; lgc=%5Cu5C0F%5Cu7C73%5Cu7C92%5Cu559C%5Cu6B22%5Cu5927%5Cu6D77; tracknick=%5Cu5C0F%5Cu7C73%5Cu7C92%5Cu559C%5Cu6B22%5Cu5927%5Cu6D77; sg=%E6%B5%B721; cookie2=1433b814776e3b3c61f4ba3b8631a81a; cookie1=Bqbn0lh%2FkPm9D0NtnTdFiqggRYia%2FBrNeQpwLWlbyJk%3D; unb=2559173312; t=1a9b12bb535040723808836b32e53507; _cc_=WqG3DMC9EA%3D%3D; tg=5; _l_g_=Ug%3D%3D; _nk_=%5Cu5C0F%5Cu7C73%5Cu7C92%5Cu559C%5Cu6B22%5Cu5927%5Cu6D77; cookie17=UU23CgHxOwgwgA%3D%3D; mt=ci=0_1; x=e%3D1%26p%3D*%26s%3D0%26c%3D0%26f%3D0%26g%3D0%26t%3D0%26__ll%3D-1%26_ato%3D0; whl=-1%260%260%260; uc1=lltime=1434353890&cookie14=UoW0FrfFYp27FQ%3D%3D&existShop=false&cookie16=V32FPkk%2FxXMk5UvIbNtImtMfJQ%3D%3D&cookie21=U%2BGCWk%2F7p4mBoUyTltGF&tag=7&cookie15=Vq8l%2BKCLz3%2F65A%3D%3D&pas=0; isg=C08C1D752BC08A3DCDF1FE6611FA3EE1; l=Ajk53TTUeK0ZKkG8yx7w7svcyasSxC34")
@@ -38,16 +38,16 @@ var Taobao = &Spider{
 	Description: "淘宝天猫商品数据 [Auto Page] [http://list.taobao.com/]",
 	// Pausetime: [2]uint{uint(3000), uint(1000)},
 	// Keyword:   USE,
-	UseCookie: false,
+	EnableCookie: false,
 	RuleTree: &RuleTree{
 		Root: func(self *Spider) {
 			if k := strings.Trim(self.GetKeyword(), " "); k != "" {
 				cookies_Taobao = SplitCookies(k)
 			}
-			self.AddQueue(map[string]interface{}{
-				"Url":     "http://list.taobao.com/browse/cat-0.htm",
-				"Rule":    "生成请求",
-				"Cookies": cookies_Taobao,
+			self.AddQueue(&context.Request{
+				Url:     "http://list.taobao.com/browse/cat-0.htm",
+				Rule:    "生成请求",
+				Cookies: cookies_Taobao,
 			})
 		},
 
@@ -60,10 +60,10 @@ var Taobao = &Spider{
 						for _, loc := range loc_Taobao {
 							urls = append(urls, "http:"+aid["urlBase"].(string)+"&_input_charset=utf-8&json=on&viewIndex=1&as=0&atype=b&style=grid&same_info=1&tid=0&isnew=2&data-action&module=page&s=0&loc="+loc+"&pSize=96&data-key=s&data-value="+strconv.Itoa(loop[0]*96))
 						}
-						self.BulkAddQueue(urls, map[string]interface{}{
-							"Rule":    aid["Rule"],
-							"Cookies": cookies_Taobao,
-							"Temp":    aid["Temp"],
+						self.BulkAddQueue(urls, &context.Request{
+							Rule:    aid["Rule"].(string),
+							Cookies: cookies_Taobao,
+							Temp:    aid["Temp"].(map[string]interface{}),
 						})
 					}
 					return nil
@@ -161,11 +161,11 @@ var Taobao = &Spider{
 							self.OutFeild("结果", 22): item2["dsrScore"],
 							self.OutFeild("结果", 23): item2["spSource"],
 						}
-						self.AddQueue(map[string]interface{}{
-							"Url":      "http:" + item2["href"].(string),
-							"Rule":     "商品详情",
-							"Temp":     temp,
-							"Priority": 1,
+						self.AddQueue(&context.Request{
+							Url:      "http:" + item2["href"].(string),
+							Rule:     "商品详情",
+							Temp:     temp,
+							Priority: 1,
 						})
 
 						// 去"结果"规则输出结果
@@ -204,11 +204,11 @@ var Taobao = &Spider{
 					temp := resp.GetTemps()
 					temp[self.OutFeild("结果", 24)] = detail
 					temp[self.OutFeild("结果", 25)] = []interface{}{}
-					self.AddQueue(map[string]interface{}{
-						"Rule":     "商品评论",
-						"Url":      "http://rate.taobao.com/feedRateList.htm?siteID=4&rateType=&orderType=sort_weight&showContent=1&userNumId=" + resp.GetTemp("sellerId").(string) + "&auctionNumId=" + resp.GetTemp("itemId").(string) + "&currentPageNum=1",
-						"Temp":     temp,
-						"Priority": 2,
+					self.AddQueue(&context.Request{
+						Rule:     "商品评论",
+						Url:      "http://rate.taobao.com/feedRateList.htm?siteID=4&rateType=&orderType=sort_weight&showContent=1&userNumId=" + resp.GetTemp("sellerId").(string) + "&auctionNumId=" + resp.GetTemp("itemId").(string) + "&currentPageNum=1",
+						Temp:     temp,
+						Priority: 2,
 					})
 				},
 			},
@@ -237,10 +237,10 @@ var Taobao = &Spider{
 					maxPage := infos["maxPage"].(int)
 					if currentPageNum < maxPage {
 						// 请求下一页
-						self.AddQueue(map[string]interface{}{
-							"Rule": "商品评论",
-							"Url":  "http://rate.taobao.com/feedRateList.htm?siteID=4&rateType=&orderType=sort_weight&showContent=1&userNumId=" + resp.GetTemp("sellerId").(string) + "&auctionNumId=" + resp.GetTemp("itemId").(string) + "&currentPageNum=" + strconv.Itoa(currentPageNum+1),
-							"Temp": resp.GetTemps(),
+						self.AddQueue(&context.Request{
+							Rule: "商品评论",
+							Url:  "http://rate.taobao.com/feedRateList.htm?siteID=4&rateType=&orderType=sort_weight&showContent=1&userNumId=" + resp.GetTemp("sellerId").(string) + "&auctionNumId=" + resp.GetTemp("itemId").(string) + "&currentPageNum=" + strconv.Itoa(currentPageNum+1),
+							Temp: resp.GetTemps(),
 						})
 					} else {
 						// 输出结果

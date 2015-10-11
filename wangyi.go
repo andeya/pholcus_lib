@@ -29,7 +29,7 @@ import (
 )
 
 func init() {
-	Wangyi.AddMenu()
+	Wangyi.Register()
 }
 
 var Wangyi = &Spider{
@@ -37,10 +37,10 @@ var Wangyi = &Spider{
 	Description: "网易排行榜新闻，含点击/跟帖排名 [Auto Page] [news.163.com/rank]",
 	// Pausetime: [2]uint{uint(3000), uint(1000)},
 	// Keyword:   USE,
-	UseCookie: false,
+	EnableCookie: false,
 	RuleTree: &RuleTree{
 		Root: func(self *Spider) {
-			self.AddQueue(map[string]interface{}{"Url": "http://news.163.com/rank/", "Rule": "排行榜主页"})
+			self.AddQueue(&context.Request{Url: "http://news.163.com/rank/", Rule: "排行榜主页"})
 		},
 
 		Trunk: map[string]*Rule{
@@ -50,7 +50,7 @@ var Wangyi = &Spider{
 					query := resp.GetDom()
 					query.Find(".subNav a").Each(func(i int, s *goquery.Selection) {
 						if url, ok := s.Attr("href"); ok {
-							self.AddQueue(map[string]interface{}{"Url": url, "Rule": "新闻排行榜"})
+							self.AddQueue(&context.Request{Url: url, Rule: "新闻排行榜"})
 						}
 					})
 				},
@@ -90,10 +90,10 @@ var Wangyi = &Spider{
 						})
 					})
 					for k, v := range urls_top {
-						self.AddQueue(map[string]interface{}{
-							"Url":  k,
-							"Rule": "热点新闻",
-							"Temp": map[string]interface{}{
+						self.AddQueue(&context.Request{
+							Url:  k,
+							Rule: "热点新闻",
+							Temp: map[string]interface{}{
 								"newsType": newsType,
 								"top":      v,
 							},
@@ -117,10 +117,10 @@ var Wangyi = &Spider{
 					// 若有多页内容，则获取阅读全文的链接并获取内容
 					if pageAll := query.Find(".ep-pages-all"); len(pageAll.Nodes) != 0 {
 						if pageAllUrl, ok := pageAll.Attr("href"); ok {
-							self.AddQueue(map[string]interface{}{
-								"Url":  pageAllUrl,
-								"Rule": "热点新闻",
-								"Temp": resp.GetTemps(),
+							self.AddQueue(&context.Request{
+								Url:  pageAllUrl,
+								Rule: "热点新闻",
+								Temp: resp.GetTemps(),
 							})
 						}
 						return

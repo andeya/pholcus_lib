@@ -28,7 +28,7 @@ import (
 )
 
 func init() {
-	GanjiGongsi.AddMenu()
+	GanjiGongsi.Register()
 }
 
 var GanjiGongsi = &Spider{
@@ -36,13 +36,13 @@ var GanjiGongsi = &Spider{
 	Description: "企业名录-深圳-赶集网 [www.ganji.com/gongsi]",
 	// Pausetime: [2]uint{uint(3000), uint(1000)},
 	// Keyword:   USE,
-	UseCookie: false,
+	EnableCookie: false,
 	RuleTree: &RuleTree{
 		Root: func(self *Spider) {
-			self.AddQueue(map[string]interface{}{
-				"Url":  "http://sz.ganji.com/gongsi/o1",
-				"Rule": "请求列表",
-				"Temp": map[string]interface{}{"p": 1},
+			self.AddQueue(&context.Request{
+				Url:  "http://sz.ganji.com/gongsi/o1",
+				Rule: "请求列表",
+				Temp: map[string]interface{}{"p": 1},
 			})
 		},
 
@@ -54,10 +54,10 @@ var GanjiGongsi = &Spider{
 					if resp.GetDom().Find(".linkOn span").Text() != strconv.Itoa(curr) {
 						return
 					}
-					self.AddQueue(map[string]interface{}{
-						"Url":  "http://sz.ganji.com/gongsi/o" + strconv.Itoa(curr+1),
-						"Rule": "请求列表",
-						"Temp": map[string]interface{}{"p": curr + 1},
+					self.AddQueue(&context.Request{
+						Url:  "http://sz.ganji.com/gongsi/o" + strconv.Itoa(curr+1),
+						Rule: "请求列表",
+						Temp: map[string]interface{}{"p": curr + 1},
 					})
 
 					// 用指定规则解析响应流
@@ -71,9 +71,9 @@ var GanjiGongsi = &Spider{
 						Find(".com-list-2 table a").
 						Each(func(i int, s *goquery.Selection) {
 						url, _ := s.Attr("href")
-						self.AddQueue(map[string]interface{}{
-							"Url":  url,
-							"Rule": "输出结果",
+						self.AddQueue(&context.Request{
+							Url:  url,
+							Rule: "输出结果",
 						})
 					})
 				},
@@ -119,11 +119,11 @@ var GanjiGongsi = &Spider{
 
 						case "联系电话：":
 							if img, ok := s.Find("img").Attr("src"); ok {
-								self.AddQueue(map[string]interface{}{
-									"Url":      "http://www.ganji.com" + img,
-									"Rule":     "联系方式",
-									"Temp":     map[string]interface{}{"n": 公司 + "(" + 联系人 + ").png"},
-									"Priority": 1,
+								self.AddQueue(&context.Request{
+									Url:      "http://www.ganji.com" + img,
+									Rule:     "联系方式",
+									Temp:     map[string]interface{}{"n": 公司 + "(" + 联系人 + ").png"},
+									Priority: 1,
 								})
 							}
 

@@ -28,7 +28,7 @@ import (
 )
 
 func init() {
-	BaiduNews.AddMenu()
+	BaiduNews.Register()
 }
 
 var rss_BaiduNews = NewRSS(map[string]string{
@@ -67,7 +67,7 @@ var BaiduNews = &Spider{
 	Description: "百度RSS新闻，实现轮询更新 [Auto Page] [news.baidu.com]",
 	// Pausetime: [2]uint{uint(3000), uint(1000)},
 	// Keyword:     USE,
-	UseCookie: false,
+	EnableCookie: false,
 	RuleTree: &RuleTree{
 		Root: func(self *Spider) {
 			for k, _ := range rss_BaiduNews.Src {
@@ -81,11 +81,11 @@ var BaiduNews = &Spider{
 					k := aid["loop"].(string)
 					v := rss_BaiduNews.Src[k]
 
-					self.AddQueue(map[string]interface{}{
-						"Url":    v + "#" + time.Now().String(),
-						"Rule":   "XML列表页",
-						"Header": http.Header{"Content-Type": []string{"text/html", "charset=GB2312"}},
-						"Temp":   map[string]interface{}{"src": k},
+					self.AddQueue(&context.Request{
+						Url:    v + "#" + time.Now().String(),
+						Rule:   "XML列表页",
+						Header: http.Header{"Content-Type": []string{"text/html", "charset=GB2312"}},
+						Temp:   map[string]interface{}{"src": k},
 					})
 					return nil
 				},
@@ -111,10 +111,10 @@ var BaiduNews = &Spider{
 					}
 
 					for _, v := range content.Item {
-						self.AddQueue(map[string]interface{}{
-							"Url":  v.Link,
-							"Rule": "新闻详情",
-							"Temp": map[string]interface{}{
+						self.AddQueue(&context.Request{
+							Url:  v.Link,
+							Rule: "新闻详情",
+							Temp: map[string]interface{}{
 								"title":       CleanHtml(v.Title, 4),
 								"description": CleanHtml(v.Description, 4),
 								"src":         src,

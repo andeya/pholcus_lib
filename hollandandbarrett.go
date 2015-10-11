@@ -28,7 +28,7 @@ import (
 )
 
 func init() {
-	Hollandandbarrett.AddMenu()
+	Hollandandbarrett.Register()
 }
 
 var Hollandandbarrett = &Spider{
@@ -36,14 +36,13 @@ var Hollandandbarrett = &Spider{
 	Description: "Hollandand&Barrett商品数据 [Auto Page] [www.Hollandandbarrett.com]",
 	// Pausetime: [2]uint{uint(3000), uint(1000)},
 	// Keyword:   USE,
-	UseCookie: false,
+	EnableCookie: false,
 	RuleTree: &RuleTree{
 		Root: func(self *Spider) {
-			self.AddQueue(
-				map[string]interface{}{
-					"Url":  "http://www.hollandandbarrett.com/",
-					"Rule": "获取版块URL",
-				},
+			self.AddQueue(&context.Request{
+				Url:  "http://www.hollandandbarrett.com/",
+				Rule: "获取版块URL",
+			},
 			)
 		},
 
@@ -57,15 +56,14 @@ var Hollandandbarrett = &Spider{
 					lis.Each(func(i int, s *goquery.Selection) {
 						if url, ok := s.Attr("href"); ok {
 							tit, _ := s.Attr("title")
-							self.AddQueue(
-								map[string]interface{}{
-									"Url":  "http://www.hollandandbarrett.com" + url + "?showAll=1&pageHa=1&es=true&vm=grid&imd=true&format=json&single=true",
-									"Rule": "获取总数",
-									"Temp": map[string]interface{}{
-										"type":    tit,
-										"baseUrl": url,
-									},
+							self.AddQueue(&context.Request{
+								Url:  "http://www.hollandandbarrett.com" + url + "?showAll=1&pageHa=1&es=true&vm=grid&imd=true&format=json&single=true",
+								Rule: "获取总数",
+								Temp: map[string]interface{}{
+									"type":    tit,
+									"baseUrl": url,
 								},
+							},
 							)
 						}
 					})
@@ -87,14 +85,13 @@ var Hollandandbarrett = &Spider{
 						logs.Log.Critical("[消息提示：| 任务：%v | 关键词：%v | 规则：%v] 没有抓取到任何数据！!!\n", self.GetName(), self.GetKeyword(), resp.GetRuleName())
 					} else {
 
-						self.AddQueue(
-							map[string]interface{}{
-								"Url":  "http://www.hollandandbarrett.com" + resp.GetTemp("baseUrl").(string) + "?showAll=" + total + "&pageHa=1&es=true&vm=grid&imd=true&format=json&single=true",
-								"Rule": "商品详情",
-								"Temp": map[string]interface{}{
-									"type": resp.GetTemp("type").(string),
-								},
+						self.AddQueue(&context.Request{
+							Url:  "http://www.hollandandbarrett.com" + resp.GetTemp("baseUrl").(string) + "?showAll=" + total + "&pageHa=1&es=true&vm=grid&imd=true&format=json&single=true",
+							Rule: "商品详情",
+							Temp: map[string]interface{}{
+								"type": resp.GetTemp("type").(string),
 							},
+						},
 						)
 
 					}

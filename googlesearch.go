@@ -28,7 +28,7 @@ import (
 )
 
 func init() {
-	GoogleSearch.AddMenu()
+	GoogleSearch.Register()
 }
 
 var googleIp = []string{
@@ -48,8 +48,8 @@ var GoogleSearch = &Spider{
 	Name:        "谷歌搜索",
 	Description: "谷歌搜索结果 [www.google.com镜像]",
 	// Pausetime: [2]uint{uint(3000), uint(1000)},
-	Keyword:   USE,
-	UseCookie: false,
+	Keyword:      USE,
+	EnableCookie: false,
 	RuleTree: &RuleTree{
 		Root: func(self *Spider) {
 			var url string
@@ -67,10 +67,10 @@ var GoogleSearch = &Spider{
 				return
 			}
 			logs.Log.Critical("开始Google搜索……")
-			self.AddQueue(map[string]interface{}{
-				"Url":  url,
-				"Rule": "获取总页数",
-				"Temp": map[string]interface{}{
+			self.AddQueue(&context.Request{
+				Url:  url,
+				Rule: "获取总页数",
+				Temp: map[string]interface{}{
 					"baseUrl": url,
 				},
 			})
@@ -81,9 +81,9 @@ var GoogleSearch = &Spider{
 			"获取总页数": {
 				AidFunc: func(self *Spider, aid map[string]interface{}) interface{} {
 					for loop := aid["loop"].([2]int); loop[0] < loop[1]; loop[0]++ {
-						self.AddQueue(map[string]interface{}{
-							"Url":  aid["urlBase"].(string) + strconv.Itoa(10*loop[0]),
-							"Rule": aid["Rule"],
+						self.AddQueue(&context.Request{
+							Url:  aid["urlBase"].(string) + strconv.Itoa(10*loop[0]),
+							Rule: aid["Rule"].(string),
 						})
 					}
 					return nil

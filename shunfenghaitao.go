@@ -28,7 +28,7 @@ import (
 )
 
 func init() {
-	Shunfenghaitao.AddMenu()
+	Shunfenghaitao.Register()
 }
 
 // 进口母婴专区，买进口奶粉、尿裤尿布、辅食、营养、洗护、日用、母婴用品  - 顺丰海淘
@@ -37,10 +37,10 @@ var Shunfenghaitao = &Spider{
 	Description: "顺丰海淘商品数据 [Auto Page] [www.sfht.com]",
 	// Pausetime: [2]uint{uint(3000), uint(1000)},
 	// Keyword:   USE,
-	UseCookie: false,
+	EnableCookie: false,
 	RuleTree: &RuleTree{
 		Root: func(self *Spider) {
-			self.AddQueue(map[string]interface{}{"Url": "http://www.sfht.com", "Rule": "获取版块URL"})
+			self.AddQueue(&context.Request{Url: "http://www.sfht.com", Rule: "获取版块URL"})
 		},
 
 		Trunk: map[string]*Rule{
@@ -56,7 +56,7 @@ var Shunfenghaitao = &Spider{
 							return
 						}
 						if url, ok := s.Attr("href"); ok {
-							self.AddQueue(map[string]interface{}{"Url": url, "Rule": "商品列表", "Temp": map[string]interface{}{"goodsType": s.Text()}})
+							self.AddQueue(&context.Request{Url: url, Rule: "商品列表", Temp: map[string]interface{}{"goodsType": s.Text()}})
 						}
 					})
 				},
@@ -68,10 +68,10 @@ var Shunfenghaitao = &Spider{
 
 					query.Find(".cms-src-item").Each(func(i int, s *goquery.Selection) {
 						if url, ok := s.Find("a").Attr("href"); ok {
-							self.AddQueue(map[string]interface{}{
-								"Url":  url,
-								"Rule": "商品详情",
-								"Temp": map[string]interface{}{"goodsType": resp.GetTemp("goodsType").(string)},
+							self.AddQueue(&context.Request{
+								Url:  url,
+								Rule: "商品详情",
+								Temp: map[string]interface{}{"goodsType": resp.GetTemp("goodsType").(string)},
 							})
 						}
 					})

@@ -28,7 +28,7 @@ import (
 )
 
 func init() {
-	Zolphone.AddMenu()
+	Zolphone.Register()
 }
 
 var Zolphone = &Spider{
@@ -36,7 +36,7 @@ var Zolphone = &Spider{
 	Description: "中关村苹果手机数据 [Auto Page] [bbs.zol.com.cn/sjbbs/d544_p]",
 	// Pausetime: [2]uint{uint(3000), uint(1000)},
 	// Keyword:   USE,
-	UseCookie: false,
+	EnableCookie: false,
 	RuleTree: &RuleTree{
 		Root: func(self *Spider) {
 			self.Aid("生成请求", map[string]interface{}{"loop": [2]int{1, 950}, "Rule": "生成请求"})
@@ -47,9 +47,9 @@ var Zolphone = &Spider{
 			"生成请求": {
 				AidFunc: func(self *Spider, aid map[string]interface{}) interface{} {
 					for loop := aid["loop"].([2]int); loop[0] < loop[1]; loop[0]++ {
-						self.AddQueue(map[string]interface{}{
-							"Url":  "http://bbs.zol.com.cn/sjbbs/d544_p" + strconv.Itoa(loop[0]) + ".html#c",
-							"Rule": aid["Rule"],
+						self.AddQueue(&context.Request{
+							Url:  "http://bbs.zol.com.cn/sjbbs/d544_p" + strconv.Itoa(loop[0]) + ".html#c",
+							Rule: aid["Rule"].(string),
 						})
 					}
 					return nil

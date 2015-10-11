@@ -28,7 +28,7 @@ import (
 )
 
 func init() {
-	FileTest.AddMenu()
+	FileTest.Register()
 }
 
 var FileTest = &Spider{
@@ -36,11 +36,11 @@ var FileTest = &Spider{
 	Description: "文件下载测试",
 	// Pausetime: [2]uint{uint(3000), uint(1000)},
 	// Keyword:   USE,
-	UseCookie: false,
+	EnableCookie: false,
 	RuleTree: &RuleTree{
 		Root: func(self *Spider) {
-			self.AddQueue(map[string]interface{}{"Url": "https://www.baidu.com/img/bd_logo1.png", "Rule": "百度图片"})
-			self.AddQueue(map[string]interface{}{"Url": "https://github.com/henrylee2cn/pholcus", "Rule": "Pholcus页面"})
+			self.AddQueue(&context.Request{Url: "https://www.baidu.com/img/bd_logo1.png", Rule: "百度图片"})
+			self.AddQueue(&context.Request{Url: "https://github.com/henrylee2cn/pholcus", Rule: "Pholcus页面"})
 		},
 
 		Trunk: map[string]*Rule{

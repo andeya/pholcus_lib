@@ -28,33 +28,35 @@ import (
 )
 
 func init() {
-	BaiduSearch.AddMenu()
+	BaiduSearch.Register()
 }
 
 var BaiduSearch = &Spider{
 	Name:        "百度搜索",
 	Description: "百度搜索结果 [www.baidu.com]",
 	// Pausetime: [2]uint{uint(3000), uint(1000)},
-	Keyword:   USE,
-	UseCookie: false,
+	Keyword:      USE,
+	EnableCookie: false,
 	RuleTree: &RuleTree{
 		Root: func(self *Spider) {
-			var bol bool
-			if self.MaxPage > 1 {
-				bol = true
-			}
-			self.Aid("生成请求", map[string]interface{}{"loop": [2]int{0, 1}, "Rule": "生成请求", "Duplicatable": bol})
+			self.Aid("生成请求", map[string]interface{}{"loop": [2]int{0, 1}, "Rule": "生成请求"})
 		},
 
 		Trunk: map[string]*Rule{
 
 			"生成请求": {
 				AidFunc: func(self *Spider, aid map[string]interface{}) interface{} {
+					var duplicatable bool
 					for loop := aid["loop"].([2]int); loop[0] < loop[1]; loop[0]++ {
-						self.AddQueue(map[string]interface{}{
-							"Url":          "http://www.baidu.com/s?ie=utf-8&nojc=1&wd=" + self.GetKeyword() + "&rn=50&pn=" + strconv.Itoa(50*loop[0]),
-							"Rule":         aid["Rule"],
-							"Duplicatable": aid["Duplicatable"],
+						if loop[0] == 0 {
+							duplicatable = true
+						} else {
+							duplicatable = false
+						}
+						self.AddQueue(&context.Request{
+							Url:          "http://www.baidu.com/s?ie=utf-8&nojc=1&wd=" + self.GetKeyword() + "&rn=50&pn=" + strconv.Itoa(50*loop[0]),
+							Rule:         aid["Rule"].(string),
+							Duplicatable: duplicatable,
 						})
 					}
 					return nil

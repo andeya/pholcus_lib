@@ -28,7 +28,7 @@ import (
 )
 
 func init() {
-	Lewa.AddMenu()
+	Lewa.Register()
 }
 
 var Lewa = &Spider{
@@ -36,21 +36,21 @@ var Lewa = &Spider{
 	Description: "乐蛙登录测试 [Auto Page] [http://accounts.lewaos.com]",
 	// Pausetime: [2]uint{uint(3000), uint(1000)},
 	// Keyword:   USE,
-	UseCookie: true,
+	EnableCookie: true,
 	RuleTree: &RuleTree{
 		Root: func(self *Spider) {
-			self.AddQueue(map[string]interface{}{"Url": "http://accounts.lewaos.com/", "Rule": "登录页"})
+			self.AddQueue(&context.Request{Url: "http://accounts.lewaos.com/", Rule: "登录页"})
 		},
 
 		Trunk: map[string]*Rule{
 
 			"登录页": {
 				ParseFunc: func(self *Spider, resp *context.Response) {
-					// self.AddQueue(map[string]interface{}{
-					// 	"Url":    "http://accounts.lewaos.com",
-					// 	"Rule":   "登录后",
-					// 	"Method": "POST",
-					// 	"PostData": url.Values{
+					// self.AddQueue(&context.Request{
+					// 	Url:    "http://accounts.lewaos.com",
+					// 	Rule:   "登录后",
+					// 	Method: "POST",
+					// 	PostData: url.Values{
 					// 		"username":  []string{""},
 					// 		"password":  []string{""},
 					// 		"login_btn": []string{"login_btn"},
@@ -63,12 +63,28 @@ var Lewa = &Spider{
 						"http://accounts.lewaos.com",
 						resp.GetDom().Find(".userlogin.lw-pl40"),
 					).Inputs(map[string]string{
-						"username": "",
-						"password": "",
+						"username": "512553396@qq.com",
+						"password": "271218",
 					}).Submit()
 				},
 			},
 			"登录后": {
+				//注意：有无字段语义和是否输出数据必须保持一致
+				OutFeild: []string{
+					"全部",
+				},
+				ParseFunc: func(self *Spider, resp *context.Response) {
+					// 结果存入Response中转
+					resp.AddItem(map[string]interface{}{
+						self.OutFeild(resp, 0): resp.GetText(),
+					})
+					self.AddQueue(&context.Request{
+						Url:  "http://accounts.lewaos.com/member",
+						Rule: "个人中心",
+					})
+				},
+			},
+			"个人中心": {
 				//注意：有无字段语义和是否输出数据必须保持一致
 				OutFeild: []string{
 					"全部",

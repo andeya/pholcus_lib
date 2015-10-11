@@ -28,15 +28,15 @@ import (
 )
 
 func init() {
-	AlibabaProduct.AddMenu()
+	AlibabaProduct.Register()
 }
 
 var AlibabaProduct = &Spider{
 	Name:        "阿里巴巴产品搜索",
 	Description: "阿里巴巴产品搜索 [s.1688.com/selloffer/offer_search.htm]",
 	// Pausetime: [2]uint{uint(3000), uint(1000)},
-	Keyword:   USE,
-	UseCookie: false,
+	Keyword:      USE,
+	EnableCookie: false,
 	RuleTree: &RuleTree{
 		Root: func(self *Spider) {
 			self.Aid("生成请求", map[string]interface{}{"loop": [2]int{0, 1}, "Rule": "生成请求"})
@@ -48,10 +48,10 @@ var AlibabaProduct = &Spider{
 				AidFunc: func(self *Spider, aid map[string]interface{}) interface{} {
 					keyword := EncodeString(self.GetKeyword(), "GBK")
 					for loop := aid["loop"].([2]int); loop[0] < loop[1]; loop[0]++ {
-						self.AddQueue(map[string]interface{}{
-							"Url":    "http://s.1688.com/selloffer/offer_search.htm?enableAsync=false&earseDirect=false&button_click=top&pageSize=60&n=y&offset=3&fromSycm=y&uniqfield=pic_tag_id&keywords=" + keyword + "&beginPage=" + strconv.Itoa(loop[0]+1),
-							"Rule":   aid["Rule"],
-							"Header": http.Header{"Content-Type": []string{"text/html", "charset=GBK"}},
+						self.AddQueue(&context.Request{
+							Url:    "http://s.1688.com/selloffer/offer_search.htm?enableAsync=false&earseDirect=false&button_click=top&pageSize=60&n=y&offset=3&fromSycm=y&uniqfield=pic_tag_id&keywords=" + keyword + "&beginPage=" + strconv.Itoa(loop[0]+1),
+							Rule:   aid["Rule"].(string),
+							Header: http.Header{"Content-Type": []string{"text/html", "charset=GBK"}},
 						})
 					}
 					return nil
@@ -64,10 +64,10 @@ var AlibabaProduct = &Spider{
 						logs.Log.Critical("[消息提示：| 任务：%v | 关键词：%v | 规则：%v] 由于跳转AJAX问题，目前只能每个子类抓取 1 页……\n", self.GetName(), self.GetKeyword(), resp.GetRuleName())
 						query.Find(".sm-floorhead-typemore a").Each(func(i int, s *goquery.Selection) {
 							if href, ok := s.Attr("href"); ok {
-								self.AddQueue(map[string]interface{}{
-									"Url":    href,
-									"Header": http.Header{"Content-Type": []string{"text/html", "charset=GBK"}},
-									"Rule":   "搜索结果",
+								self.AddQueue(&context.Request{
+									Url:    href,
+									Header: http.Header{"Content-Type": []string{"text/html", "charset=GBK"}},
+									Rule:   "搜索结果",
 								})
 							}
 						})

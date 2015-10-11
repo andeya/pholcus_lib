@@ -28,7 +28,7 @@ import (
 )
 
 func init() {
-	CarHome.AddMenu()
+	CarHome.Register()
 }
 
 var CarHome = &Spider{
@@ -36,13 +36,13 @@ var CarHome = &Spider{
 	Description: "汽车之家帖子 [http://club.autohome.com.cn/bbs/]",
 	// Pausetime: [2]uint{uint(3000), uint(1000)},
 	// Keyword:   USE,
-	UseCookie: false,
+	EnableCookie: false,
 	RuleTree: &RuleTree{
 		Root: func(self *Spider) {
-			self.AddQueue(map[string]interface{}{
-				"Url":  "http://club.autohome.com.cn/bbs/forum-o-200042-1.html?qaType=-1#pvareaid=101061",
-				"Rule": "请求列表",
-				"Temp": map[string]interface{}{"p": 1},
+			self.AddQueue(&context.Request{
+				Url:  "http://club.autohome.com.cn/bbs/forum-o-200042-1.html?qaType=-1#pvareaid=101061",
+				Rule: "请求列表",
+				Temp: map[string]interface{}{"p": 1},
 			})
 		},
 
@@ -55,10 +55,10 @@ var CarHome = &Spider{
 						// Log.Printf("当前列表页不存在 %v", c)
 						return
 					}
-					self.AddQueue(map[string]interface{}{
-						"Url":  "http://club.autohome.com.cn/bbs/forum-o-200042-" + strconv.Itoa(curr+1) + ".html?qaType=-1#pvareaid=101061",
-						"Rule": "请求列表",
-						"Temp": map[string]interface{}{"p": curr + 1},
+					self.AddQueue(&context.Request{
+						Url:  "http://club.autohome.com.cn/bbs/forum-o-200042-" + strconv.Itoa(curr+1) + ".html?qaType=-1#pvareaid=101061",
+						Rule: "请求列表",
+						Temp: map[string]interface{}{"p": curr + 1},
 					})
 
 					// 用指定规则解析响应流
@@ -72,10 +72,10 @@ var CarHome = &Spider{
 						Find(".list_dl").
 						Each(func(i int, s *goquery.Selection) {
 						url, _ := s.Find("dt a").Attr("href")
-						self.AddQueue(map[string]interface{}{
-							"Url":      "http://club.autohome.com.cn" + url,
-							"Rule":     "输出结果",
-							"priority": 1,
+						self.AddQueue(&context.Request{
+							Url:      "http://club.autohome.com.cn" + url,
+							Rule:     "输出结果",
+							Priority: 1,
 						})
 					})
 				},

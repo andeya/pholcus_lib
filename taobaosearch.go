@@ -28,15 +28,15 @@ import (
 )
 
 func init() {
-	TaobaoSearch.AddMenu()
+	TaobaoSearch.Register()
 }
 
 var TaobaoSearch = &Spider{
 	Name:        "淘宝搜索",
 	Description: "淘宝天猫搜索结果 [s.taobao.com]",
 	// Pausetime: [2]uint{uint(3000), uint(1000)},
-	Keyword:   USE,
-	UseCookie: false,
+	Keyword:      USE,
+	EnableCookie: false,
 	RuleTree: &RuleTree{
 		Root: func(self *Spider) {
 			self.Aid("生成请求", map[string]interface{}{"loop": [2]int{0, 1}, "Rule": "生成请求"})
@@ -47,9 +47,9 @@ var TaobaoSearch = &Spider{
 			"生成请求": {
 				AidFunc: func(self *Spider, aid map[string]interface{}) interface{} {
 					for loop := aid["loop"].([2]int); loop[0] < loop[1]; loop[0]++ {
-						self.AddQueue(map[string]interface{}{
-							"Url":  "http://s.taobao.com/search?q=" + self.GetKeyword() + "&ie=utf8&cps=yes&app=vproduct&cd=false&v=auction&tab=all&vlist=1&bcoffset=1&s=" + strconv.Itoa(loop[0]*44),
-							"Rule": aid["Rule"],
+						self.AddQueue(&context.Request{
+							Url:  "http://s.taobao.com/search?q=" + self.GetKeyword() + "&ie=utf8&cps=yes&app=vproduct&cd=false&v=auction&tab=all&vlist=1&bcoffset=1&s=" + strconv.Itoa(loop[0]*44),
+							Rule: aid["Rule"].(string),
 						})
 					}
 					return nil
@@ -117,17 +117,17 @@ var TaobaoSearch = &Spider{
 						return
 					} else {
 						for _, info := range infos {
-							self.AddQueue(map[string]interface{}{
-								"Url":  "http:" + info["detail_url"].(string),
-								"Rule": "商品详情",
-								"Temp": map[string]interface{}{
+							self.AddQueue(&context.Request{
+								Url:  "http:" + info["detail_url"].(string),
+								Rule: "商品详情",
+								Temp: map[string]interface{}{
 									self.OutFeild("商品详情", 0): info["raw_title"],
 									self.OutFeild("商品详情", 1): info["view_price"],
 									self.OutFeild("商品详情", 2): info["view_sales"],
 									self.OutFeild("商品详情", 3): info["nick"],
 									self.OutFeild("商品详情", 4): info["item_loc"],
 								},
-								"Priority": 1,
+								Priority: 1,
 								// "Referer":  resp.GetUrl(),
 							})
 						}

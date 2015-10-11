@@ -28,7 +28,7 @@ import (
 )
 
 func init() {
-	Miyabaobei.AddMenu()
+	Miyabaobei.Register()
 }
 
 var Miyabaobei = &Spider{
@@ -36,10 +36,10 @@ var Miyabaobei = &Spider{
 	Description: "蜜芽宝贝商品数据 [Auto Page] [www.miyabaobei.com]",
 	// Pausetime: [2]uint{uint(3000), uint(1000)},
 	// Keyword:   USE,
-	UseCookie: false,
+	EnableCookie: false,
 	RuleTree: &RuleTree{
 		Root: func(self *Spider) {
-			self.AddQueue(map[string]interface{}{"Url": "http://www.miyabaobei.com/", "Rule": "获取版块URL"})
+			self.AddQueue(&context.Request{Url: "http://www.miyabaobei.com/", Rule: "获取版块URL"})
 		},
 
 		Trunk: map[string]*Rule{
@@ -70,9 +70,9 @@ var Miyabaobei = &Spider{
 
 			"生成请求": {
 				AidFunc: func(self *Spider, aid map[string]interface{}) interface{} {
-					req := aid["req"].(map[string]interface{})
+					req := aid["req"].(*context.Request)
 					for loop := aid["loop"].([2]int); loop[0] < loop[1]; loop[0]++ {
-						req["Url"] = aid["urlBase"].(string) + "&per_page=" + strconv.Itoa(loop[0]*40)
+						req.Url = aid["urlBase"].(string) + "&per_page=" + strconv.Itoa(loop[0]*40)
 						self.AddQueue(req)
 					}
 					return nil

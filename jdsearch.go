@@ -28,15 +28,15 @@ import (
 )
 
 func init() {
-	JDSearch.AddMenu()
+	JDSearch.Register()
 }
 
 var JDSearch = &Spider{
 	Name:        "京东搜索",
 	Description: "京东搜索结果 [search.jd.com]",
 	// Pausetime: [2]uint{uint(3000), uint(1000)},
-	Keyword:   USE,
-	UseCookie: false,
+	Keyword:      USE,
+	EnableCookie: false,
 	RuleTree: &RuleTree{
 		Root: func(self *Spider) {
 			self.Aid("生成请求", map[string]interface{}{"loop": [2]int{0, 1}, "Rule": "生成请求"})
@@ -50,8 +50,8 @@ var JDSearch = &Spider{
 						self.BulkAddQueue([]string{
 							"http://search.jd.com/Search?keyword=" + self.GetKeyword() + "&enc=utf-8&qrst=1&rt=1&stop=1&click=&psort=&page=" + strconv.Itoa(2*loop[0]+2),
 							"http://search.jd.com/Search?keyword=" + self.GetKeyword() + "&enc=utf-8&qrst=1&rt=1&stop=1&click=&psort=&page=" + strconv.Itoa(2*loop[0]+1),
-						}, map[string]interface{}{
-							"Rule": aid["Rule"],
+						}, &context.Request{
+							Rule: aid["Rule"].(string),
 						})
 					}
 					return nil

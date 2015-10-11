@@ -28,7 +28,7 @@ import (
 )
 
 func init() {
-	Kaola.AddMenu()
+	Kaola.Register()
 }
 
 // 考拉海淘,海外直采,7天无理由退货,售后无忧!考拉网放心的海淘网站!
@@ -37,10 +37,10 @@ var Kaola = &Spider{
 	Description: "考拉海淘商品数据 [Auto Page] [www.kaola.com]",
 	// Pausetime: [2]uint{uint(3000), uint(1000)},
 	// Keyword:   USE,
-	UseCookie: false,
+	EnableCookie: false,
 	RuleTree: &RuleTree{
 		Root: func(self *Spider) {
-			self.AddQueue(map[string]interface{}{"Url": "http://www.kaola.com", "Rule": "获取版块URL"})
+			self.AddQueue(&context.Request{Url: "http://www.kaola.com", Rule: "获取版块URL"})
 		},
 
 		Trunk: map[string]*Rule{
@@ -54,7 +54,7 @@ var Kaola = &Spider{
 							return
 						}
 						if url, ok := s.Attr("href"); ok {
-							self.AddQueue(map[string]interface{}{"Url": url, "Rule": "商品列表", "Temp": map[string]interface{}{"goodsType": s.Text()}})
+							self.AddQueue(&context.Request{Url: url, Rule: "商品列表", Temp: map[string]interface{}{"goodsType": s.Text()}})
 						}
 					})
 				},
@@ -65,10 +65,10 @@ var Kaola = &Spider{
 					query := resp.GetDom()
 					query.Find(".proinfo").Each(func(i int, s *goquery.Selection) {
 						if url, ok := s.Find("a").Attr("href"); ok {
-							self.AddQueue(map[string]interface{}{
-								"Url":  "http://www.kaola.com" + url,
-								"Rule": "商品详情",
-								"Temp": map[string]interface{}{"goodsType": resp.GetTemp("goodsType").(string)},
+							self.AddQueue(&context.Request{
+								Url:  "http://www.kaola.com" + url,
+								Rule: "商品详情",
+								Temp: map[string]interface{}{"goodsType": resp.GetTemp("goodsType").(string)},
 							})
 						}
 					})
