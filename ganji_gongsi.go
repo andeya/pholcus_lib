@@ -55,9 +55,10 @@ var GanjiGongsi = &Spider{
 						return
 					}
 					self.AddQueue(&context.Request{
-						Url:  "http://sz.ganji.com/gongsi/o" + strconv.Itoa(curr+1),
-						Rule: "请求列表",
-						Temp: map[string]interface{}{"p": curr + 1},
+						Url:      "http://sz.ganji.com/gongsi/o" + strconv.Itoa(curr+1),
+						Rule:     "请求列表",
+						Temp:     map[string]interface{}{"p": curr + 1},
+						Deadline: -1,
 					})
 
 					// 用指定规则解析响应流
@@ -72,8 +73,9 @@ var GanjiGongsi = &Spider{
 						Each(func(i int, s *goquery.Selection) {
 						url, _ := s.Attr("href")
 						self.AddQueue(&context.Request{
-							Url:  url,
-							Rule: "输出结果",
+							Url:      url,
+							Rule:     "输出结果",
+							Deadline: -1,
 						})
 					})
 				},
@@ -124,6 +126,7 @@ var GanjiGongsi = &Spider{
 									Rule:     "联系方式",
 									Temp:     map[string]interface{}{"n": 公司 + "(" + 联系人 + ").png"},
 									Priority: 1,
+									Deadline: -1,
 								})
 							}
 
