@@ -40,7 +40,7 @@ var Taobao = &Spider{
 	// Keyword:   USE,
 	EnableCookie: false,
 	RuleTree: &RuleTree{
-		Root: func(self *Spider) {
+		Root: func(self *Spider, resp *context.Response) {
 			if k := strings.Trim(self.GetKeyword(), " "); k != "" {
 				cookies_Taobao = SplitCookies(k)
 			}
@@ -112,7 +112,7 @@ var Taobao = &Spider{
 							"Rule":    "商品列表",
 							"Temp":    resp.GetTemps(),
 						})
-						self.Parse("商品列表", resp)
+						self.Parse(resp, "商品列表")
 					}
 				},
 			},
@@ -135,42 +135,38 @@ var Taobao = &Spider{
 					}
 					for _, item := range infos["mallItemList"].([]interface{}) {
 						item2 := item.(map[string]interface{})
-						temp := map[string]interface{}{
-							self.OutFeild("结果", 0):  item2["title"],
-							self.OutFeild("结果", 1):  item2["price"],
-							self.OutFeild("结果", 2):  item2["currentPrice"],
-							self.OutFeild("结果", 3):  item2["vipPrice"],
-							self.OutFeild("结果", 4):  item2["unitPrice"],
-							self.OutFeild("结果", 5):  item2["unit"],
-							self.OutFeild("结果", 6):  item2["isVirtual"],
-							self.OutFeild("结果", 7):  item2["ship"],
-							self.OutFeild("结果", 8):  item2["tradeNum"],
-							self.OutFeild("结果", 9):  item2["formatedNum"],
-							self.OutFeild("结果", 10): item2["nick"],
-							self.OutFeild("结果", 11): item2["sellerId"],
-							self.OutFeild("结果", 12): item2["guarantee"],
-							self.OutFeild("结果", 13): item2["itemId"],
-							self.OutFeild("结果", 14): item2["isLimitPromotion"],
-							self.OutFeild("结果", 15): item2["loc"],
-							self.OutFeild("结果", 16): "http:" + item2["storeLink"].(string),
-							self.OutFeild("结果", 17): "http:" + item2["href"].(string),
-							self.OutFeild("结果", 18): item2["commend"],
-							self.OutFeild("结果", 19): item2["source"],
-							self.OutFeild("结果", 20): item2["ratesum"],
-							self.OutFeild("结果", 21): item2["goodRate"],
-							self.OutFeild("结果", 22): item2["dsrScore"],
-							self.OutFeild("结果", 23): item2["spSource"],
-						}
+						temp := self.CreatItem("结果", map[int]interface{}{
+							0:  item2["title"],
+							1:  item2["price"],
+							2:  item2["currentPrice"],
+							3:  item2["vipPrice"],
+							4:  item2["unitPrice"],
+							5:  item2["unit"],
+							6:  item2["isVirtual"],
+							7:  item2["ship"],
+							8:  item2["tradeNum"],
+							9:  item2["formatedNum"],
+							10: item2["nick"],
+							11: item2["sellerId"],
+							12: item2["guarantee"],
+							13: item2["itemId"],
+							14: item2["isLimitPromotion"],
+							15: item2["loc"],
+							16: "http:" + item2["storeLink"].(string),
+							17: "http:" + item2["href"].(string),
+							18: item2["commend"],
+							19: item2["source"],
+							20: item2["ratesum"],
+							21: item2["goodRate"],
+							22: item2["dsrScore"],
+							23: item2["spSource"],
+						})
 						self.AddQueue(&context.Request{
 							Url:      "http:" + item2["href"].(string),
 							Rule:     "商品详情",
 							Temp:     temp,
 							Priority: 1,
 						})
-
-						// 去"结果"规则输出结果
-						// resp.SetAllTemps(temp)
-						// self.CallRule("结果", resp)
 					}
 				},
 			},
@@ -202,8 +198,8 @@ var Taobao = &Spider{
 						})
 					}
 					temp := resp.GetTemps()
-					temp[self.OutFeild("结果", 24)] = detail
-					temp[self.OutFeild("结果", 25)] = []interface{}{}
+					temp[self.IndexOutFeild("结果", 24)] = detail
+					temp[self.IndexOutFeild("结果", 25)] = []interface{}{}
 					self.AddQueue(&context.Request{
 						Rule:     "商品评论",
 						Url:      "http://rate.taobao.com/feedRateList.htm?siteID=4&rateType=&orderType=sort_weight&showContent=1&userNumId=" + resp.GetTemp("sellerId").(string) + "&auctionNumId=" + resp.GetTemp("itemId").(string) + "&currentPageNum=1",
@@ -229,9 +225,9 @@ var Taobao = &Spider{
 						return
 					}
 					discussSlice := infos["comments"].([]interface{})
-					discussAll := resp.GetTemp(self.OutFeild("结果", 25)).([]interface{})
+					discussAll := resp.GetTemp(self.IndexOutFeild("结果", 25)).([]interface{})
 					discussAll = append(discussAll, discussSlice...)
-					resp.SetTemp(self.OutFeild("结果", 25), discussAll)
+					resp.SetTemp(self.IndexOutFeild("结果", 25), discussAll)
 
 					currentPageNum := infos["currentPageNum"].(int)
 					maxPage := infos["maxPage"].(int)
@@ -244,7 +240,7 @@ var Taobao = &Spider{
 						})
 					} else {
 						// 输出结果
-						self.Parse("结果", resp)
+						self.Parse(resp, "结果")
 					}
 				},
 			},
@@ -281,7 +277,7 @@ var Taobao = &Spider{
 				},
 				ParseFunc: func(self *Spider, resp *context.Response) {
 					// 结果存入Response中转
-					resp.AddItem(resp.GetTemps())
+					self.Output(resp.GetRuleName(), resp, resp.GetTemps())
 				},
 			},
 		},

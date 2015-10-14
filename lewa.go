@@ -38,7 +38,7 @@ var Lewa = &Spider{
 	// Keyword:   USE,
 	EnableCookie: true,
 	RuleTree: &RuleTree{
-		Root: func(self *Spider) {
+		Root: func(self *Spider, resp *context.Response) {
 			self.AddQueue(&context.Request{Url: "http://accounts.lewaos.com/", Rule: "登录页"})
 		},
 
@@ -75,8 +75,8 @@ var Lewa = &Spider{
 				},
 				ParseFunc: func(self *Spider, resp *context.Response) {
 					// 结果存入Response中转
-					resp.AddItem(map[string]interface{}{
-						self.OutFeild(resp, 0): resp.GetText(),
+					self.Output(resp.GetRuleName(), resp, map[int]interface{}{
+						0: resp.GetText(),
 					})
 					self.AddQueue(&context.Request{
 						Url:  "http://accounts.lewaos.com/member",
@@ -91,8 +91,8 @@ var Lewa = &Spider{
 				},
 				ParseFunc: func(self *Spider, resp *context.Response) {
 					// 结果存入Response中转
-					resp.AddItem(map[string]interface{}{
-						self.OutFeild(resp, 0): resp.GetText(),
+					self.Output(resp.GetRuleName(), resp, map[int]interface{}{
+						0: resp.GetText(),
 					})
 				},
 			},

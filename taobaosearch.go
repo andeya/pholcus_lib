@@ -38,7 +38,7 @@ var TaobaoSearch = &Spider{
 	Keyword:      USE,
 	EnableCookie: false,
 	RuleTree: &RuleTree{
-		Root: func(self *Spider) {
+		Root: func(self *Spider, resp *context.Response) {
 			self.Aid("生成请求", map[string]interface{}{"loop": [2]int{0, 1}, "Rule": "生成请求"})
 		},
 
@@ -84,7 +84,7 @@ var TaobaoSearch = &Spider{
 					// 调用指定规则下辅助函数
 					self.Aid("生成请求", map[string]interface{}{"loop": [2]int{1, self.GetMaxPage()}, "Rule": "搜索结果"})
 					// 用指定规则解析响应流
-					self.Parse("搜索结果", resp)
+					self.Parse(resp, "搜索结果")
 				},
 			},
 
@@ -120,13 +120,13 @@ var TaobaoSearch = &Spider{
 							self.AddQueue(&context.Request{
 								Url:  "http:" + info["detail_url"].(string),
 								Rule: "商品详情",
-								Temp: map[string]interface{}{
-									self.OutFeild("商品详情", 0): info["raw_title"],
-									self.OutFeild("商品详情", 1): info["view_price"],
-									self.OutFeild("商品详情", 2): info["view_sales"],
-									self.OutFeild("商品详情", 3): info["nick"],
-									self.OutFeild("商品详情", 4): info["item_loc"],
-								},
+								Temp: self.CreatItem("商品详情", map[int]interface{}{
+									0: info["raw_title"],
+									1: info["view_price"],
+									2: info["view_sales"],
+									3: info["nick"],
+									4: info["item_loc"],
+								}),
 								Priority: 1,
 								// "Referer":  resp.GetUrl(),
 							})
@@ -198,7 +198,7 @@ var TaobaoSearch = &Spider{
 						}
 					}
 
-					resp.AddItem(r)
+					self.Output(resp.GetRuleName(), resp, r)
 				},
 			},
 		},

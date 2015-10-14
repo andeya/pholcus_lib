@@ -38,7 +38,7 @@ var BaiduSearch = &Spider{
 	Keyword:      USE,
 	EnableCookie: false,
 	RuleTree: &RuleTree{
-		Root: func(self *Spider) {
+		Root: func(self *Spider, resp *context.Response) {
 			self.Aid("生成请求", map[string]interface{}{"loop": [2]int{0, 1}, "Rule": "生成请求"})
 		},
 
@@ -77,7 +77,7 @@ var BaiduSearch = &Spider{
 					// 调用指定规则下辅助函数
 					self.Aid("生成请求", map[string]interface{}{"loop": [2]int{1, total}, "Rule": "搜索结果"})
 					// 用指定规则解析响应流
-					self.Parse("搜索结果", resp)
+					self.Parse(resp, "搜索结果")
 				},
 			},
 
@@ -106,11 +106,11 @@ var BaiduSearch = &Spider{
 						content = re.ReplaceAllString(content, "")
 
 						// 结果存入Response中转
-						resp.AddItem(map[string]interface{}{
-							self.OutFeild(resp, 0): strings.Trim(title, " \t\n"),
-							self.OutFeild(resp, 1): strings.Trim(content, " \t\n"),
-							self.OutFeild(resp, 2): tar,
-							self.OutFeild(resp, 3): href,
+						self.Output(resp.GetRuleName(), resp, map[int]interface{}{
+							0: strings.Trim(title, " \t\n"),
+							1: strings.Trim(content, " \t\n"),
+							2: tar,
+							3: href,
 						})
 					})
 				},

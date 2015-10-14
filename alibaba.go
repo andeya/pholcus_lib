@@ -38,7 +38,7 @@ var AlibabaProduct = &Spider{
 	Keyword:      USE,
 	EnableCookie: false,
 	RuleTree: &RuleTree{
-		Root: func(self *Spider) {
+		Root: func(self *Spider, resp *context.Response) {
 			self.Aid("生成请求", map[string]interface{}{"loop": [2]int{0, 1}, "Rule": "生成请求"})
 		},
 
@@ -86,7 +86,7 @@ var AlibabaProduct = &Spider{
 					// 调用指定规则下辅助函数
 					self.Aid("生成请求", map[string]interface{}{"loop": [2]int{1, total}, "Rule": "搜索结果"})
 					// 用指定规则解析响应流
-					self.Parse("搜索结果", resp)
+					self.Parse(resp, "搜索结果")
 				},
 			},
 
@@ -129,14 +129,14 @@ var AlibabaProduct = &Spider{
 						level := s.Find("span.sm-offer-companyTag > a.sw-ui-flaticon-cxt16x16").First().Text()
 
 						// 结果存入Response中转
-						resp.AddItem(map[string]interface{}{
-							self.OutFeild(resp, 0): company,
-							self.OutFeild(resp, 1): title,
-							self.OutFeild(resp, 2): price,
-							self.OutFeild(resp, 3): sales,
-							self.OutFeild(resp, 4): level,
-							self.OutFeild(resp, 5): address,
-							self.OutFeild(resp, 6): url,
+						self.Output("搜索结果", resp, map[int]interface{}{
+							0: company,
+							1: title,
+							2: price,
+							3: sales,
+							4: level,
+							5: address,
+							6: url,
 						})
 					})
 				},

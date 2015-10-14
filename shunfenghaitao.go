@@ -39,7 +39,7 @@ var Shunfenghaitao = &Spider{
 	// Keyword:   USE,
 	EnableCookie: false,
 	RuleTree: &RuleTree{
-		Root: func(self *Spider) {
+		Root: func(self *Spider, resp *context.Response) {
 			self.AddQueue(&context.Request{Url: "http://www.sfht.com", Rule: "获取版块URL"})
 		},
 
@@ -105,12 +105,12 @@ var Shunfenghaitao = &Spider{
 					from2 := query.Find("#detailattributes li").Eq(1).Text()
 
 					// 结果存入Response中转
-					resp.AddItem(map[string]interface{}{
-						self.OutFeild(resp, 0): title,
-						self.OutFeild(resp, 1): brand,
-						self.OutFeild(resp, 2): from1,
-						self.OutFeild(resp, 3): from2,
-						self.OutFeild(resp, 4): resp.GetTemp("goodsType"),
+					self.Output(resp.GetRuleName(), resp, map[int]interface{}{
+						0: title,
+						1: brand,
+						2: from1,
+						3: from2,
+						4: resp.GetTemp("goodsType"),
 					})
 				},
 			},

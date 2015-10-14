@@ -32,13 +32,13 @@ func init() {
 }
 
 var GanjiGongsi = &Spider{
-	Name:        "企业名录-赶集网",
-	Description: "企业名录-深圳-赶集网 [www.ganji.com/gongsi]",
+	Name:        "经典示例-赶集网企业名录",
+	Description: "**典型规则示例，具有文本与文件两种输出行为**",
 	// Pausetime: [2]uint{uint(3000), uint(1000)},
 	// Keyword:   USE,
 	EnableCookie: false,
 	RuleTree: &RuleTree{
-		Root: func(self *Spider) {
+		Root: func(self *Spider, resp *context.Response) {
 			self.AddQueue(&context.Request{
 				Url:  "http://sz.ganji.com/gongsi/o1",
 				Rule: "请求列表",
@@ -62,7 +62,7 @@ var GanjiGongsi = &Spider{
 					})
 
 					// 用指定规则解析响应流
-					self.Parse("获取列表", resp)
+					self.Parse(resp, "获取列表")
 				},
 			},
 
@@ -137,22 +137,49 @@ var GanjiGongsi = &Spider{
 
 					简介 := query.Find("#company_description").Text()
 
-					// 结果存入Response中转
-					resp.AddItem(map[string]interface{}{
-						self.OutFeild(resp, 0): 公司,
-						self.OutFeild(resp, 1): 联系人,
-						self.OutFeild(resp, 2): 地址,
-						self.OutFeild(resp, 3): 简介,
-						self.OutFeild(resp, 4): 行业,
-						self.OutFeild(resp, 5): 类型,
-						self.OutFeild(resp, 6): 规模,
+					// 结果输出方式一（推荐）
+					self.Output(resp.GetRuleName(), resp, map[int]interface{}{
+						0: 公司,
+						1: 联系人,
+						2: 地址,
+						3: 简介,
+						4: 行业,
+						5: 类型,
+						6: 规模,
 					})
+
+					// 结果输出方式二
+					// var item map[string]interface{} = self.CreatItem(resp.GetRuleName(), map[string]interface{}{
+					// 	0: 公司,
+					// 	1: 联系人,
+					// 	2: 地址,
+					// 	3: 简介,
+					// 	4: 行业,
+					// 	5: 类型,
+					// 	6: 规模,
+					// })
+					// self.Output(resp.GetRuleName(), resp, item)
+
+					// 结果输出方式三（不推荐）
+					// self.Output(resp.GetRuleName(), resp, map[string]interface{}{
+					// 	self.IndexOutFeild(resp.GetRuleName(), 0): 公司,
+					// 	self.IndexOutFeild(resp.GetRuleName(), 1): 联系人,
+					// 	self.IndexOutFeild(resp.GetRuleName(), 2): 地址,
+					// 	self.IndexOutFeild(resp.GetRuleName(), 3): 简介,
+					// 	self.IndexOutFeild(resp.GetRuleName(), 4): 行业,
+					// 	self.IndexOutFeild(resp.GetRuleName(), 5): 类型,
+					// 	self.IndexOutFeild(resp.GetRuleName(), 6): 规模,
+					// })
 				},
 			},
 
 			"联系方式": {
 				ParseFunc: func(self *Spider, resp *context.Response) {
-					resp.AddFile(resp.GetTemp("n").(string))
+					// 文件输出方式一（推荐）
+					self.FileOutput(resp, resp.GetTemp("n").(string))
+
+					// 文件输出方式二
+					// resp.AddFile(resp.GetTemp("n").(string))
 				},
 			},
 		},

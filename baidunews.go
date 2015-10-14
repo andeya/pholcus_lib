@@ -69,7 +69,7 @@ var BaiduNews = &Spider{
 	// Keyword:     USE,
 	EnableCookie: false,
 	RuleTree: &RuleTree{
-		Root: func(self *Spider) {
+		Root: func(self *Spider, resp *context.Response) {
 			for k, _ := range rss_BaiduNews.Src {
 				self.Aid("LOOP", map[string]interface{}{"loop": k})
 			}
@@ -147,13 +147,13 @@ var BaiduNews = &Spider{
 						return
 					}
 					// 结果存入Response中转
-					resp.AddItem(map[string]interface{}{
-						self.OutFeild(resp, 0): title,
-						self.OutFeild(resp, 1): resp.GetTemp("description"),
-						self.OutFeild(resp, 2): infoStr,
-						self.OutFeild(resp, 3): resp.GetTemp("releaseTime"),
-						self.OutFeild(resp, 4): resp.GetTemp("src"),
-						self.OutFeild(resp, 5): resp.GetTemp("author"),
+					self.Output(resp.GetRuleName(), resp, map[int]interface{}{
+						0: title,
+						1: resp.GetTemp("description"),
+						2: infoStr,
+						3: resp.GetTemp("releaseTime"),
+						4: resp.GetTemp("src"),
+						5: resp.GetTemp("author"),
 					})
 				},
 			},

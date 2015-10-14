@@ -39,7 +39,7 @@ var Kaola = &Spider{
 	// Keyword:   USE,
 	EnableCookie: false,
 	RuleTree: &RuleTree{
-		Root: func(self *Spider) {
+		Root: func(self *Spider, resp *context.Response) {
 			self.AddQueue(&context.Request{Url: "http://www.kaola.com", Rule: "获取版块URL"})
 		},
 
@@ -103,13 +103,13 @@ var Kaola = &Spider{
 					discussNum := query.Find("#commentCounts").Text()
 
 					// 结果存入Response中转
-					resp.AddItem(map[string]interface{}{
-						self.OutFeild(resp, 0): title,
-						self.OutFeild(resp, 1): price,
-						self.OutFeild(resp, 2): brand,
-						self.OutFeild(resp, 3): from,
-						self.OutFeild(resp, 4): discussNum,
-						self.OutFeild(resp, 5): resp.GetTemp("goodsType"),
+					self.Output(resp.GetRuleName(), resp, map[int]interface{}{
+						0: title,
+						1: price,
+						2: brand,
+						3: from,
+						4: discussNum,
+						5: resp.GetTemp("goodsType"),
 					})
 				},
 			},
