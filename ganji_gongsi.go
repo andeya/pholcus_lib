@@ -149,7 +149,7 @@ var GanjiGongsi = &Spider{
 					})
 
 					// 结果输出方式二
-					// var item map[string]interface{} = self.CreatItem(resp.GetRuleName(), map[string]interface{}{
+					// var item map[string]interface{} = self.CreatItem(resp.GetRuleName(), map[int]interface{}{
 					// 	0: 公司,
 					// 	1: 联系人,
 					// 	2: 地址,
