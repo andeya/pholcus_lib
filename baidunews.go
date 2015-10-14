@@ -24,7 +24,7 @@ import (
 	// 其他包
 	// "fmt"
 	// "math"
-	"time"
+	// "time"
 )
 
 func init() {
@@ -82,10 +82,13 @@ var BaiduNews = &Spider{
 					v := rss_BaiduNews.Src[k]
 
 					self.AddQueue(&context.Request{
-						Url:    v + "#" + time.Now().String(),
-						Rule:   "XML列表页",
-						Header: http.Header{"Content-Type": []string{"text/html", "charset=GB2312"}},
-						Temp:   map[string]interface{}{"src": k},
+						Url:          v,
+						Rule:         "XML列表页",
+						Header:       http.Header{"Content-Type": []string{"text/html", "charset=GB2312"}},
+						Temp:         map[string]interface{}{"src": k},
+						DialTimeout:  -1,
+						ConnTimeout:  -1,
+						Duplicatable: true,
 					})
 					return nil
 				},
