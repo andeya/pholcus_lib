@@ -38,7 +38,7 @@ var Miyabaobei = &Spider{
 	// Keyword:   USE,
 	EnableCookie: false,
 	RuleTree: &RuleTree{
-		Root: func(self *Spider) {
+		Root: func(self *Spider, resp *context.Response) {
 			self.AddQueue(&context.Request{Url: "http://www.miyabaobei.com/", Rule: "获取版块URL"})
 		},
 
@@ -101,7 +101,7 @@ var Miyabaobei = &Spider{
 						},
 					})
 					// 用指定规则解析响应流
-					self.Parse("商品列表", resp)
+					self.Parse(resp, "商品列表")
 				},
 			},
 
@@ -128,10 +128,10 @@ var Miyabaobei = &Spider{
 						price := s.Find(".f20").Text()
 
 						// 结果存入Response中转
-						resp.AddItem(map[string]interface{}{
-							self.OutFeild(resp, 0): title,
-							self.OutFeild(resp, 1): price,
-							self.OutFeild(resp, 2): goodsType,
+						self.Output(resp.GetRuleName(), resp, map[int]interface{}{
+							0: title,
+							1: price,
+							2: goodsType,
 						})
 					})
 				},

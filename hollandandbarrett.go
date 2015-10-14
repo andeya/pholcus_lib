@@ -38,7 +38,7 @@ var Hollandandbarrett = &Spider{
 	// Keyword:   USE,
 	EnableCookie: false,
 	RuleTree: &RuleTree{
-		Root: func(self *Spider) {
+		Root: func(self *Spider, resp *context.Response) {
 			self.AddQueue(&context.Request{
 				Url:  "http://www.hollandandbarrett.com/",
 				Rule: "获取版块URL",
@@ -168,13 +168,13 @@ var Hollandandbarrett = &Spider{
 							}
 
 							// 结果存入Response中转
-							resp.AddItem(map[string]interface{}{
-								self.OutFeild(resp, 0): n,
-								self.OutFeild(resp, 1): price1,
-								self.OutFeild(resp, 2): price2,
-								self.OutFeild(resp, 3): prm,
-								self.OutFeild(resp, 4): level,
-								self.OutFeild(resp, 5): resp.GetTemp("type"),
+							self.Output(resp.GetRuleName(), resp, map[int]interface{}{
+								0: n,
+								1: price1,
+								2: price2,
+								3: prm,
+								4: level,
+								5: resp.GetTemp("type"),
 							})
 						}
 					}

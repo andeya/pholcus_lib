@@ -39,7 +39,7 @@ var Wangyi = &Spider{
 	// Keyword:   USE,
 	EnableCookie: false,
 	RuleTree: &RuleTree{
-		Root: func(self *Spider) {
+		Root: func(self *Spider, resp *context.Response) {
 			self.AddQueue(&context.Request{Url: "http://news.163.com/rank/", Rule: "排行榜主页"})
 		},
 
@@ -141,12 +141,12 @@ var Wangyi = &Spider{
 					release = strings.Trim(release, " \t\n")
 
 					// 结果存入Response中转
-					resp.AddItem(map[string]interface{}{
-						self.OutFeild(resp, 0): title,
-						self.OutFeild(resp, 1): content,
-						self.OutFeild(resp, 2): resp.GetTemp("top"),
-						self.OutFeild(resp, 3): resp.GetTemp("newsType"),
-						self.OutFeild(resp, 4): release,
+					self.Output("热点新闻", resp, map[int]interface{}{
+						0: title,
+						1: content,
+						2: resp.GetTemp("top"),
+						3: resp.GetTemp("newsType"),
+						4: release,
 					})
 				},
 			},

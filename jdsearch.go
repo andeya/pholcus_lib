@@ -38,7 +38,7 @@ var JDSearch = &Spider{
 	Keyword:      USE,
 	EnableCookie: false,
 	RuleTree: &RuleTree{
-		Root: func(self *Spider) {
+		Root: func(self *Spider, resp *context.Response) {
 			self.Aid("生成请求", map[string]interface{}{"loop": [2]int{0, 1}, "Rule": "生成请求"})
 		},
 
@@ -74,7 +74,7 @@ var JDSearch = &Spider{
 					// 调用指定规则下辅助函数
 					self.Aid("生成请求", map[string]interface{}{"loop": [2]int{1, total}, "Rule": "搜索结果"})
 					// 用指定规则解析响应流
-					self.Parse("搜索结果", resp)
+					self.Parse(resp, "搜索结果")
 				},
 			},
 
@@ -117,12 +117,12 @@ var JDSearch = &Spider{
 						url, _ := a.Attr("href")
 
 						// 结果存入Response中转
-						resp.AddItem(map[string]interface{}{
-							self.OutFeild(resp, 0): title,
-							self.OutFeild(resp, 1): price,
-							self.OutFeild(resp, 2): discuss,
-							self.OutFeild(resp, 3): level,
-							self.OutFeild(resp, 4): url,
+						self.Output(resp.GetRuleName(), resp, map[int]interface{}{
+							0: title,
+							1: price,
+							2: discuss,
+							3: level,
+							4: url,
 						})
 					})
 				},

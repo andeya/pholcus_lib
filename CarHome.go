@@ -38,7 +38,7 @@ var CarHome = &Spider{
 	// Keyword:   USE,
 	EnableCookie: false,
 	RuleTree: &RuleTree{
-		Root: func(self *Spider) {
+		Root: func(self *Spider, resp *context.Response) {
 			self.AddQueue(&context.Request{
 				Url:  "http://club.autohome.com.cn/bbs/forum-o-200042-1.html?qaType=-1#pvareaid=101061",
 				Rule: "请求列表",
@@ -62,7 +62,7 @@ var CarHome = &Spider{
 					})
 
 					// 用指定规则解析响应流
-					self.Parse("获取列表", resp)
+					self.Parse(resp, "获取列表")
 				},
 			},
 
@@ -137,16 +137,12 @@ var CarHome = &Spider{
 					}
 					作者 = query.Find(".conleft").Eq(0).Find("a").Text()
 					// 结果存入Response中转
-					resp.AddItem(map[string]interface{}{
-						self.OutFeild(resp, 0): 当前积分,
-						self.OutFeild(resp, 1): 帖子数,
-						self.OutFeild(resp, 2): 关注的车,
-						self.OutFeild(resp, 3): 注册时间,
-						self.OutFeild(resp, 4): 作者,
-
-						// self.OutFeild(resp, 4): 行业,
-						// self.OutFeild(resp, 5): 类型,
-						// self.OutFeild(resp, 6): 规模,
+					self.Output(resp.GetRuleName(), resp, map[int]interface{}{
+						0: 当前积分,
+						1: 帖子数,
+						2: 关注的车,
+						3: 注册时间,
+						4: 作者,
 					})
 				},
 			},

@@ -38,7 +38,7 @@ var Zolphone = &Spider{
 	// Keyword:   USE,
 	EnableCookie: false,
 	RuleTree: &RuleTree{
-		Root: func(self *Spider) {
+		Root: func(self *Spider, resp *context.Response) {
 			self.Aid("生成请求", map[string]interface{}{"loop": [2]int{1, 950}, "Rule": "生成请求"})
 		},
 
@@ -59,7 +59,7 @@ var Zolphone = &Spider{
 					ss := query.Find("tbody").Find("tr[id]")
 					ss.Each(func(i int, goq *goquery.Selection) {
 						resp.SetTemp("html", goq)
-						self.Parse("获取结果", resp)
+						self.Parse(resp, "获取结果")
 
 					})
 				},
@@ -107,16 +107,16 @@ var Zolphone = &Spider{
 					etime := etimes.Find("a").Eq(1).Text()
 
 					// 结果存入Response中转
-					resp.AddItem(map[string]interface{}{
-						self.OutFeild(resp, 0): outType,
-						self.OutFeild(resp, 1): outUrl,
-						self.OutFeild(resp, 2): outTitle,
-						self.OutFeild(resp, 3): author,
-						self.OutFeild(resp, 4): stime,
-						self.OutFeild(resp, 5): reply,
-						self.OutFeild(resp, 6): read,
-						self.OutFeild(resp, 7): ereply,
-						self.OutFeild(resp, 8): etime,
+					self.Output(resp.GetRuleName(), resp, map[int]interface{}{
+						0: outType,
+						1: outUrl,
+						2: outTitle,
+						3: author,
+						4: stime,
+						5: reply,
+						6: read,
+						7: ereply,
+						8: etime,
 					})
 				},
 			},

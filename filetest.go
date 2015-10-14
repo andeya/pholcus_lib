@@ -38,7 +38,7 @@ var FileTest = &Spider{
 	// Keyword:   USE,
 	EnableCookie: false,
 	RuleTree: &RuleTree{
-		Root: func(self *Spider) {
+		Root: func(self *Spider, resp *context.Response) {
 			self.AddQueue(&context.Request{
 				Url:         "https://www.baidu.com/img/bd_logo1.png",
 				Rule:        "百度图片",
@@ -55,12 +55,12 @@ var FileTest = &Spider{
 
 			"百度图片": {
 				ParseFunc: func(self *Spider, resp *context.Response) {
-					resp.AddFile("baidu")
+					self.FileOutput(resp, "baidu") // 等价于resp.AddFile("baidu")
 				},
 			},
 			"Pholcus页面": {
 				ParseFunc: func(self *Spider, resp *context.Response) {
-					resp.AddFile()
+					self.FileOutput(resp) // 等价于resp.AddFile()
 				},
 			},
 		},

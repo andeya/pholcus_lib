@@ -51,7 +51,7 @@ var GoogleSearch = &Spider{
 	Keyword:      USE,
 	EnableCookie: false,
 	RuleTree: &RuleTree{
-		Root: func(self *Spider) {
+		Root: func(self *Spider, resp *context.Response) {
 			var url string
 			var success bool
 			logs.Log.Critical("正在查找可用的Google镜像，该过程可能需要几分钟……")
@@ -110,7 +110,7 @@ var GoogleSearch = &Spider{
 						"Rule":    "搜索结果",
 					})
 					// 用指定规则解析响应流
-					self.Parse("搜索结果", resp)
+					self.Parse(resp, "搜索结果")
 				},
 			},
 
@@ -129,10 +129,10 @@ var GoogleSearch = &Spider{
 						href = strings.TrimLeft(href, "/url?q=")
 						title := t.Text()
 						content := s.Find(".st").Text()
-						resp.AddItem(map[string]interface{}{
-							self.OutFeild(resp, 0): title,
-							self.OutFeild(resp, 1): content,
-							self.OutFeild(resp, 2): href,
+						self.Output(resp.GetRuleName(), resp, map[int]interface{}{
+							0: title,
+							1: content,
+							2: href,
 						})
 					})
 				},
