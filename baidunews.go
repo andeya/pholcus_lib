@@ -31,7 +31,7 @@ func init() {
 	BaiduNews.Register()
 }
 
-var rss_BaiduNews = NewRSS(map[string]string{
+var rss_BaiduNews = map[string]string{
 	"国内最新":  "http://news.baidu.com/n?cmd=4&class=civilnews&tn=rss",
 	"国际最新":  "http://news.baidu.com/n?cmd=4&class=internews&tn=rss",
 	"军事最新":  "http://news.baidu.com/n?cmd=4&class=mil&tn=rss",
@@ -46,9 +46,16 @@ var rss_BaiduNews = NewRSS(map[string]string{
 	"女人最新":  "http://news.baidu.com/n?cmd=4&class=healthnews&tn=rss",
 	"科技最新":  "http://news.baidu.com/n?cmd=4&class=technnews&tn=rss",
 	"社会最新":  "http://news.baidu.com/n?cmd=4&class=socianews&tn=rss",
-},
-	[]float64{5, 10, 20, 30, 45, 60},
-)
+}
+
+var baiduNewsCountdownTimer = NewCountdownTimer([]float64{5, 10, 20, 30, 45, 60}, func() []string {
+	src, i := make([]string, len(rss_BaiduNews)), 0
+	for k := range rss_BaiduNews {
+		src[i] = k
+		i++
+	}
+	return src
+}())
 
 type BaiduNewsData struct {
 	Item []BaiduNewsItem `xml:"item"`
@@ -70,7 +77,7 @@ var BaiduNews = &Spider{
 	EnableCookie: false,
 	RuleTree: &RuleTree{
 		Root: func(self *Spider, resp *context.Response) {
-			for k, _ := range rss_BaiduNews.Src {
+			for k, _ := range rss_BaiduNews {
 				self.Aid("LOOP", map[string]interface{}{"loop": k})
 			}
 		},
@@ -79,7 +86,7 @@ var BaiduNews = &Spider{
 			"LOOP": {
 				AidFunc: func(self *Spider, aid map[string]interface{}) interface{} {
 					k := aid["loop"].(string)
-					v := rss_BaiduNews.Src[k]
+					v := rss_BaiduNews[k]
 
 					self.AddQueue(&context.Request{
 						Url:          v,
@@ -88,6 +95,7 @@ var BaiduNews = &Spider{
 						Temp:         map[string]interface{}{"src": k},
 						DialTimeout:  -1,
 						ConnTimeout:  -1,
+						TryTimes:     -1,
 						Duplicatable: true,
 					})
 					return nil
@@ -98,7 +106,7 @@ var BaiduNews = &Spider{
 					src := resp.GetTemp("src").(string)
 					defer func() {
 						// 循环请求
-						rss_BaiduNews.Wait(src)
+						baiduNewsCountdownTimer.Wait(src)
 						self.Aid("LOOP", map[string]interface{}{"loop": src})
 					}()
 
@@ -141,7 +149,7 @@ var BaiduNews = &Spider{
 				},
 				ParseFunc: func(self *Spider, resp *context.Response) {
 					// RSS标记更新
-					rss_BaiduNews.Update(resp.GetTemp("src").(string))
+					baiduNewsCountdownTimer.Update(resp.GetTemp("src").(string))
 
 					title := resp.GetTemp("title").(string)
 
