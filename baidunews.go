@@ -48,11 +48,10 @@ var rss_BaiduNews = map[string]string{
 	"社会最新":  "http://news.baidu.com/n?cmd=4&class=socianews&tn=rss",
 }
 
-var baiduNewsCountdownTimer = NewCountdownTimer([]float64{5, 10, 20, 30, 45, 60}, func() []string {
-	src, i := make([]string, len(rss_BaiduNews)), 0
+var baiduNewsCountdownTimer = NewCountdownTimer([]float64{5, 10, 20, 30, 45, 60}, func() map[string]float64 {
+	src := make(map[string]float64, len(rss_BaiduNews))
 	for k := range rss_BaiduNews {
-		src[i] = k
-		i++
+		src[k] = 0
 	}
 	return src
 }())
