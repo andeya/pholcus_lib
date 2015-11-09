@@ -37,6 +37,10 @@ var BaiduSearch = &Spider{
 	// Pausetime: [2]uint{uint(3000), uint(1000)},
 	Keyword:      USE,
 	EnableCookie: false,
+	// 命名空间相对于数据库名，不依赖具体数据内容，可选
+	Namespace: nil,
+	// 子命名空间相对于表名，可依赖具体数据内容，可选
+	SubNamespace: nil,
 	RuleTree: &RuleTree{
 		Root: func(self *Spider, resp *context.Response) {
 			self.Aid("生成请求", map[string]interface{}{"loop": [2]int{0, 1}, "Rule": "生成请求"})

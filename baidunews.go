@@ -74,6 +74,12 @@ var BaiduNews = &Spider{
 	// Pausetime: [2]uint{uint(3000), uint(1000)},
 	// Keyword:     USE,
 	EnableCookie: false,
+	// 命名空间相对于数据库名，不依赖具体数据内容，可选
+	Namespace: nil,
+	// 子命名空间相对于表名，可依赖具体数据内容，可选
+	SubNamespace: func(self *Spider, dataCell map[string]interface{}) string {
+		return dataCell["Data"].(map[string]interface{})["分类"].(string)
+	},
 	RuleTree: &RuleTree{
 		Root: func(self *Spider, resp *context.Response) {
 			for k, _ := range rss_BaiduNews {
