@@ -38,28 +38,28 @@ var Zolslab = &Spider{
 	// Keyword:   USE,
 	EnableCookie: false,
 	RuleTree: &RuleTree{
-		Root: func(self *Spider, resp *context.Response) {
-			self.Aid("生成请求", map[string]interface{}{"loop": [2]int{1, 640}, "Rule": "生成请求"})
+		Root: func(ctx *Context) {
+			ctx.Aid(map[string]interface{}{"loop": [2]int{1, 640}, "Rule": "生成请求"}, "生成请求")
 		},
 
 		Trunk: map[string]*Rule{
 
 			"生成请求": {
-				AidFunc: func(self *Spider, aid map[string]interface{}) interface{} {
+				AidFunc: func(ctx *Context, aid map[string]interface{}) interface{} {
 					for loop := aid["loop"].([2]int); loop[0] < loop[1]; loop[0]++ {
-						self.AddQueue(&context.Request{
+						ctx.AddQueue(&context.Request{
 							Url:  "http://bbs.zol.com.cn/padbbs/p" + strconv.Itoa(loop[0]) + ".html#c",
 							Rule: aid["Rule"].(string),
 						})
 					}
 					return nil
 				},
-				ParseFunc: func(self *Spider, resp *context.Response) {
-					query := resp.GetDom()
+				ParseFunc: func(ctx *Context) {
+					query := ctx.GetDom()
 					ss := query.Find("tbody").Find("tr[id]")
 					ss.Each(func(i int, goq *goquery.Selection) {
-						resp.SetTemp("html", goq)
-						self.Parse(resp, "获取结果")
+						ctx.SetTemp("html", goq)
+						ctx.Parse("获取结果")
 
 					})
 				},
@@ -78,9 +78,9 @@ var Zolslab = &Spider{
 					"最后回复者",
 					"最后回复时间",
 				},
-				ParseFunc: func(self *Spider, resp *context.Response) {
+				ParseFunc: func(ctx *Context) {
 
-					selectObj := resp.GetTemp("html").(*goquery.Selection)
+					selectObj := ctx.GetTemp("html").(*goquery.Selection)
 					//url
 					outUrls := selectObj.Find("td").Eq(1)
 					outUrl, _ := outUrls.Attr("data-url")
@@ -107,7 +107,7 @@ var Zolslab = &Spider{
 					etime := etimes.Find("a").Eq(1).Text()
 
 					// 结果存入Response中转
-					self.Output(resp.GetRuleName(), resp, map[int]interface{}{
+					ctx.Output(map[int]interface{}{
 						0: outType,
 						1: outUrl,
 						2: outTitle,

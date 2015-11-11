@@ -39,36 +39,36 @@ var Kaola = &Spider{
 	// Keyword:   USE,
 	EnableCookie: false,
 	RuleTree: &RuleTree{
-		Root: func(self *Spider, resp *context.Response) {
-			self.AddQueue(&context.Request{Url: "http://www.kaola.com", Rule: "获取版块URL"})
+		Root: func(ctx *Context) {
+			ctx.AddQueue(&context.Request{Url: "http://www.kaola.com", Rule: "获取版块URL"})
 		},
 
 		Trunk: map[string]*Rule{
 
 			"获取版块URL": {
-				ParseFunc: func(self *Spider, resp *context.Response) {
-					query := resp.GetDom()
+				ParseFunc: func(ctx *Context) {
+					query := ctx.GetDom()
 					lis := query.Find("#funcTab li a")
 					lis.Each(func(i int, s *goquery.Selection) {
 						if i == 0 {
 							return
 						}
 						if url, ok := s.Attr("href"); ok {
-							self.AddQueue(&context.Request{Url: url, Rule: "商品列表", Temp: map[string]interface{}{"goodsType": s.Text()}})
+							ctx.AddQueue(&context.Request{Url: url, Rule: "商品列表", Temp: map[string]interface{}{"goodsType": s.Text()}})
 						}
 					})
 				},
 			},
 
 			"商品列表": {
-				ParseFunc: func(self *Spider, resp *context.Response) {
-					query := resp.GetDom()
+				ParseFunc: func(ctx *Context) {
+					query := ctx.GetDom()
 					query.Find(".proinfo").Each(func(i int, s *goquery.Selection) {
 						if url, ok := s.Find("a").Attr("href"); ok {
-							self.AddQueue(&context.Request{
+							ctx.AddQueue(&context.Request{
 								Url:  "http://www.kaola.com" + url,
 								Rule: "商品详情",
-								Temp: map[string]interface{}{"goodsType": resp.GetTemp("goodsType").(string)},
+								Temp: map[string]interface{}{"goodsType": ctx.GetTemp("goodsType").(string)},
 							})
 						}
 					})
@@ -85,8 +85,8 @@ var Kaola = &Spider{
 					"评论数",
 					"类别",
 				},
-				ParseFunc: func(self *Spider, resp *context.Response) {
-					query := resp.GetDom()
+				ParseFunc: func(ctx *Context) {
+					query := ctx.GetDom()
 					// 获取标题
 					title := query.Find(".product-title").Text()
 
@@ -103,13 +103,13 @@ var Kaola = &Spider{
 					discussNum := query.Find("#commentCounts").Text()
 
 					// 结果存入Response中转
-					self.Output(resp.GetRuleName(), resp, map[int]interface{}{
+					ctx.Output(map[int]interface{}{
 						0: title,
 						1: price,
 						2: brand,
 						3: from,
 						4: discussNum,
-						5: resp.GetTemp("goodsType"),
+						5: ctx.GetTemp("goodsType"),
 					})
 				},
 			},

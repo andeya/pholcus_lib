@@ -42,14 +42,14 @@ var BaiduSearch = &Spider{
 	// 子命名空间相对于表名，可依赖具体数据内容，可选
 	SubNamespace: nil,
 	RuleTree: &RuleTree{
-		Root: func(self *Spider, resp *context.Response) {
-			self.Aid("生成请求", map[string]interface{}{"loop": [2]int{0, 1}, "Rule": "生成请求"})
+		Root: func(ctx *Context) {
+			ctx.Aid(map[string]interface{}{"loop": [2]int{0, 1}, "Rule": "生成请求"}, "生成请求")
 		},
 
 		Trunk: map[string]*Rule{
 
 			"生成请求": {
-				AidFunc: func(self *Spider, aid map[string]interface{}) interface{} {
+				AidFunc: func(ctx *Context, aid map[string]interface{}) interface{} {
 					var duplicatable bool
 					for loop := aid["loop"].([2]int); loop[0] < loop[1]; loop[0]++ {
 						if loop[0] == 0 {
@@ -57,31 +57,31 @@ var BaiduSearch = &Spider{
 						} else {
 							duplicatable = false
 						}
-						self.AddQueue(&context.Request{
-							Url:          "http://www.baidu.com/s?ie=utf-8&nojc=1&wd=" + self.GetKeyword() + "&rn=50&pn=" + strconv.Itoa(50*loop[0]),
+						ctx.AddQueue(&context.Request{
+							Url:          "http://www.baidu.com/s?ie=utf-8&nojc=1&wd=" + ctx.GetKeyword() + "&rn=50&pn=" + strconv.Itoa(50*loop[0]),
 							Rule:         aid["Rule"].(string),
 							Duplicatable: duplicatable,
 						})
 					}
 					return nil
 				},
-				ParseFunc: func(self *Spider, resp *context.Response) {
-					query := resp.GetDom()
+				ParseFunc: func(ctx *Context) {
+					query := ctx.GetDom()
 					total1 := query.Find(".nums").Text()
 					re, _ := regexp.Compile(`[\D]*`)
 					total1 = re.ReplaceAllString(total1, "")
 					total2, _ := strconv.Atoi(total1)
 					total := int(math.Ceil(float64(total2) / 50))
-					if total > self.MaxPage {
-						total = self.MaxPage
+					if total > ctx.GetMaxPage() {
+						total = ctx.GetMaxPage()
 					} else if total == 0 {
-						logs.Log.Critical("[消息提示：| 任务：%v | 关键词：%v | 规则：%v] 没有抓取到任何数据！!!\n", self.GetName(), self.GetKeyword(), resp.GetRuleName())
+						logs.Log.Critical("[消息提示：| 任务：%v | 关键词：%v | 规则：%v] 没有抓取到任何数据！!!\n", ctx.GetName(), ctx.GetKeyword(), ctx.GetRuleName())
 						return
 					}
 					// 调用指定规则下辅助函数
-					self.Aid("生成请求", map[string]interface{}{"loop": [2]int{1, total}, "Rule": "搜索结果"})
+					ctx.Aid(map[string]interface{}{"loop": [2]int{1, total}, "Rule": "搜索结果"})
 					// 用指定规则解析响应流
-					self.Parse(resp, "搜索结果")
+					ctx.Parse("搜索结果")
 				},
 			},
 
@@ -93,8 +93,8 @@ var BaiduSearch = &Spider{
 					"不完整URL",
 					"百度跳转",
 				},
-				ParseFunc: func(self *Spider, resp *context.Response) {
-					query := resp.GetDom()
+				ParseFunc: func(ctx *Context) {
+					query := ctx.GetDom()
 					query.Find("#content_left .c-container").Each(func(i int, s *goquery.Selection) {
 
 						title := s.Find(".t").Text()
@@ -110,7 +110,7 @@ var BaiduSearch = &Spider{
 						content = re.ReplaceAllString(content, "")
 
 						// 结果存入Response中转
-						self.Output(resp.GetRuleName(), resp, map[int]interface{}{
+						ctx.Output(map[int]interface{}{
 							0: strings.Trim(title, " \t\n"),
 							1: strings.Trim(content, " \t\n"),
 							2: tar,

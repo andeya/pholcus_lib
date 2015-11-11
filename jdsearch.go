@@ -38,26 +38,26 @@ var JDSearch = &Spider{
 	Keyword:      USE,
 	EnableCookie: false,
 	RuleTree: &RuleTree{
-		Root: func(self *Spider, resp *context.Response) {
-			self.Aid("生成请求", map[string]interface{}{"loop": [2]int{0, 1}, "Rule": "生成请求"})
+		Root: func(ctx *Context) {
+			ctx.Aid(map[string]interface{}{"loop": [2]int{0, 1}, "Rule": "生成请求"}, "生成请求")
 		},
 
 		Trunk: map[string]*Rule{
 
 			"生成请求": {
-				AidFunc: func(self *Spider, aid map[string]interface{}) interface{} {
+				AidFunc: func(ctx *Context, aid map[string]interface{}) interface{} {
 					for loop := aid["loop"].([2]int); loop[0] < loop[1]; loop[0]++ {
-						self.BulkAddQueue([]string{
-							"http://search.jd.com/Search?keyword=" + self.GetKeyword() + "&enc=utf-8&qrst=1&rt=1&stop=1&click=&psort=&page=" + strconv.Itoa(2*loop[0]+2),
-							"http://search.jd.com/Search?keyword=" + self.GetKeyword() + "&enc=utf-8&qrst=1&rt=1&stop=1&click=&psort=&page=" + strconv.Itoa(2*loop[0]+1),
+						ctx.BulkAddQueue([]string{
+							"http://search.jd.com/Search?keyword=" + ctx.GetKeyword() + "&enc=utf-8&qrst=1&rt=1&stop=1&click=&psort=&page=" + strconv.Itoa(2*loop[0]+2),
+							"http://search.jd.com/Search?keyword=" + ctx.GetKeyword() + "&enc=utf-8&qrst=1&rt=1&stop=1&click=&psort=&page=" + strconv.Itoa(2*loop[0]+1),
 						}, &context.Request{
 							Rule: aid["Rule"].(string),
 						})
 					}
 					return nil
 				},
-				ParseFunc: func(self *Spider, resp *context.Response) {
-					query := resp.GetDom()
+				ParseFunc: func(ctx *Context) {
+					query := ctx.GetDom()
 
 					total1 := query.Find("#top_pagi span.text").Text()
 
@@ -65,16 +65,16 @@ var JDSearch = &Spider{
 					total1 = re.FindString(total1)
 					total, _ := strconv.Atoi(total1)
 
-					if total > self.MaxPage {
-						total = self.MaxPage
+					if total > ctx.GetMaxPage() {
+						total = ctx.GetMaxPage()
 					} else if total == 0 {
-						logs.Log.Critical("[消息提示：| 任务：%v | 关键词：%v | 规则：%v] 没有抓取到任何数据！!!\n", self.GetName(), self.GetKeyword(), resp.GetRuleName())
+						logs.Log.Critical("[消息提示：| 任务：%v | 关键词：%v | 规则：%v] 没有抓取到任何数据！!!\n", ctx.GetName(), ctx.GetKeyword(), ctx.GetRuleName())
 						return
 					}
 					// 调用指定规则下辅助函数
-					self.Aid("生成请求", map[string]interface{}{"loop": [2]int{1, total}, "Rule": "搜索结果"})
+					ctx.Aid(map[string]interface{}{"loop": [2]int{1, total}, "Rule": "搜索结果"})
 					// 用指定规则解析响应流
-					self.Parse(resp, "搜索结果")
+					ctx.Parse("搜索结果")
 				},
 			},
 
@@ -87,8 +87,8 @@ var JDSearch = &Spider{
 					"星级",
 					"链接",
 				},
-				ParseFunc: func(self *Spider, resp *context.Response) {
-					query := resp.GetDom()
+				ParseFunc: func(ctx *Context) {
+					query := ctx.GetDom()
 
 					query.Find("#plist .list-h:nth-child(1) > li").Each(func(i int, s *goquery.Selection) {
 						// 获取标题
@@ -117,7 +117,7 @@ var JDSearch = &Spider{
 						url, _ := a.Attr("href")
 
 						// 结果存入Response中转
-						self.Output(resp.GetRuleName(), resp, map[int]interface{}{
+						ctx.Output(map[int]interface{}{
 							0: title,
 							1: price,
 							2: discuss,

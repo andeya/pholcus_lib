@@ -39,25 +39,25 @@ var Wangyi = &Spider{
 	// Keyword:   USE,
 	EnableCookie: false,
 	RuleTree: &RuleTree{
-		Root: func(self *Spider, resp *context.Response) {
-			self.AddQueue(&context.Request{Url: "http://news.163.com/rank/", Rule: "排行榜主页"})
+		Root: func(ctx *Context) {
+			ctx.AddQueue(&context.Request{Url: "http://news.163.com/rank/", Rule: "排行榜主页"})
 		},
 
 		Trunk: map[string]*Rule{
 
 			"排行榜主页": {
-				ParseFunc: func(self *Spider, resp *context.Response) {
-					query := resp.GetDom()
+				ParseFunc: func(ctx *Context) {
+					query := ctx.GetDom()
 					query.Find(".subNav a").Each(func(i int, s *goquery.Selection) {
 						if url, ok := s.Attr("href"); ok {
-							self.AddQueue(&context.Request{Url: url, Rule: "新闻排行榜"})
+							ctx.AddQueue(&context.Request{Url: url, Rule: "新闻排行榜"})
 						}
 					})
 				},
 			},
 
 			"新闻排行榜": {
-				ParseFunc: func(self *Spider, resp *context.Response) {
+				ParseFunc: func(ctx *Context) {
 					topTit := []string{
 						"1小时前点击排行",
 						"24小时点击排行",
@@ -66,7 +66,7 @@ var Wangyi = &Spider{
 						"本周跟帖排行",
 						"本月跟贴排行",
 					}
-					query := resp.GetDom()
+					query := ctx.GetDom()
 					// 获取新闻分类
 					newsType := query.Find(".titleBar h2").Text()
 
@@ -90,7 +90,7 @@ var Wangyi = &Spider{
 						})
 					})
 					for k, v := range urls_top {
-						self.AddQueue(&context.Request{
+						ctx.AddQueue(&context.Request{
 							Url:  k,
 							Rule: "热点新闻",
 							Temp: map[string]interface{}{
@@ -111,16 +111,16 @@ var Wangyi = &Spider{
 					"类别",
 					"ReleaseTime",
 				},
-				ParseFunc: func(self *Spider, resp *context.Response) {
-					query := resp.GetDom()
+				ParseFunc: func(ctx *Context) {
+					query := ctx.GetDom()
 
 					// 若有多页内容，则获取阅读全文的链接并获取内容
 					if pageAll := query.Find(".ep-pages-all"); len(pageAll.Nodes) != 0 {
 						if pageAllUrl, ok := pageAll.Attr("href"); ok {
-							self.AddQueue(&context.Request{
+							ctx.AddQueue(&context.Request{
 								Url:  pageAllUrl,
 								Rule: "热点新闻",
-								Temp: resp.GetTemps(),
+								Temp: ctx.GetTemps(),
 							})
 						}
 						return
@@ -141,11 +141,11 @@ var Wangyi = &Spider{
 					release = strings.Trim(release, " \t\n")
 
 					// 结果存入Response中转
-					self.Output("热点新闻", resp, map[int]interface{}{
+					ctx.Output(map[int]interface{}{
 						0: title,
 						1: content,
-						2: resp.GetTemp("top"),
-						3: resp.GetTemp("newsType"),
+						2: ctx.GetTemp("top"),
+						3: ctx.GetTemp("newsType"),
 						4: release,
 					})
 				},

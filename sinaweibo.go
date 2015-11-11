@@ -97,11 +97,11 @@ var SinaWeibo = &Spider{
 	// Keyword:     USE,
 	EnableCookie: true,
 	RuleTree: &RuleTree{
-		Root: func(self *Spider, resp *context.Response) {
+		Root: func(ctx *Context) {
 
-			// self.Aid("入口", map[string]interface{}{})
+			// ctx.Aid("入口", map[string]interface{}{})
 			for _, v := range weiboList {
-				self.AddQueue(&context.Request{
+				ctx.AddQueue(&context.Request{
 					Url:          v,
 					Rule:         "请求列表",
 					Duplicatable: true,
@@ -113,12 +113,12 @@ var SinaWeibo = &Spider{
 		Trunk: map[string]*Rule{
 
 			"请求列表": {
-				AidFunc: func(self *Spider, aid map[string]interface{}) interface{} {
+				AidFunc: func(ctx *Context, aid map[string]interface{}) interface{} {
 					// defer func() {
 					// 	// 循环请求
 					// 	time.Sleep(60 * time.Second)
 					// 	timer_SinaWeibo.Wait("请求列表")
-					// 	self.Aid("请求列表", map[string]interface{}{})
+					// 	ctx.Aid("请求列表", map[string]interface{}{})
 					// }()
 
 					return nil
@@ -129,13 +129,12 @@ var SinaWeibo = &Spider{
 					"微博数",
 					"全文",
 				},
-				ParseFunc: func(self *Spider, resp *context.Response) {
+				ParseFunc: func(ctx *Context) {
 					defer func() {
 						fmt.Println(recover())
 					}()
-					// self.FileOutput(resp)
 
-					query := resp.GetDom()
+					query := ctx.GetDom()
 					fmt.Println(query.Find("html").Text())
 					微博名 := query.Find(".username").Text()
 					粉丝数 := query.Find(".W_f16").Eq(1).Text()
@@ -156,7 +155,7 @@ var SinaWeibo = &Spider{
 					// if err != nil {
 					// 	fmt.Println(err)
 					// }
-					self.Output(resp.GetRuleName(), resp, map[int]interface{}{
+					ctx.Output(map[int]interface{}{
 						0: 微博名,
 						1: 粉丝数,
 						2: 微博数,

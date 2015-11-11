@@ -9,7 +9,7 @@ import (
 	"github.com/henrylee2cn/pholcus/logs"                   //信息输出
 
 	// net包
-	// "net/http" //设置http.Header
+	"net/http" //设置http.Header
 	// "net/url"
 
 	// 编码包
@@ -31,7 +31,7 @@ func init() {
 	Taobao.Register()
 }
 
-var cookies_Taobao = SplitCookies("mt=ci%3D-1_0; swfstore=35673; thw=cn; cna=fcr5DRDmwnQCAT2QxZSu3Db6; sloc=%E8%BE%BD%E5%AE%81; _tb_token_=XLlMHhT9BI8IzeA; ck1=; v=0; uc3=nk2=symxAo6NBazVq7cY2z0%3D&id2=UU23CgHxOwgwgA%3D%3D&vt3=F8dAT%2BCFEEyTLicOBEc%3D&lg2=U%2BGCWk%2F75gdr5Q%3D%3D; existShop=MTQzNDM1NDcyNg%3D%3D; lgc=%5Cu5C0F%5Cu7C73%5Cu7C92%5Cu559C%5Cu6B22%5Cu5927%5Cu6D77; tracknick=%5Cu5C0F%5Cu7C73%5Cu7C92%5Cu559C%5Cu6B22%5Cu5927%5Cu6D77; sg=%E6%B5%B721; cookie2=1433b814776e3b3c61f4ba3b8631a81a; cookie1=Bqbn0lh%2FkPm9D0NtnTdFiqggRYia%2FBrNeQpwLWlbyJk%3D; unb=2559173312; t=1a9b12bb535040723808836b32e53507; _cc_=WqG3DMC9EA%3D%3D; tg=5; _l_g_=Ug%3D%3D; _nk_=%5Cu5C0F%5Cu7C73%5Cu7C92%5Cu559C%5Cu6B22%5Cu5927%5Cu6D77; cookie17=UU23CgHxOwgwgA%3D%3D; mt=ci=0_1; x=e%3D1%26p%3D*%26s%3D0%26c%3D0%26f%3D0%26g%3D0%26t%3D0%26__ll%3D-1%26_ato%3D0; whl=-1%260%260%260; uc1=lltime=1434353890&cookie14=UoW0FrfFYp27FQ%3D%3D&existShop=false&cookie16=V32FPkk%2FxXMk5UvIbNtImtMfJQ%3D%3D&cookie21=U%2BGCWk%2F7p4mBoUyTltGF&tag=7&cookie15=Vq8l%2BKCLz3%2F65A%3D%3D&pas=0; isg=C08C1D752BC08A3DCDF1FE6611FA3EE1; l=Ajk53TTUeK0ZKkG8yx7w7svcyasSxC34")
+var cookies_Taobao = "mt=ci%3D-1_0; swfstore=35673; thw=cn; cna=fcr5DRDmwnQCAT2QxZSu3Db6; sloc=%E8%BE%BD%E5%AE%81; _tb_token_=XLlMHhT9BI8IzeA; ck1=; v=0; uc3=nk2=symxAo6NBazVq7cY2z0%3D&id2=UU23CgHxOwgwgA%3D%3D&vt3=F8dAT%2BCFEEyTLicOBEc%3D&lg2=U%2BGCWk%2F75gdr5Q%3D%3D; existShop=MTQzNDM1NDcyNg%3D%3D; lgc=%5Cu5C0F%5Cu7C73%5Cu7C92%5Cu559C%5Cu6B22%5Cu5927%5Cu6D77; tracknick=%5Cu5C0F%5Cu7C73%5Cu7C92%5Cu559C%5Cu6B22%5Cu5927%5Cu6D77; sg=%E6%B5%B721; cookie2=1433b814776e3b3c61f4ba3b8631a81a; cookie1=Bqbn0lh%2FkPm9D0NtnTdFiqggRYia%2FBrNeQpwLWlbyJk%3D; unb=2559173312; t=1a9b12bb535040723808836b32e53507; _cc_=WqG3DMC9EA%3D%3D; tg=5; _l_g_=Ug%3D%3D; _nk_=%5Cu5C0F%5Cu7C73%5Cu7C92%5Cu559C%5Cu6B22%5Cu5927%5Cu6D77; cookie17=UU23CgHxOwgwgA%3D%3D; mt=ci=0_1; x=e%3D1%26p%3D*%26s%3D0%26c%3D0%26f%3D0%26g%3D0%26t%3D0%26__ll%3D-1%26_ato%3D0; whl=-1%260%260%260; uc1=lltime=1434353890&cookie14=UoW0FrfFYp27FQ%3D%3D&existShop=false&cookie16=V32FPkk%2FxXMk5UvIbNtImtMfJQ%3D%3D&cookie21=U%2BGCWk%2F7p4mBoUyTltGF&tag=7&cookie15=Vq8l%2BKCLz3%2F65A%3D%3D&pas=0; isg=C08C1D752BC08A3DCDF1FE6611FA3EE1; l=Ajk53TTUeK0ZKkG8yx7w7svcyasSxC34"
 
 var Taobao = &Spider{
 	Name:        "淘宝数据",
@@ -40,36 +40,37 @@ var Taobao = &Spider{
 	// Keyword:   USE,
 	EnableCookie: false,
 	RuleTree: &RuleTree{
-		Root: func(self *Spider, resp *context.Response) {
-			if k := strings.Trim(self.GetKeyword(), " "); k != "" {
-				cookies_Taobao = SplitCookies(k)
-			}
-			self.AddQueue(&context.Request{
-				Url:     "http://list.taobao.com/browse/cat-0.htm",
-				Rule:    "生成请求",
-				Cookies: cookies_Taobao,
+		Root: func(ctx *Context) {
+			ctx.AddQueue(&context.Request{
+				Url:  "http://list.taobao.com/browse/cat-0.htm",
+				Rule: "生成请求",
+				Header: http.Header{
+					"Cookie": []string{cookies_Taobao},
+				},
 			})
 		},
 
 		Trunk: map[string]*Rule{
 
 			"生成请求": {
-				AidFunc: func(self *Spider, aid map[string]interface{}) interface{} {
+				AidFunc: func(ctx *Context, aid map[string]interface{}) interface{} {
 					for loop := aid["loop"].([2]int); loop[0] < loop[1]; loop[0]++ {
 						urls := []string{}
 						for _, loc := range loc_Taobao {
 							urls = append(urls, "http:"+aid["urlBase"].(string)+"&_input_charset=utf-8&json=on&viewIndex=1&as=0&atype=b&style=grid&same_info=1&tid=0&isnew=2&data-action&module=page&s=0&loc="+loc+"&pSize=96&data-key=s&data-value="+strconv.Itoa(loop[0]*96))
 						}
-						self.BulkAddQueue(urls, &context.Request{
-							Rule:    aid["Rule"].(string),
-							Cookies: cookies_Taobao,
-							Temp:    aid["Temp"].(map[string]interface{}),
+						ctx.BulkAddQueue(urls, &context.Request{
+							Rule: aid["Rule"].(string),
+							Header: http.Header{
+								"Cookie": []string{cookies_Taobao},
+							},
+							Temp: aid["Temp"].(map[string]interface{}),
 						})
 					}
 					return nil
 				},
-				ParseFunc: func(self *Spider, resp *context.Response) {
-					query := resp.GetDom()
+				ParseFunc: func(ctx *Context) {
+					query := ctx.GetDom()
 					query.Find(".J_TBMarketCat").Each(func(i int, a *goquery.Selection) {
 						type1 := a.Find("h4").Text()
 						a.Find(".section").Each(func(i int, b *goquery.Selection) {
@@ -78,7 +79,7 @@ var Taobao = &Spider{
 								type3 := c.Text()
 								href3, _ := c.Attr("href")
 
-								self.Aid("生成请求", map[string]interface{}{
+								ctx.Aid(map[string]interface{}{
 									"loop":    [2]int{0, 1},
 									"urlBase": href3,
 									"Rule":    "列表页数",
@@ -95,8 +96,8 @@ var Taobao = &Spider{
 			},
 
 			"列表页数": {
-				ParseFunc: func(self *Spider, resp *context.Response) {
-					json := resp.GetText()
+				ParseFunc: func(ctx *Context) {
+					json := ctx.GetText()
 					re, _ := regexp.Compile(`(?U)"totalPage":"[\d]+",`)
 					total := re.FindString(json)
 					re, _ = regexp.Compile(`[\d]+`)
@@ -104,22 +105,22 @@ var Taobao = &Spider{
 					total = strings.Trim(total, " \t\n")
 					totalPage, _ := strconv.Atoi(total)
 					if total == "0" {
-						logs.Log.Critical("[消息提示：| 任务：%v | 关键词：%v | 规则：%v] 没有抓取到任何数据！!!\n", self.GetName(), self.GetKeyword(), resp.GetRuleName())
+						logs.Log.Critical("[消息提示：| 任务：%v | 关键词：%v | 规则：%v] 没有抓取到任何数据！!!\n", ctx.GetName(), ctx.GetKeyword(), ctx.GetRuleName())
 					} else {
-						self.Aid("生成请求", map[string]interface{}{
+						ctx.Aid(map[string]interface{}{
 							"loop":    [2]int{1, totalPage},
-							"urlBase": resp.GetUrl(),
+							"urlBase": ctx.GetUrl(),
 							"Rule":    "商品列表",
-							"Temp":    resp.GetTemps(),
-						})
-						self.Parse(resp, "商品列表")
+							"Temp":    ctx.GetTemps(),
+						}, "生成请求")
+						ctx.Parse("商品列表")
 					}
 				},
 			},
 
 			"商品列表": {
-				ParseFunc: func(self *Spider, resp *context.Response) {
-					j := resp.GetText()
+				ParseFunc: func(ctx *Context) {
+					j := ctx.GetText()
 					// re, _ := regexp.Compile(`null`)
 					// j = re.ReplaceAllString(j, " ")
 
@@ -135,7 +136,7 @@ var Taobao = &Spider{
 					}
 					for _, item := range infos["mallItemList"].([]interface{}) {
 						item2 := item.(map[string]interface{})
-						temp := self.CreatItem("结果", map[int]interface{}{
+						temp := ctx.CreatItem(map[int]interface{}{
 							0:  item2["title"],
 							1:  item2["price"],
 							2:  item2["currentPrice"],
@@ -160,8 +161,8 @@ var Taobao = &Spider{
 							21: item2["goodRate"],
 							22: item2["dsrScore"],
 							23: item2["spSource"],
-						})
-						self.AddQueue(&context.Request{
+						}, "结果")
+						ctx.AddQueue(&context.Request{
 							Url:      "http:" + item2["href"].(string),
 							Rule:     "商品详情",
 							Temp:     temp,
@@ -173,8 +174,8 @@ var Taobao = &Spider{
 
 			"商品详情": {
 
-				ParseFunc: func(self *Spider, resp *context.Response) {
-					query := resp.GetDom()
+				ParseFunc: func(ctx *Context) {
+					query := ctx.GetDom()
 
 					// 商品规格参数
 					detail := make(map[string]string)
@@ -197,12 +198,12 @@ var Taobao = &Spider{
 							detail[slice[0]] = slice[1]
 						})
 					}
-					temp := resp.GetTemps()
-					temp[self.IndexOutFeild("结果", 24)] = detail
-					temp[self.IndexOutFeild("结果", 25)] = []interface{}{}
-					self.AddQueue(&context.Request{
+					temp := ctx.GetTemps()
+					temp[ctx.IndexOutFeild(24, "结果")] = detail
+					temp[ctx.IndexOutFeild(25, "结果")] = []interface{}{}
+					ctx.AddQueue(&context.Request{
 						Rule:     "商品评论",
-						Url:      "http://rate.taobao.com/feedRateList.htm?siteID=4&rateType=&orderType=sort_weight&showContent=1&userNumId=" + resp.GetTemp("sellerId").(string) + "&auctionNumId=" + resp.GetTemp("itemId").(string) + "&currentPageNum=1",
+						Url:      "http://rate.taobao.com/feedRateList.htm?siteID=4&rateType=&orderType=sort_weight&showContent=1&userNumId=" + ctx.GetTemp("sellerId").(string) + "&auctionNumId=" + ctx.GetTemp("itemId").(string) + "&currentPageNum=1",
 						Temp:     temp,
 						Priority: 2,
 					})
@@ -210,8 +211,8 @@ var Taobao = &Spider{
 			},
 
 			"商品评论": {
-				ParseFunc: func(self *Spider, resp *context.Response) {
-					j := resp.GetText()
+				ParseFunc: func(ctx *Context) {
+					j := ctx.GetText()
 					j = strings.TrimLeft(j, "(")
 					j = strings.TrimRight(j, ")")
 
@@ -225,22 +226,22 @@ var Taobao = &Spider{
 						return
 					}
 					discussSlice := infos["comments"].([]interface{})
-					discussAll := resp.GetTemp(self.IndexOutFeild("结果", 25)).([]interface{})
+					discussAll := ctx.GetTemp(ctx.IndexOutFeild(25, "结果")).([]interface{})
 					discussAll = append(discussAll, discussSlice...)
-					resp.SetTemp(self.IndexOutFeild("结果", 25), discussAll)
+					ctx.SetTemp(ctx.IndexOutFeild(25, "结果"), discussAll)
 
 					currentPageNum := infos["currentPageNum"].(int)
 					maxPage := infos["maxPage"].(int)
 					if currentPageNum < maxPage {
 						// 请求下一页
-						self.AddQueue(&context.Request{
+						ctx.AddQueue(&context.Request{
 							Rule: "商品评论",
-							Url:  "http://rate.taobao.com/feedRateList.htm?siteID=4&rateType=&orderType=sort_weight&showContent=1&userNumId=" + resp.GetTemp("sellerId").(string) + "&auctionNumId=" + resp.GetTemp("itemId").(string) + "&currentPageNum=" + strconv.Itoa(currentPageNum+1),
-							Temp: resp.GetTemps(),
+							Url:  "http://rate.taobao.com/feedRateList.htm?siteID=4&rateType=&orderType=sort_weight&showContent=1&userNumId=" + ctx.GetTemp("sellerId").(string) + "&auctionNumId=" + ctx.GetTemp("itemId").(string) + "&currentPageNum=" + strconv.Itoa(currentPageNum+1),
+							Temp: ctx.GetTemps(),
 						})
 					} else {
 						// 输出结果
-						self.Parse(resp, "结果")
+						ctx.Parse("结果")
 					}
 				},
 			},
@@ -275,9 +276,9 @@ var Taobao = &Spider{
 					"规格参数",
 					"评论内容",
 				},
-				ParseFunc: func(self *Spider, resp *context.Response) {
+				ParseFunc: func(ctx *Context) {
 					// 结果存入Response中转
-					self.Output(resp.GetRuleName(), resp, resp.GetTemps())
+					ctx.Output(ctx.GetTemps())
 				},
 			},
 		},

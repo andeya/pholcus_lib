@@ -81,19 +81,19 @@ var BaiduNews = &Spider{
 		return dataCell["Data"].(map[string]interface{})["分类"].(string)
 	},
 	RuleTree: &RuleTree{
-		Root: func(self *Spider, resp *context.Response) {
+		Root: func(ctx *Context) {
 			for k, _ := range rss_BaiduNews {
-				self.Aid("LOOP", map[string]interface{}{"loop": k})
+				ctx.Aid(map[string]interface{}{"loop": k}, "LOOP")
 			}
 		},
 
 		Trunk: map[string]*Rule{
 			"LOOP": {
-				AidFunc: func(self *Spider, aid map[string]interface{}) interface{} {
+				AidFunc: func(ctx *Context, aid map[string]interface{}) interface{} {
 					k := aid["loop"].(string)
 					v := rss_BaiduNews[k]
 
-					self.AddQueue(&context.Request{
+					ctx.AddQueue(&context.Request{
 						Url:          v,
 						Rule:         "XML列表页",
 						Header:       http.Header{"Content-Type": []string{"text/html", "charset=GB2312"}},
@@ -107,15 +107,15 @@ var BaiduNews = &Spider{
 				},
 			},
 			"XML列表页": {
-				ParseFunc: func(self *Spider, resp *context.Response) {
-					src := resp.GetTemp("src").(string)
+				ParseFunc: func(ctx *Context) {
+					src := ctx.GetTemp("src").(string)
 					defer func() {
 						// 循环请求
 						baiduNewsCountdownTimer.Wait(src)
-						self.Aid("LOOP", map[string]interface{}{"loop": src})
+						ctx.Aid(map[string]interface{}{"loop": src}, "LOOP")
 					}()
 
-					page := GBKToUTF8(resp.GetText())
+					page := GBKToUTF8(ctx.GetText())
 					page = strings.TrimLeft(page, `<?xml version="1.0" encoding="gb2312"?>`)
 					re, _ := regexp.Compile(`\<[\/]?rss\>`)
 					page = re.ReplaceAllString(page, "")
@@ -127,7 +127,7 @@ var BaiduNews = &Spider{
 					}
 
 					for _, v := range content.Item {
-						self.AddQueue(&context.Request{
+						ctx.AddQueue(&context.Request{
 							Url:  v.Link,
 							Rule: "新闻详情",
 							Temp: map[string]interface{}{
@@ -152,24 +152,24 @@ var BaiduNews = &Spider{
 					"分类",
 					"作者",
 				},
-				ParseFunc: func(self *Spider, resp *context.Response) {
+				ParseFunc: func(ctx *Context) {
 					// RSS标记更新
-					baiduNewsCountdownTimer.Update(resp.GetTemp("src").(string))
+					baiduNewsCountdownTimer.Update(ctx.GetTemp("src").(string))
 
-					title := resp.GetTemp("title").(string)
+					title := ctx.GetTemp("title").(string)
 
-					infoStr, isReload := baiduNewsFn.prase(resp)
+					infoStr, isReload := baiduNewsFn.prase(ctx)
 					if isReload {
 						return
 					}
 					// 结果存入Response中转
-					self.Output(resp.GetRuleName(), resp, map[int]interface{}{
+					ctx.Output(map[int]interface{}{
 						0: title,
-						1: resp.GetTemp("description"),
+						1: ctx.GetTemp("description"),
 						2: infoStr,
-						3: resp.GetTemp("releaseTime"),
-						4: resp.GetTemp("src"),
-						5: resp.GetTemp("author"),
+						3: ctx.GetTemp("releaseTime"),
+						4: ctx.GetTemp("src"),
+						5: ctx.GetTemp("author"),
 					})
 				},
 			},
@@ -177,21 +177,21 @@ var BaiduNews = &Spider{
 	},
 }
 
-type baiduNews map[string]func(resp *context.Response) (infoStr string, isReload bool)
+type baiduNews map[string]func(ctx *Context) (infoStr string, isReload bool)
 
 // @url 必须为含有协议头的地址
-func (b baiduNews) prase(resp *context.Response) (infoStr string, isReload bool) {
-	url := resp.Response.Request.URL.Host
+func (b baiduNews) prase(ctx *Context) (infoStr string, isReload bool) {
+	url := ctx.Response.Response.Request.URL.Host
 	// Log.Println("域名", url)
 	if _, ok := b[url]; ok {
-		return b[url](resp)
+		return b[url](ctx)
 	} else {
-		return b.commonPrase(resp), false
+		return b.commonPrase(ctx), false
 	}
 }
 
-func (b baiduNews) commonPrase(resp *context.Response) (infoStr string) {
-	body := resp.GetDom().Find("body")
+func (b baiduNews) commonPrase(ctx *Context) (infoStr string) {
+	body := ctx.GetDom().Find("body")
 
 	var info *goquery.Selection
 
@@ -231,22 +231,22 @@ func (b baiduNews) findP(html *goquery.Selection) *goquery.Selection {
 }
 
 var baiduNewsFn = baiduNews{
-	"yule.sohu.com": func(resp *context.Response) (infoStr string, isReload bool) {
+	"yule.sohu.com": func(ctx *Context) (infoStr string, isReload bool) {
 
 		// 当有翻页等需求时，重新添加请求
-		// req := resp.GetRequest()
+		// req := ctx.GetRequest()
 
 		// 根据需要可能会对req进行某些修改
 		// req.SetUrl("")
 
 		// 添加请求到队列
 		// scheduler.Sdl.Push(req)
-		infoStr = resp.GetDom().Find("#contentText").Text()
+		infoStr = ctx.GetDom().Find("#contentText").Text()
 
 		return
 	},
-	"news.qtv.com.cn": func(resp *context.Response) (infoStr string, isReload bool) {
-		infoStr = resp.GetDom().Find(".zwConreally_z").Text()
+	"news.qtv.com.cn": func(ctx *Context) (infoStr string, isReload bool) {
+		infoStr = ctx.GetDom().Find(".zwConreally_z").Text()
 		return
 	},
 }

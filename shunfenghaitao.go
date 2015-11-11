@@ -39,15 +39,15 @@ var Shunfenghaitao = &Spider{
 	// Keyword:   USE,
 	EnableCookie: false,
 	RuleTree: &RuleTree{
-		Root: func(self *Spider, resp *context.Response) {
-			self.AddQueue(&context.Request{Url: "http://www.sfht.com", Rule: "获取版块URL"})
+		Root: func(ctx *Context) {
+			ctx.AddQueue(&context.Request{Url: "http://www.sfht.com", Rule: "获取版块URL"})
 		},
 
 		Trunk: map[string]*Rule{
 
 			"获取版块URL": {
-				ParseFunc: func(self *Spider, resp *context.Response) {
-					query := resp.GetDom()
+				ParseFunc: func(ctx *Context) {
+					query := ctx.GetDom()
 
 					lis := query.Find(".nav-c1").First().Find("li a")
 
@@ -56,22 +56,22 @@ var Shunfenghaitao = &Spider{
 							return
 						}
 						if url, ok := s.Attr("href"); ok {
-							self.AddQueue(&context.Request{Url: url, Rule: "商品列表", Temp: map[string]interface{}{"goodsType": s.Text()}})
+							ctx.AddQueue(&context.Request{Url: url, Rule: "商品列表", Temp: map[string]interface{}{"goodsType": s.Text()}})
 						}
 					})
 				},
 			},
 
 			"商品列表": {
-				ParseFunc: func(self *Spider, resp *context.Response) {
-					query := resp.GetDom()
+				ParseFunc: func(ctx *Context) {
+					query := ctx.GetDom()
 
 					query.Find(".cms-src-item").Each(func(i int, s *goquery.Selection) {
 						if url, ok := s.Find("a").Attr("href"); ok {
-							self.AddQueue(&context.Request{
+							ctx.AddQueue(&context.Request{
 								Url:  url,
 								Rule: "商品详情",
-								Temp: map[string]interface{}{"goodsType": resp.GetTemp("goodsType").(string)},
+								Temp: map[string]interface{}{"goodsType": ctx.GetTemp("goodsType").(string)},
 							})
 						}
 					})
@@ -87,8 +87,8 @@ var Shunfenghaitao = &Spider{
 					"货源地",
 					"类别",
 				},
-				ParseFunc: func(self *Spider, resp *context.Response) {
-					query := resp.GetDom()
+				ParseFunc: func(ctx *Context) {
+					query := ctx.GetDom()
 
 					// 获取标题
 					title := query.Find("#titleInfo h1").Text()
@@ -105,12 +105,12 @@ var Shunfenghaitao = &Spider{
 					from2 := query.Find("#detailattributes li").Eq(1).Text()
 
 					// 结果存入Response中转
-					self.Output(resp.GetRuleName(), resp, map[int]interface{}{
+					ctx.Output(map[int]interface{}{
 						0: title,
 						1: brand,
 						2: from1,
 						3: from2,
-						4: resp.GetTemp("goodsType"),
+						4: ctx.GetTemp("goodsType"),
 					})
 				},
 			},

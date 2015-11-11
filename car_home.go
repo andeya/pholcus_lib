@@ -38,8 +38,8 @@ var CarHome = &Spider{
 	// Keyword:   USE,
 	EnableCookie: false,
 	RuleTree: &RuleTree{
-		Root: func(self *Spider, resp *context.Response) {
-			self.AddQueue(&context.Request{
+		Root: func(ctx *Context) {
+			ctx.AddQueue(&context.Request{
 				Url:  "http://club.autohome.com.cn/bbs/forum-o-200042-1.html?qaType=-1#pvareaid=101061",
 				Rule: "请求列表",
 				Temp: map[string]interface{}{"p": 1},
@@ -49,30 +49,30 @@ var CarHome = &Spider{
 		Trunk: map[string]*Rule{
 
 			"请求列表": {
-				ParseFunc: func(self *Spider, resp *context.Response) {
-					curr := resp.GetTemp("p").(int)
-					if c := resp.GetDom().Find(".pages .cur").Text(); c != strconv.Itoa(curr) {
+				ParseFunc: func(ctx *Context) {
+					curr := ctx.GetTemp("p").(int)
+					if c := ctx.GetDom().Find(".pages .cur").Text(); c != strconv.Itoa(curr) {
 						// Log.Printf("当前列表页不存在 %v", c)
 						return
 					}
-					self.AddQueue(&context.Request{
+					ctx.AddQueue(&context.Request{
 						Url:  "http://club.autohome.com.cn/bbs/forum-o-200042-" + strconv.Itoa(curr+1) + ".html?qaType=-1#pvareaid=101061",
 						Rule: "请求列表",
 						Temp: map[string]interface{}{"p": curr + 1},
 					})
 
 					// 用指定规则解析响应流
-					self.Parse(resp, "获取列表")
+					ctx.Parse("获取列表")
 				},
 			},
 
 			"获取列表": {
-				ParseFunc: func(self *Spider, resp *context.Response) {
-					resp.GetDom().
+				ParseFunc: func(ctx *Context) {
+					ctx.GetDom().
 						Find(".list_dl").
 						Each(func(i int, s *goquery.Selection) {
 						url, _ := s.Find("dt a").Attr("href")
-						self.AddQueue(&context.Request{
+						ctx.AddQueue(&context.Request{
 							Url:      "http://club.autohome.com.cn" + url,
 							Rule:     "输出结果",
 							Priority: 1,
@@ -91,8 +91,8 @@ var CarHome = &Spider{
 					"注册时间",
 					"作者",
 				},
-				ParseFunc: func(self *Spider, resp *context.Response) {
-					query := resp.GetDom()
+				ParseFunc: func(ctx *Context) {
+					query := ctx.GetDom()
 
 					var 当前积分, 帖子数, 关注的车, 注册时间, 作者 string
 
@@ -137,7 +137,7 @@ var CarHome = &Spider{
 					}
 					作者 = query.Find(".conleft").Eq(0).Find("a").Text()
 					// 结果存入Response中转
-					self.Output(resp.GetRuleName(), resp, map[int]interface{}{
+					ctx.Output(map[int]interface{}{
 						0: 当前积分,
 						1: 帖子数,
 						2: 关注的车,
@@ -148,8 +148,8 @@ var CarHome = &Spider{
 			},
 
 			// "联系方式": {
-			// 	ParseFunc: func(self *Spider, resp *context.Response) {
-			// 		resp.AddFile(resp.GetTemp("n").(string))
+			// 	ParseFunc: func(ctx *Context) {
+			// 		ctx.AddFile(ctx.GetTemp("n").(string))
 			// 	},
 			// },
 		},

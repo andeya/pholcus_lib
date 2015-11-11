@@ -38,14 +38,14 @@ var FileTest = &Spider{
 	// Keyword:   USE,
 	EnableCookie: false,
 	RuleTree: &RuleTree{
-		Root: func(self *Spider, resp *context.Response) {
-			self.AddQueue(&context.Request{
+		Root: func(ctx *Context) {
+			ctx.AddQueue(&context.Request{
 				Url:          "https://www.baidu.com/img/bd_logo1.png",
 				Rule:         "百度图片",
 				ConnTimeout:  -1,
 				DownloaderID: 1,
 			})
-			self.AddQueue(&context.Request{
+			ctx.AddQueue(&context.Request{
 				Url:          "https://github.com/henrylee2cn/pholcus",
 				Rule:         "Pholcus页面",
 				ConnTimeout:  -1,
@@ -56,13 +56,13 @@ var FileTest = &Spider{
 		Trunk: map[string]*Rule{
 
 			"百度图片": {
-				ParseFunc: func(self *Spider, resp *context.Response) {
-					self.FileOutput(resp, "baidu") // 等价于resp.AddFile("baidu")
+				ParseFunc: func(ctx *Context) {
+					ctx.FileOutput("baidu") // 等价于ctx.AddFile("baidu")
 				},
 			},
 			"Pholcus页面": {
-				ParseFunc: func(self *Spider, resp *context.Response) {
-					self.FileOutput(resp) // 等价于resp.AddFile()
+				ParseFunc: func(ctx *Context) {
+					ctx.FileOutput() // 等价于ctx.AddFile()
 				},
 			},
 		},

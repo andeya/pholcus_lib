@@ -51,12 +51,12 @@ var GoogleSearch = &Spider{
 	Keyword:      USE,
 	EnableCookie: false,
 	RuleTree: &RuleTree{
-		Root: func(self *Spider, resp *context.Response) {
+		Root: func(ctx *Context) {
 			var url string
 			var success bool
 			logs.Log.Critical("正在查找可用的Google镜像，该过程可能需要几分钟……")
 			for _, ip := range googleIp {
-				url = "http://" + ip + "/search?q=" + self.GetKeyword() + "&newwindow=1&biw=1600&bih=398&start="
+				url = "http://" + ip + "/search?q=" + ctx.GetKeyword() + "&newwindow=1&biw=1600&bih=398&start="
 				if _, err := goquery.NewDocument(url); err == nil {
 					success = true
 					break
@@ -67,7 +67,7 @@ var GoogleSearch = &Spider{
 				return
 			}
 			logs.Log.Critical("开始Google搜索……")
-			self.AddQueue(&context.Request{
+			ctx.AddQueue(&context.Request{
 				Url:  url,
 				Rule: "获取总页数",
 				Temp: map[string]interface{}{
@@ -79,17 +79,17 @@ var GoogleSearch = &Spider{
 		Trunk: map[string]*Rule{
 
 			"获取总页数": {
-				AidFunc: func(self *Spider, aid map[string]interface{}) interface{} {
+				AidFunc: func(ctx *Context, aid map[string]interface{}) interface{} {
 					for loop := aid["loop"].([2]int); loop[0] < loop[1]; loop[0]++ {
-						self.AddQueue(&context.Request{
+						ctx.AddQueue(&context.Request{
 							Url:  aid["urlBase"].(string) + strconv.Itoa(10*loop[0]),
 							Rule: aid["Rule"].(string),
 						})
 					}
 					return nil
 				},
-				ParseFunc: func(self *Spider, resp *context.Response) {
-					query := resp.GetDom()
+				ParseFunc: func(ctx *Context) {
+					query := ctx.GetDom()
 					txt := query.Find("#resultStats").Text()
 					re, _ := regexp.Compile(`,+`)
 					txt = re.ReplaceAllString(txt, "")
@@ -97,20 +97,20 @@ var GoogleSearch = &Spider{
 					txt = re.FindString(txt)
 					num, _ := strconv.Atoi(txt)
 					total := int(math.Ceil(float64(num) / 10))
-					if total > self.MaxPage {
-						total = self.MaxPage
+					if total > ctx.GetMaxPage() {
+						total = ctx.GetMaxPage()
 					} else if total == 0 {
-						logs.Log.Critical("[消息提示：| 任务：%v | 关键词：%v | 规则：%v] 没有抓取到任何数据！!!\n", self.GetName(), self.GetKeyword(), resp.GetRuleName())
+						logs.Log.Critical("[消息提示：| 任务：%v | 关键词：%v | 规则：%v] 没有抓取到任何数据！!!\n", ctx.GetName(), ctx.GetKeyword(), ctx.GetRuleName())
 						return
 					}
 					// 调用指定规则下辅助函数
-					self.Aid("获取总页数", map[string]interface{}{
+					ctx.Aid(map[string]interface{}{
 						"loop":    [2]int{1, total},
-						"urlBase": resp.GetTemp("baseUrl"),
+						"urlBase": ctx.GetTemp("baseUrl"),
 						"Rule":    "搜索结果",
 					})
 					// 用指定规则解析响应流
-					self.Parse(resp, "搜索结果")
+					ctx.Parse("搜索结果")
 				},
 			},
 
@@ -121,15 +121,15 @@ var GoogleSearch = &Spider{
 					"内容",
 					"链接",
 				},
-				ParseFunc: func(self *Spider, resp *context.Response) {
-					query := resp.GetDom()
+				ParseFunc: func(ctx *Context) {
+					query := ctx.GetDom()
 					query.Find("#ires li.g").Each(func(i int, s *goquery.Selection) {
 						t := s.Find(".r > a")
 						href, _ := t.Attr("href")
 						href = strings.TrimLeft(href, "/url?q=")
 						title := t.Text()
 						content := s.Find(".st").Text()
-						self.Output(resp.GetRuleName(), resp, map[int]interface{}{
+						ctx.Output(map[int]interface{}{
 							0: title,
 							1: content,
 							2: href,

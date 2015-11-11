@@ -38,8 +38,8 @@ var Hollandandbarrett = &Spider{
 	// Keyword:   USE,
 	EnableCookie: false,
 	RuleTree: &RuleTree{
-		Root: func(self *Spider, resp *context.Response) {
-			self.AddQueue(&context.Request{
+		Root: func(ctx *Context) {
+			ctx.AddQueue(&context.Request{
 				Url:  "http://www.hollandandbarrett.com/",
 				Rule: "获取版块URL",
 			},
@@ -49,14 +49,14 @@ var Hollandandbarrett = &Spider{
 		Trunk: map[string]*Rule{
 
 			"获取版块URL": {
-				ParseFunc: func(self *Spider, resp *context.Response) {
-					query := resp.GetDom()
+				ParseFunc: func(ctx *Context) {
+					query := ctx.GetDom()
 					lis := query.Find(".footer-links nav.l-one-half a")
 
 					lis.Each(func(i int, s *goquery.Selection) {
 						if url, ok := s.Attr("href"); ok {
 							tit, _ := s.Attr("title")
-							self.AddQueue(&context.Request{
+							ctx.AddQueue(&context.Request{
 								Url:  "http://www.hollandandbarrett.com" + url + "?showAll=1&pageHa=1&es=true&vm=grid&imd=true&format=json&single=true",
 								Rule: "获取总数",
 								Temp: map[string]interface{}{
@@ -71,9 +71,9 @@ var Hollandandbarrett = &Spider{
 			},
 
 			"获取总数": {
-				ParseFunc: func(self *Spider, resp *context.Response) {
+				ParseFunc: func(ctx *Context) {
 
-					query := resp.GetDom()
+					query := ctx.GetDom()
 
 					re, _ := regexp.Compile(`(?U)"totalNumRecs":[\d]+,`)
 					total := re.FindString(query.Text())
@@ -82,14 +82,14 @@ var Hollandandbarrett = &Spider{
 					total = strings.Trim(total, " \t\n")
 
 					if total == "0" {
-						logs.Log.Critical("[消息提示：| 任务：%v | 关键词：%v | 规则：%v] 没有抓取到任何数据！!!\n", self.GetName(), self.GetKeyword(), resp.GetRuleName())
+						logs.Log.Critical("[消息提示：| 任务：%v | 关键词：%v | 规则：%v] 没有抓取到任何数据！!!\n", ctx.GetName(), ctx.GetKeyword(), ctx.GetRuleName())
 					} else {
 
-						self.AddQueue(&context.Request{
-							Url:  "http://www.hollandandbarrett.com" + resp.GetTemp("baseUrl").(string) + "?showAll=" + total + "&pageHa=1&es=true&vm=grid&imd=true&format=json&single=true",
+						ctx.AddQueue(&context.Request{
+							Url:  "http://www.hollandandbarrett.com" + ctx.GetTemp("baseUrl").(string) + "?showAll=" + total + "&pageHa=1&es=true&vm=grid&imd=true&format=json&single=true",
 							Rule: "商品详情",
 							Temp: map[string]interface{}{
-								"type": resp.GetTemp("type").(string),
+								"type": ctx.GetTemp("type").(string),
 							},
 						},
 						)
@@ -108,8 +108,8 @@ var Hollandandbarrett = &Spider{
 					"星级",
 					"分类",
 				},
-				ParseFunc: func(self *Spider, resp *context.Response) {
-					query := resp.GetDom()
+				ParseFunc: func(ctx *Context) {
+					query := ctx.GetDom()
 
 					src := query.Text()
 
@@ -168,13 +168,13 @@ var Hollandandbarrett = &Spider{
 							}
 
 							// 结果存入Response中转
-							self.Output(resp.GetRuleName(), resp, map[int]interface{}{
+							ctx.Output(map[int]interface{}{
 								0: n,
 								1: price1,
 								2: price2,
 								3: prm,
 								4: level,
-								5: resp.GetTemp("type"),
+								5: ctx.GetTemp("type"),
 							})
 						}
 					}

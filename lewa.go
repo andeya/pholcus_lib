@@ -9,7 +9,7 @@ import (
 	. "github.com/henrylee2cn/pholcus/app/spider/common" //选用
 
 	// net包
-	// "net/http" //设置http.Header
+	"net/http" //设置http.Header
 	// "net/url"
 
 	// 编码包
@@ -38,15 +38,15 @@ var Lewa = &Spider{
 	// Keyword:   USE,
 	EnableCookie: true,
 	RuleTree: &RuleTree{
-		Root: func(self *Spider, resp *context.Response) {
-			self.AddQueue(&context.Request{Url: "http://accounts.lewaos.com/", Rule: "登录页"})
+		Root: func(ctx *Context) {
+			ctx.AddQueue(&context.Request{Url: "http://accounts.lewaos.com/", Rule: "登录页"})
 		},
 
 		Trunk: map[string]*Rule{
 
 			"登录页": {
-				ParseFunc: func(self *Spider, resp *context.Response) {
-					// self.AddQueue(&context.Request{
+				ParseFunc: func(ctx *Context) {
+					// ctx.AddQueue(&context.Request{
 					// 	Url:    "http://accounts.lewaos.com",
 					// 	Rule:   "登录后",
 					// 	Method: "POST",
@@ -58,13 +58,13 @@ var Lewa = &Spider{
 					// 	},
 					// })
 					NewForm(
-						self,
+						ctx,
 						"登录后",
 						"http://accounts.lewaos.com",
-						resp.GetDom().Find(".userlogin.lw-pl40"),
+						ctx.GetDom().Find(".userlogin.lw-pl40"),
 					).Inputs(map[string]string{
-						"username": "512553396@qq.com",
-						"password": "271218",
+						"username": "",
+						"password": "",
 					}).Submit()
 				},
 			},
@@ -73,14 +73,15 @@ var Lewa = &Spider{
 				OutFeild: []string{
 					"全部",
 				},
-				ParseFunc: func(self *Spider, resp *context.Response) {
+				ParseFunc: func(ctx *Context) {
 					// 结果存入Response中转
-					self.Output(resp.GetRuleName(), resp, map[int]interface{}{
-						0: resp.GetText(),
+					ctx.Output(map[int]interface{}{
+						0: ctx.GetText(),
 					})
-					self.AddQueue(&context.Request{
-						Url:  "http://accounts.lewaos.com/member",
-						Rule: "个人中心",
+					ctx.AddQueue(&context.Request{
+						Url:    "http://accounts.lewaos.com/member",
+						Rule:   "个人中心",
+						Header: http.Header{"Referer": []string{ctx.GetUrl()}},
 					})
 				},
 			},
@@ -89,10 +90,10 @@ var Lewa = &Spider{
 				OutFeild: []string{
 					"全部",
 				},
-				ParseFunc: func(self *Spider, resp *context.Response) {
+				ParseFunc: func(ctx *Context) {
 					// 结果存入Response中转
-					self.Output(resp.GetRuleName(), resp, map[int]interface{}{
-						0: resp.GetText(),
+					ctx.Output(map[int]interface{}{
+						0: ctx.GetText(),
 					})
 				},
 			},

@@ -38,8 +38,8 @@ var GanjiGongsi = &Spider{
 	// Keyword:   USE,
 	EnableCookie: false,
 	RuleTree: &RuleTree{
-		Root: func(self *Spider, resp *context.Response) {
-			self.AddQueue(&context.Request{
+		Root: func(ctx *Context) {
+			ctx.AddQueue(&context.Request{
 				Url:  "http://sz.ganji.com/gongsi/o1",
 				Rule: "请求列表",
 				Temp: map[string]interface{}{"p": 1},
@@ -49,12 +49,12 @@ var GanjiGongsi = &Spider{
 		Trunk: map[string]*Rule{
 
 			"请求列表": {
-				ParseFunc: func(self *Spider, resp *context.Response) {
-					curr := resp.GetTemp("p").(int)
-					if resp.GetDom().Find(".linkOn span").Text() != strconv.Itoa(curr) {
+				ParseFunc: func(ctx *Context) {
+					curr := ctx.GetTemp("p").(int)
+					if ctx.GetDom().Find(".linkOn span").Text() != strconv.Itoa(curr) {
 						return
 					}
-					self.AddQueue(&context.Request{
+					ctx.AddQueue(&context.Request{
 						Url:         "http://sz.ganji.com/gongsi/o" + strconv.Itoa(curr+1),
 						Rule:        "请求列表",
 						Temp:        map[string]interface{}{"p": curr + 1},
@@ -62,17 +62,17 @@ var GanjiGongsi = &Spider{
 					})
 
 					// 用指定规则解析响应流
-					self.Parse(resp, "获取列表")
+					ctx.Parse("获取列表")
 				},
 			},
 
 			"获取列表": {
-				ParseFunc: func(self *Spider, resp *context.Response) {
-					resp.GetDom().
+				ParseFunc: func(ctx *Context) {
+					ctx.GetDom().
 						Find(".com-list-2 table a").
 						Each(func(i int, s *goquery.Selection) {
 						url, _ := s.Attr("href")
-						self.AddQueue(&context.Request{
+						ctx.AddQueue(&context.Request{
 							Url:         url,
 							Rule:        "输出结果",
 							ConnTimeout: -1,
@@ -92,8 +92,8 @@ var GanjiGongsi = &Spider{
 					"类型",
 					"规模",
 				},
-				ParseFunc: func(self *Spider, resp *context.Response) {
-					query := resp.GetDom()
+				ParseFunc: func(ctx *Context) {
+					query := ctx.GetDom()
 
 					var 公司, 规模, 行业, 类型, 联系人, 地址 string
 
@@ -121,7 +121,7 @@ var GanjiGongsi = &Spider{
 
 						case "联系电话：":
 							if img, ok := s.Find("img").Attr("src"); ok {
-								self.AddQueue(&context.Request{
+								ctx.AddQueue(&context.Request{
 									Url:         "http://www.ganji.com" + img,
 									Rule:        "联系方式",
 									Temp:        map[string]interface{}{"n": 公司 + "(" + 联系人 + ").png"},
@@ -138,7 +138,7 @@ var GanjiGongsi = &Spider{
 					简介 := query.Find("#company_description").Text()
 
 					// 结果输出方式一（推荐）
-					self.Output(resp.GetRuleName(), resp, map[int]interface{}{
+					ctx.Output(map[int]interface{}{
 						0: 公司,
 						1: 联系人,
 						2: 地址,
@@ -149,7 +149,7 @@ var GanjiGongsi = &Spider{
 					})
 
 					// 结果输出方式二
-					// var item map[string]interface{} = self.CreatItem(resp.GetRuleName(), map[int]interface{}{
+					// var item map[string]interface{} = ctx.CreatItem(map[int]interface{}{
 					// 	0: 公司,
 					// 	1: 联系人,
 					// 	2: 地址,
@@ -158,28 +158,28 @@ var GanjiGongsi = &Spider{
 					// 	5: 类型,
 					// 	6: 规模,
 					// })
-					// self.Output(resp.GetRuleName(), resp, item)
+					// ctx.Output(item)
 
 					// 结果输出方式三（不推荐）
-					// self.Output(resp.GetRuleName(), resp, map[string]interface{}{
-					// 	self.IndexOutFeild(resp.GetRuleName(), 0): 公司,
-					// 	self.IndexOutFeild(resp.GetRuleName(), 1): 联系人,
-					// 	self.IndexOutFeild(resp.GetRuleName(), 2): 地址,
-					// 	self.IndexOutFeild(resp.GetRuleName(), 3): 简介,
-					// 	self.IndexOutFeild(resp.GetRuleName(), 4): 行业,
-					// 	self.IndexOutFeild(resp.GetRuleName(), 5): 类型,
-					// 	self.IndexOutFeild(resp.GetRuleName(), 6): 规模,
+					// ctx.Output(map[string]interface{}{
+					// 	ctx.IndexOutFeild(0): 公司,
+					// 	ctx.IndexOutFeild(1): 联系人,
+					// 	ctx.IndexOutFeild(2): 地址,
+					// 	ctx.IndexOutFeild(3): 简介,
+					// 	ctx.IndexOutFeild(4): 行业,
+					// 	ctx.IndexOutFeild(5): 类型,
+					// 	ctx.IndexOutFeild(6): 规模,
 					// })
 				},
 			},
 
 			"联系方式": {
-				ParseFunc: func(self *Spider, resp *context.Response) {
+				ParseFunc: func(ctx *Context) {
 					// 文件输出方式一（推荐）
-					self.FileOutput(resp, resp.GetTemp("n").(string))
+					ctx.FileOutput(ctx.GetTemp("n").(string))
 
 					// 文件输出方式二
-					// resp.AddFile(resp.GetTemp("n").(string))
+					// ctx.AddFile(ctx.GetTemp("n").(string))
 				},
 			},
 		},

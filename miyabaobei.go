@@ -38,15 +38,15 @@ var Miyabaobei = &Spider{
 	// Keyword:   USE,
 	EnableCookie: false,
 	RuleTree: &RuleTree{
-		Root: func(self *Spider, resp *context.Response) {
-			self.AddQueue(&context.Request{Url: "http://www.miyabaobei.com/", Rule: "获取版块URL"})
+		Root: func(ctx *Context) {
+			ctx.AddQueue(&context.Request{Url: "http://www.miyabaobei.com/", Rule: "获取版块URL"})
 		},
 
 		Trunk: map[string]*Rule{
 
 			"获取版块URL": {
-				ParseFunc: func(self *Spider, resp *context.Response) {
-					query := resp.GetDom()
+				ParseFunc: func(ctx *Context) {
+					query := ctx.GetDom()
 					lis := query.Find(".ccon")
 					lis.Each(func(i int, s *goquery.Selection) {
 						s.Find("a").Each(func(n int, ss *goquery.Selection) {
@@ -54,14 +54,14 @@ var Miyabaobei = &Spider{
 								if !strings.Contains(url, "http://www.miyabaobei.com") {
 									url = "http://www.miyabaobei.com" + url
 								}
-								self.Aid("生成请求", map[string]interface{}{
+								ctx.Aid(map[string]interface{}{
 									"loop":    [2]int{0, 1},
 									"urlBase": url,
 									"req": map[string]interface{}{
 										"Rule": "生成请求",
 										"Temp": map[string]interface{}{"baseUrl": url},
 									},
-								})
+								}, "生成请求")
 							}
 						})
 					})
@@ -69,16 +69,16 @@ var Miyabaobei = &Spider{
 			},
 
 			"生成请求": {
-				AidFunc: func(self *Spider, aid map[string]interface{}) interface{} {
+				AidFunc: func(ctx *Context, aid map[string]interface{}) interface{} {
 					req := aid["req"].(*context.Request)
 					for loop := aid["loop"].([2]int); loop[0] < loop[1]; loop[0]++ {
 						req.Url = aid["urlBase"].(string) + "&per_page=" + strconv.Itoa(loop[0]*40)
-						self.AddQueue(req)
+						ctx.AddQueue(req)
 					}
 					return nil
 				},
-				ParseFunc: func(self *Spider, resp *context.Response) {
-					query := resp.GetDom()
+				ParseFunc: func(ctx *Context) {
+					query := ctx.GetDom()
 					totalPage := "1"
 
 					urls := query.Find(".Lpage.page p a")
@@ -93,15 +93,15 @@ var Miyabaobei = &Spider{
 					total, _ := strconv.Atoi(totalPage)
 
 					// 调用指定规则下辅助函数
-					self.Aid("生成请求", map[string]interface{}{
+					ctx.Aid(map[string]interface{}{
 						"loop":     [2]int{1, total},
-						"ruleBase": resp.GetTemp("baseUrl").(string),
+						"ruleBase": ctx.GetTemp("baseUrl").(string),
 						"rep": map[string]interface{}{
 							"Rule": "商品列表",
 						},
 					})
 					// 用指定规则解析响应流
-					self.Parse(resp, "商品列表")
+					ctx.Parse("商品列表")
 				},
 			},
 
@@ -112,8 +112,8 @@ var Miyabaobei = &Spider{
 					"价格",
 					"类别",
 				},
-				ParseFunc: func(self *Spider, resp *context.Response) {
-					query := resp.GetDom()
+				ParseFunc: func(ctx *Context) {
+					query := ctx.GetDom()
 					//获取品类
 					goodsType := query.Find(".crumbs").Text()
 					re, _ := regexp.Compile("\\s")
@@ -128,7 +128,7 @@ var Miyabaobei = &Spider{
 						price := s.Find(".f20").Text()
 
 						// 结果存入Response中转
-						self.Output(resp.GetRuleName(), resp, map[int]interface{}{
+						ctx.Output(map[int]interface{}{
 							0: title,
 							1: price,
 							2: goodsType,
