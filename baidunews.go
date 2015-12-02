@@ -182,7 +182,6 @@ type baiduNews map[string]func(ctx *Context) (infoStr string, isReload bool)
 // @url 必须为含有协议头的地址
 func (b baiduNews) prase(ctx *Context) (infoStr string, isReload bool) {
 	url := ctx.Response.Response.Request.URL.Host
-	// Log.Println("域名", url)
 	if _, ok := b[url]; ok {
 		return b[url](ctx)
 	} else {
@@ -210,9 +209,6 @@ func (b baiduNews) commonPrase(ctx *Context) (infoStr string) {
 	} else {
 		info = body.Find("body")
 	}
-	// 去除标签
-	// info.RemoveFiltered("script")
-	// info.RemoveFiltered("style")
 	infoStr, _ = info.Html()
 
 	// 清洗HTML
@@ -232,17 +228,7 @@ func (b baiduNews) findP(html *goquery.Selection) *goquery.Selection {
 
 var baiduNewsFn = baiduNews{
 	"yule.sohu.com": func(ctx *Context) (infoStr string, isReload bool) {
-
-		// 当有翻页等需求时，重新添加请求
-		// req := ctx.GetRequest()
-
-		// 根据需要可能会对req进行某些修改
-		// req.SetUrl("")
-
-		// 添加请求到队列
-		// scheduler.Sdl.Push(req)
 		infoStr = ctx.GetDom().Find("#contentText").Text()
-
 		return
 	},
 	"news.qtv.com.cn": func(ctx *Context) (infoStr string, isReload bool) {
