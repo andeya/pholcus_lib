@@ -58,7 +58,7 @@ var Zolphone = &Spider{
 					query := ctx.GetDom()
 					ss := query.Find("tbody").Find("tr[id]")
 					ss.Each(func(i int, goq *goquery.Selection) {
-						ctx.SetRequestTemp("html", goq)
+						ctx.SetReqTemp("html", goq)
 						ctx.Parse("获取结果")
 
 					})

@@ -228,7 +228,7 @@ var Taobao = &Spider{
 					discussSlice := infos["comments"].([]interface{})
 					discussAll := ctx.GetTemp(ctx.IndexOutFeild(25, "结果")).([]interface{})
 					discussAll = append(discussAll, discussSlice...)
-					ctx.SetRequestTemp(ctx.IndexOutFeild(25, "结果"), discussAll)
+					ctx.SetReqTemp(ctx.IndexOutFeild(25, "结果"), discussAll)
 
 					currentPageNum := infos["currentPageNum"].(int)
 					maxPage := infos["maxPage"].(int)
