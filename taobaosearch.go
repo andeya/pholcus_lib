@@ -144,7 +144,7 @@ var TaobaoSearch = &Spider{
 					"发货地",
 				},
 				ParseFunc: func(ctx *Context) {
-					r := ctx.GetTemps()
+					r := ctx.GetTemps(false)
 
 					re := regexp.MustCompile(`"newProGroup":.*,"progressiveSupport"`)
 					d := re.FindString(ctx.GetText())

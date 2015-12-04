@@ -111,7 +111,7 @@ var Taobao = &Spider{
 							"loop":    [2]int{1, totalPage},
 							"urlBase": ctx.GetUrl(),
 							"Rule":    "商品列表",
-							"Temp":    ctx.GetTemps(),
+							"Temp":    ctx.GetTemps(false),
 						}, "生成请求")
 						ctx.Parse("商品列表")
 					}
@@ -198,7 +198,7 @@ var Taobao = &Spider{
 							detail[slice[0]] = slice[1]
 						})
 					}
-					temp := ctx.GetTemps()
+					temp := ctx.GetTemps(false)
 					temp[ctx.IndexOutFeild(24, "结果")] = detail
 					temp[ctx.IndexOutFeild(25, "结果")] = []interface{}{}
 					ctx.AddQueue(&context.Request{
@@ -237,7 +237,7 @@ var Taobao = &Spider{
 						ctx.AddQueue(&context.Request{
 							Rule: "商品评论",
 							Url:  "http://rate.taobao.com/feedRateList.htm?siteID=4&rateType=&orderType=sort_weight&showContent=1&userNumId=" + ctx.GetTemp("sellerId").(string) + "&auctionNumId=" + ctx.GetTemp("itemId").(string) + "&currentPageNum=" + strconv.Itoa(currentPageNum+1),
-							Temp: ctx.GetTemps(),
+							Temp: ctx.GetTemps(false),
 						})
 					} else {
 						// 输出结果
@@ -278,7 +278,7 @@ var Taobao = &Spider{
 				},
 				ParseFunc: func(ctx *Context) {
 					// 结果存入Response中转
-					ctx.Output(ctx.GetTemps())
+					ctx.Output(ctx.GetTemps(false))
 				},
 			},
 		},
