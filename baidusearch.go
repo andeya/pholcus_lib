@@ -87,7 +87,7 @@ var BaiduSearch = &Spider{
 
 			"搜索结果": {
 				//注意：有无字段语义和是否输出数据必须保持一致
-				OutFeild: []string{
+				ItemFields: []string{
 					"标题",
 					"内容",
 					"不完整URL",

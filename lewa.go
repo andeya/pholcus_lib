@@ -70,7 +70,7 @@ var Lewa = &Spider{
 			},
 			"登录后": {
 				//注意：有无字段语义和是否输出数据必须保持一致
-				OutFeild: []string{
+				ItemFields: []string{
 					"全部",
 				},
 				ParseFunc: func(ctx *Context) {
@@ -87,7 +87,7 @@ var Lewa = &Spider{
 			},
 			"个人中心": {
 				//注意：有无字段语义和是否输出数据必须保持一致
-				OutFeild: []string{
+				ItemFields: []string{
 					"全部",
 				},
 				ParseFunc: func(ctx *Context) {

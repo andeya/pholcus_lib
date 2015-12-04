@@ -123,7 +123,7 @@ var SinaWeibo = &Spider{
 
 					return nil
 				},
-				OutFeild: []string{
+				ItemFields: []string{
 					"微博名",
 					"粉丝数",
 					"微博数",

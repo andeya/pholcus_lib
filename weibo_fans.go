@@ -22,7 +22,7 @@ import (
 	"strings"
 
 	// 其他包
-	// "fmt"
+	"fmt"
 	// "math"
 	// "time"
 	// "io/ioutil"
@@ -78,8 +78,11 @@ var WeiboFans = &Spider{
 			"好友列表": {
 				ParseFunc: func(ctx *Context) {
 					query := ctx.GetDom()
+					fmt.Println(query.Find(".follow_list").Text())
 					query.Find(".follow_list .mod_info").Each(func(i int, s *goquery.Selection) {
+						fmt.Println("222")
 						name, _ := s.Find(".info_name a").Attr("title")
+						fmt.Println(name)
 						url, _ := s.Find(".info_name a").Attr("href")
 						uid := strings.Replace(url, "/u", "", -1)
 						uid = strings.Replace(uid, "/", "", -1)
@@ -91,6 +94,7 @@ var WeiboFans = &Spider{
 						关注 := s.Find(".info_connect em a").Eq(0).Text()
 						粉丝 := s.Find(".info_connect em a").Eq(1).Text()
 						微博 := s.Find(".info_connect em a").Eq(2).Text()
+						fmt.Println(关注, 粉丝, 微博)
 						x := &context.Request{
 							Url:          url,
 							Rule:         "好友资料",
@@ -109,7 +113,7 @@ var WeiboFans = &Spider{
 				},
 			},
 			"好友资料": {
-				OutFeild: []string{
+				ItemFields: []string{
 					"好友名",
 					"好友ID",
 					"认证",
@@ -132,7 +136,7 @@ var WeiboFans = &Spider{
 						detail = Deprive2(detail)
 						属性[title] = detail
 					})
-					临时 := map[int]interface{}{
+					结果 := map[int]interface{}{
 						0: ctx.GetTemp("好友名"),
 						1: ctx.GetTemp("好友ID"),
 						2: ctx.GetTemp("认证"),
@@ -141,12 +145,12 @@ var WeiboFans = &Spider{
 						5: ctx.GetTemp("微博"),
 					}
 					for k, v := range 属性 {
-						idx := ctx.AddOutFeild(k)
-						临时[idx] = v
+						idx := ctx.UpsertItemField(k)
+						结果[idx] = v
 					}
 
-					// 结果存入Response中转
-					ctx.Output(临时)
+					// 结果输出
+					ctx.Output(结果)
 				},
 			},
 		},

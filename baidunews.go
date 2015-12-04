@@ -144,7 +144,7 @@ var BaiduNews = &Spider{
 
 			"新闻详情": {
 				//注意：有无字段语义和是否输出数据必须保持一致
-				OutFeild: []string{
+				ItemFields: []string{
 					"标题",
 					"描述",
 					"内容",

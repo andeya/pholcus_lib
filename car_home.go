@@ -83,7 +83,7 @@ var CarHome = &Spider{
 
 			"输出结果": {
 				//注意：有无字段语义和是否输出数据必须保持一致
-				OutFeild: []string{
+				ItemFields: []string{
 
 					"当前积分",
 					"帖子数",

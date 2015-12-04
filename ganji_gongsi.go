@@ -83,7 +83,7 @@ var GanjiGongsi = &Spider{
 
 			"输出结果": {
 				//注意：有无字段语义和是否输出数据必须保持一致
-				OutFeild: []string{
+				ItemFields: []string{
 					"公司",
 					"联系人",
 					"地址",
@@ -162,13 +162,13 @@ var GanjiGongsi = &Spider{
 
 					// 结果输出方式三（不推荐）
 					// ctx.Output(map[string]interface{}{
-					// 	ctx.IndexOutFeild(0): 公司,
-					// 	ctx.IndexOutFeild(1): 联系人,
-					// 	ctx.IndexOutFeild(2): 地址,
-					// 	ctx.IndexOutFeild(3): 简介,
-					// 	ctx.IndexOutFeild(4): 行业,
-					// 	ctx.IndexOutFeild(5): 类型,
-					// 	ctx.IndexOutFeild(6): 规模,
+					// 	ctx.GetItemField(0): 公司,
+					// 	ctx.GetItemField(1): 联系人,
+					// 	ctx.GetItemField(2): 地址,
+					// 	ctx.GetItemField(3): 简介,
+					// 	ctx.GetItemField(4): 行业,
+					// 	ctx.GetItemField(5): 类型,
+					// 	ctx.GetItemField(6): 规模,
 					// })
 				},
 			},

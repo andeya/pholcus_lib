@@ -199,8 +199,8 @@ var Taobao = &Spider{
 						})
 					}
 					temp := ctx.GetTemps(false)
-					temp[ctx.IndexOutFeild(24, "结果")] = detail
-					temp[ctx.IndexOutFeild(25, "结果")] = []interface{}{}
+					temp[ctx.GetItemField(24, "结果")] = detail
+					temp[ctx.GetItemField(25, "结果")] = []interface{}{}
 					ctx.AddQueue(&context.Request{
 						Rule:     "商品评论",
 						Url:      "http://rate.taobao.com/feedRateList.htm?siteID=4&rateType=&orderType=sort_weight&showContent=1&userNumId=" + ctx.GetTemp("sellerId").(string) + "&auctionNumId=" + ctx.GetTemp("itemId").(string) + "&currentPageNum=1",
@@ -226,9 +226,9 @@ var Taobao = &Spider{
 						return
 					}
 					discussSlice := infos["comments"].([]interface{})
-					discussAll := ctx.GetTemp(ctx.IndexOutFeild(25, "结果")).([]interface{})
+					discussAll := ctx.GetTemp(ctx.GetItemField(25, "结果")).([]interface{})
 					discussAll = append(discussAll, discussSlice...)
-					ctx.SetReqTemp(ctx.IndexOutFeild(25, "结果"), discussAll)
+					ctx.SetReqTemp(ctx.GetItemField(25, "结果"), discussAll)
 
 					currentPageNum := infos["currentPageNum"].(int)
 					maxPage := infos["maxPage"].(int)
@@ -248,7 +248,7 @@ var Taobao = &Spider{
 
 			"结果": {
 				//注意：有无字段语义和是否输出数据必须保持一致
-				OutFeild: []string{
+				ItemFields: []string{
 					"标题",               //title
 					"原价",               //price
 					"现价",               //currentPrice

@@ -128,7 +128,6 @@ var TaobaoSearch = &Spider{
 									4: info["item_loc"],
 								}, "商品详情"),
 								Priority: 1,
-								// "Referer":  ctx.GetUrl(),
 							})
 						}
 					}
@@ -136,7 +135,7 @@ var TaobaoSearch = &Spider{
 			},
 			"商品详情": {
 				//注意：有无字段语义和是否输出数据必须保持一致
-				OutFeild: []string{
+				ItemFields: []string{
 					"标题",
 					"价格",
 					"销量",
@@ -172,7 +171,7 @@ var TaobaoSearch = &Spider{
 								continue
 							}
 
-							ctx.AddOutFeild(feild[0])
+							ctx.UpsertItemField(feild[0])
 							r[feild[0]] = feild[1]
 						}
 
@@ -191,7 +190,7 @@ var TaobaoSearch = &Spider{
 							for _, info := range infos {
 								for _, attr := range info["attrs"].([]interface{}) {
 									a := attr.(map[string]interface{})
-									ctx.AddOutFeild(a["name"].(string))
+									ctx.UpsertItemField(a["name"].(string))
 									r[a["name"].(string)] = a["value"]
 								}
 							}
