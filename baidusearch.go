@@ -58,9 +58,9 @@ var BaiduSearch = &Spider{
 							duplicatable = false
 						}
 						ctx.AddQueue(&context.Request{
-							Url:          "http://www.baidu.com/s?ie=utf-8&nojc=1&wd=" + ctx.GetKeyword() + "&rn=50&pn=" + strconv.Itoa(50*loop[0]),
-							Rule:         aid["Rule"].(string),
-							Duplicatable: duplicatable,
+							Url:        "http://www.baidu.com/s?ie=utf-8&nojc=1&wd=" + ctx.GetKeyword() + "&rn=50&pn=" + strconv.Itoa(50*loop[0]),
+							Rule:       aid["Rule"].(string),
+							Reloadable: duplicatable,
 						})
 					}
 					return nil

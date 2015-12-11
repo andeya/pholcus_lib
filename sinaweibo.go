@@ -104,7 +104,7 @@ var SinaWeibo = &Spider{
 				ctx.AddQueue(&context.Request{
 					Url:          v,
 					Rule:         "请求列表",
-					Duplicatable: true,
+					Reloadable:   true,
 					DownloaderID: 1,
 				})
 			}

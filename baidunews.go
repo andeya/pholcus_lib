@@ -94,14 +94,14 @@ var BaiduNews = &Spider{
 					v := rss_BaiduNews[k]
 
 					ctx.AddQueue(&context.Request{
-						Url:          v,
-						Rule:         "XML列表页",
-						Header:       http.Header{"Content-Type": []string{"text/html", "charset=GB2312"}},
-						Temp:         map[string]interface{}{"src": k},
-						DialTimeout:  -1,
-						ConnTimeout:  -1,
-						TryTimes:     -1,
-						Duplicatable: true,
+						Url:         v,
+						Rule:        "XML列表页",
+						Header:      http.Header{"Content-Type": []string{"text/html", "charset=GB2312"}},
+						Temp:        map[string]interface{}{"src": k},
+						DialTimeout: -1,
+						ConnTimeout: -1,
+						TryTimes:    -1,
+						Reloadable:  true,
 					})
 					return nil
 				},
