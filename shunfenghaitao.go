@@ -71,7 +71,7 @@ var Shunfenghaitao = &Spider{
 							ctx.AddQueue(&context.Request{
 								Url:  url,
 								Rule: "商品详情",
-								Temp: map[string]interface{}{"goodsType": ctx.GetTemp("goodsType").(string)},
+								Temp: map[string]interface{}{"goodsType": ctx.GetTemp("goodsType", "").(string)},
 							})
 						}
 					})
@@ -110,7 +110,7 @@ var Shunfenghaitao = &Spider{
 						1: brand,
 						2: from1,
 						3: from2,
-						4: ctx.GetTemp("goodsType"),
+						4: ctx.GetTemp("goodsType", ""),
 					})
 				},
 			},

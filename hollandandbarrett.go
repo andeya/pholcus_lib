@@ -86,10 +86,10 @@ var Hollandandbarrett = &Spider{
 					} else {
 
 						ctx.AddQueue(&context.Request{
-							Url:  "http://www.hollandandbarrett.com" + ctx.GetTemp("baseUrl").(string) + "?showAll=" + total + "&pageHa=1&es=true&vm=grid&imd=true&format=json&single=true",
+							Url:  "http://www.hollandandbarrett.com" + ctx.GetTemp("baseUrl", "").(string) + "?showAll=" + total + "&pageHa=1&es=true&vm=grid&imd=true&format=json&single=true",
 							Rule: "商品详情",
 							Temp: map[string]interface{}{
-								"type": ctx.GetTemp("type").(string),
+								"type": ctx.GetTemp("type", "").(string),
 							},
 						},
 						)
@@ -174,7 +174,7 @@ var Hollandandbarrett = &Spider{
 								2: price2,
 								3: prm,
 								4: level,
-								5: ctx.GetTemp("type"),
+								5: ctx.GetTemp("type", ""),
 							})
 						}
 					}

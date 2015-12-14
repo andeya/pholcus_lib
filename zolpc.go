@@ -58,9 +58,8 @@ var Zolpc = &Spider{
 					query := ctx.GetDom()
 					ss := query.Find("tbody").Find("tr[id]")
 					ss.Each(func(i int, goq *goquery.Selection) {
-						ctx.SetReqTemp("html", goq)
+						ctx.SetOriginTemp("html", goq)
 						ctx.Parse("获取结果")
-
 					})
 				},
 			},
@@ -79,8 +78,9 @@ var Zolpc = &Spider{
 					"最后回复时间",
 				},
 				ParseFunc: func(ctx *Context) {
+					var selectObj *goquery.Selection
+					ctx.GetTemp("html", selectObj)
 
-					selectObj := ctx.GetTemp("html").(*goquery.Selection)
 					//url
 					outUrls := selectObj.Find("td").Eq(1)
 					outUrl, _ := outUrls.Attr("data-url")

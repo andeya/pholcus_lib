@@ -95,7 +95,7 @@ var Miyabaobei = &Spider{
 					// 调用指定规则下辅助函数
 					ctx.Aid(map[string]interface{}{
 						"loop":     [2]int{1, total},
-						"ruleBase": ctx.GetTemp("baseUrl").(string),
+						"ruleBase": ctx.GetTemp("baseUrl", "").(string),
 						"rep": map[string]interface{}{
 							"Rule": "商品列表",
 						},

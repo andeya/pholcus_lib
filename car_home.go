@@ -50,7 +50,8 @@ var CarHome = &Spider{
 
 			"请求列表": {
 				ParseFunc: func(ctx *Context) {
-					curr := ctx.GetTemp("p").(int)
+					var curr int
+					ctx.GetTemp("p", &curr)
 					if c := ctx.GetDom().Find(".pages .cur").Text(); c != strconv.Itoa(curr) {
 						// Log.Printf("当前列表页不存在 %v", c)
 						return

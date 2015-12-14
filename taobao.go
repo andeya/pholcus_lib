@@ -55,17 +55,16 @@ var Taobao = &Spider{
 			"生成请求": {
 				AidFunc: func(ctx *Context, aid map[string]interface{}) interface{} {
 					for loop := aid["loop"].([2]int); loop[0] < loop[1]; loop[0]++ {
-						urls := []string{}
 						for _, loc := range loc_Taobao {
-							urls = append(urls, "http:"+aid["urlBase"].(string)+"&_input_charset=utf-8&json=on&viewIndex=1&as=0&atype=b&style=grid&same_info=1&tid=0&isnew=2&data-action&module=page&s=0&loc="+loc+"&pSize=96&data-key=s&data-value="+strconv.Itoa(loop[0]*96))
+							ctx.AddQueue(&context.Request{
+								Url:  "http:" + aid["urlBase"].(string) + "&_input_charset=utf-8&json=on&viewIndex=1&as=0&atype=b&style=grid&same_info=1&tid=0&isnew=2&data-action&module=page&s=0&loc=" + loc + "&pSize=96&data-key=s&data-value=" + strconv.Itoa(loop[0]*96),
+								Rule: aid["Rule"].(string),
+								Header: http.Header{
+									"Cookie": []string{cookies_Taobao},
+								},
+								Temp: aid["Temp"].(map[string]interface{}),
+							})
 						}
-						ctx.BulkAddQueue(urls, &context.Request{
-							Rule: aid["Rule"].(string),
-							Header: http.Header{
-								"Cookie": []string{cookies_Taobao},
-							},
-							Temp: aid["Temp"].(map[string]interface{}),
-						})
 					}
 					return nil
 				},
@@ -111,7 +110,7 @@ var Taobao = &Spider{
 							"loop":    [2]int{1, totalPage},
 							"urlBase": ctx.GetUrl(),
 							"Rule":    "商品列表",
-							"Temp":    ctx.GetTemps(false),
+							"Temp":    ctx.CopyTemps(),
 						}, "生成请求")
 						ctx.Parse("商品列表")
 					}
@@ -198,12 +197,18 @@ var Taobao = &Spider{
 							detail[slice[0]] = slice[1]
 						})
 					}
-					temp := ctx.GetTemps(false)
-					temp[ctx.GetItemField(24, "结果")] = detail
-					temp[ctx.GetItemField(25, "结果")] = []interface{}{}
+
+					temp := ctx.CopyTemps().
+						Set(ctx.GetItemField(24, "结果"), detail).
+						Set(ctx.GetItemField(25, "结果"), []interface{}{})
+
 					ctx.AddQueue(&context.Request{
-						Rule:     "商品评论",
-						Url:      "http://rate.taobao.com/feedRateList.htm?siteID=4&rateType=&orderType=sort_weight&showContent=1&userNumId=" + ctx.GetTemp("sellerId").(string) + "&auctionNumId=" + ctx.GetTemp("itemId").(string) + "&currentPageNum=1",
+						Rule: "商品评论",
+						Url: "http://rate.taobao.com/feedRateList.htm?siteID=4&rateType=&orderType=sort_weight&showContent=1&userNumId=" +
+							ctx.GetTemp("sellerId", "").(string) +
+							"&auctionNumId=" +
+							ctx.GetTemp("itemId", "").(string) +
+							"&currentPageNum=1",
 						Temp:     temp,
 						Priority: 2,
 					})
@@ -226,9 +231,11 @@ var Taobao = &Spider{
 						return
 					}
 					discussSlice := infos["comments"].([]interface{})
-					discussAll := ctx.GetTemp(ctx.GetItemField(25, "结果")).([]interface{})
+					var discussAll []interface{}
+					ctx.GetTemp(ctx.GetItemField(25, "结果"), &discussAll)
 					discussAll = append(discussAll, discussSlice...)
-					ctx.SetReqTemp(ctx.GetItemField(25, "结果"), discussAll)
+					temp := ctx.CopyTemps()
+					temp[ctx.GetItemField(25, "结果")] = discussAll
 
 					currentPageNum := infos["currentPageNum"].(int)
 					maxPage := infos["maxPage"].(int)
@@ -236,8 +243,13 @@ var Taobao = &Spider{
 						// 请求下一页
 						ctx.AddQueue(&context.Request{
 							Rule: "商品评论",
-							Url:  "http://rate.taobao.com/feedRateList.htm?siteID=4&rateType=&orderType=sort_weight&showContent=1&userNumId=" + ctx.GetTemp("sellerId").(string) + "&auctionNumId=" + ctx.GetTemp("itemId").(string) + "&currentPageNum=" + strconv.Itoa(currentPageNum+1),
-							Temp: ctx.GetTemps(false),
+							Url: "http://rate.taobao.com/feedRateList.htm?siteID=4&rateType=&orderType=sort_weight&showContent=1&userNumId=" +
+								ctx.GetTemp("sellerId", "").(string) +
+								"&auctionNumId=" +
+								ctx.GetTemp("itemId", "").(string) +
+								"&currentPageNum=" +
+								strconv.Itoa(currentPageNum+1),
+							Temp: temp,
 						})
 					} else {
 						// 输出结果
@@ -278,7 +290,7 @@ var Taobao = &Spider{
 				},
 				ParseFunc: func(ctx *Context) {
 					// 结果存入Response中转
-					ctx.Output(ctx.GetTemps(false))
+					ctx.Output(ctx.CopyTemps())
 				},
 			},
 		},

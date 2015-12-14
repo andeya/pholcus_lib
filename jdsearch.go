@@ -35,7 +35,8 @@ var JDSearch = &Spider{
 	Name:        "京东搜索",
 	Description: "京东搜索结果 [search.jd.com]",
 	// Pausetime: [2]uint{uint(3000), uint(1000)},
-	Keyword:      USE,
+	Keyword:      KEYWORD,
+	MaxPage:      MAXPAGE,
 	EnableCookie: false,
 	RuleTree: &RuleTree{
 		Root: func(ctx *Context) {
@@ -47,12 +48,18 @@ var JDSearch = &Spider{
 			"生成请求": {
 				AidFunc: func(ctx *Context, aid map[string]interface{}) interface{} {
 					for loop := aid["loop"].([2]int); loop[0] < loop[1]; loop[0]++ {
-						ctx.BulkAddQueue([]string{
-							"http://search.jd.com/Search?keyword=" + ctx.GetKeyword() + "&enc=utf-8&qrst=1&rt=1&stop=1&click=&psort=&page=" + strconv.Itoa(2*loop[0]+2),
-							"http://search.jd.com/Search?keyword=" + ctx.GetKeyword() + "&enc=utf-8&qrst=1&rt=1&stop=1&click=&psort=&page=" + strconv.Itoa(2*loop[0]+1),
-						}, &context.Request{
-							Rule: aid["Rule"].(string),
-						})
+						ctx.AddQueue(
+							&context.Request{
+								Url:  "http://search.jd.com/Search?keyword=" + ctx.GetKeyword() + "&enc=utf-8&qrst=1&rt=1&stop=1&click=&psort=&page=" + strconv.Itoa(2*loop[0]+1),
+								Rule: aid["Rule"].(string),
+							},
+						)
+						ctx.AddQueue(
+							&context.Request{
+								Url:  "http://search.jd.com/Search?keyword=" + ctx.GetKeyword() + "&enc=utf-8&qrst=1&rt=1&stop=1&click=&psort=&page=" + strconv.Itoa(2*loop[0]+2),
+								Rule: aid["Rule"].(string),
+							},
+						)
 					}
 					return nil
 				},

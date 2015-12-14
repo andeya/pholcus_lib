@@ -108,7 +108,8 @@ var BaiduNews = &Spider{
 			},
 			"XML列表页": {
 				ParseFunc: func(ctx *Context) {
-					src := ctx.GetTemp("src").(string)
+					var src string
+					ctx.GetTemp("src", &src)
 					defer func() {
 						// 循环请求
 						baiduNewsCountdownTimer.Wait(src)
@@ -154,9 +155,10 @@ var BaiduNews = &Spider{
 				},
 				ParseFunc: func(ctx *Context) {
 					// RSS标记更新
-					baiduNewsCountdownTimer.Update(ctx.GetTemp("src").(string))
+					baiduNewsCountdownTimer.Update(ctx.GetTemp("src", "").(string))
 
-					title := ctx.GetTemp("title").(string)
+					var title string
+					ctx.GetTemp("title", &title)
 
 					infoStr, isReload := baiduNewsFn.prase(ctx)
 					if isReload {
@@ -165,11 +167,11 @@ var BaiduNews = &Spider{
 					// 结果存入Response中转
 					ctx.Output(map[int]interface{}{
 						0: title,
-						1: ctx.GetTemp("description"),
+						1: ctx.GetTemp("description", ""),
 						2: infoStr,
-						3: ctx.GetTemp("releaseTime"),
-						4: ctx.GetTemp("src"),
-						5: ctx.GetTemp("author"),
+						3: ctx.GetTemp("releaseTime", ""),
+						4: ctx.GetTemp("src", ""),
+						5: ctx.GetTemp("author", ""),
 					})
 				},
 			},
@@ -181,7 +183,7 @@ type baiduNews map[string]func(ctx *Context) (infoStr string, isReload bool)
 
 // @url 必须为含有协议头的地址
 func (b baiduNews) prase(ctx *Context) (infoStr string, isReload bool) {
-	url := ctx.Response.Response.Request.URL.Host
+	url := ctx.GetHost()
 	if _, ok := b[url]; ok {
 		return b[url](ctx)
 	} else {

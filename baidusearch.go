@@ -35,7 +35,8 @@ var BaiduSearch = &Spider{
 	Name:        "百度搜索",
 	Description: "百度搜索结果 [www.baidu.com]",
 	// Pausetime: [2]uint{uint(3000), uint(1000)},
-	Keyword:      USE,
+	Keyword:      KEYWORD,
+	MaxPage:      MAXPAGE,
 	EnableCookie: false,
 	// 命名空间相对于数据库名，不依赖具体数据内容，可选
 	Namespace: nil,

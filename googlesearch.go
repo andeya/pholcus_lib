@@ -48,7 +48,8 @@ var GoogleSearch = &Spider{
 	Name:        "谷歌搜索",
 	Description: "谷歌搜索结果 [www.google.com镜像]",
 	// Pausetime: [2]uint{uint(3000), uint(1000)},
-	Keyword:      USE,
+	Keyword:      KEYWORD,
+	MaxPage:      MAXPAGE,
 	EnableCookie: false,
 	RuleTree: &RuleTree{
 		Root: func(ctx *Context) {
@@ -106,7 +107,7 @@ var GoogleSearch = &Spider{
 					// 调用指定规则下辅助函数
 					ctx.Aid(map[string]interface{}{
 						"loop":    [2]int{1, total},
-						"urlBase": ctx.GetTemp("baseUrl"),
+						"urlBase": ctx.GetTemp("baseUrl", ""),
 						"Rule":    "搜索结果",
 					})
 					// 用指定规则解析响应流

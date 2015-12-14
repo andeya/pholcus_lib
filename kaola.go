@@ -68,7 +68,7 @@ var Kaola = &Spider{
 							ctx.AddQueue(&context.Request{
 								Url:  "http://www.kaola.com" + url,
 								Rule: "商品详情",
-								Temp: map[string]interface{}{"goodsType": ctx.GetTemp("goodsType").(string)},
+								Temp: map[string]interface{}{"goodsType": ctx.GetTemp("goodsType", "").(string)},
 							})
 						}
 					})
@@ -109,7 +109,7 @@ var Kaola = &Spider{
 						2: brand,
 						3: from,
 						4: discussNum,
-						5: ctx.GetTemp("goodsType"),
+						5: ctx.GetTemp("goodsType", ""),
 					})
 				},
 			},

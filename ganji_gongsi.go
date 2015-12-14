@@ -50,7 +50,8 @@ var GanjiGongsi = &Spider{
 
 			"请求列表": {
 				ParseFunc: func(ctx *Context) {
-					curr := ctx.GetTemp("p").(int)
+					var curr int
+					ctx.GetTemp("p", &curr)
 					if ctx.GetDom().Find(".linkOn span").Text() != strconv.Itoa(curr) {
 						return
 					}
@@ -176,7 +177,7 @@ var GanjiGongsi = &Spider{
 			"联系方式": {
 				ParseFunc: func(ctx *Context) {
 					// 文件输出方式一（推荐）
-					ctx.FileOutput(ctx.GetTemp("n").(string))
+					ctx.FileOutput(ctx.GetTemp("n", "").(string))
 
 					// 文件输出方式二
 					// ctx.AddFile(ctx.GetTemp("n").(string))

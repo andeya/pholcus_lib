@@ -35,7 +35,8 @@ var TaobaoSearch = &Spider{
 	Name:        "淘宝搜索",
 	Description: "淘宝天猫搜索结果 [s.taobao.com]",
 	// Pausetime: [2]uint{uint(3000), uint(1000)},
-	Keyword:      USE,
+	Keyword:      KEYWORD,
+	MaxPage:      MAXPAGE,
 	EnableCookie: false,
 	RuleTree: &RuleTree{
 		Root: func(ctx *Context) {
@@ -143,7 +144,7 @@ var TaobaoSearch = &Spider{
 					"发货地",
 				},
 				ParseFunc: func(ctx *Context) {
-					r := ctx.GetTemps(false)
+					r := ctx.CopyTemps()
 
 					re := regexp.MustCompile(`"newProGroup":.*,"progressiveSupport"`)
 					d := re.FindString(ctx.GetText())
@@ -172,7 +173,7 @@ var TaobaoSearch = &Spider{
 							}
 
 							ctx.UpsertItemField(feild[0])
-							r[feild[0]] = feild[1]
+							r.Set(feild[0], feild[1])
 						}
 
 					} else {
@@ -191,7 +192,7 @@ var TaobaoSearch = &Spider{
 								for _, attr := range info["attrs"].([]interface{}) {
 									a := attr.(map[string]interface{})
 									ctx.UpsertItemField(a["name"].(string))
-									r[a["name"].(string)] = a["value"]
+									r.Set(a["name"].(string), a["value"])
 								}
 							}
 						}

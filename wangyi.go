@@ -120,7 +120,7 @@ var Wangyi = &Spider{
 							ctx.AddQueue(&context.Request{
 								Url:  pageAllUrl,
 								Rule: "热点新闻",
-								Temp: ctx.GetTemps(false),
+								Temp: ctx.CopyTemps(),
 							})
 						}
 						return
@@ -144,8 +144,8 @@ var Wangyi = &Spider{
 					ctx.Output(map[int]interface{}{
 						0: title,
 						1: content,
-						2: ctx.GetTemp("top"),
-						3: ctx.GetTemp("newsType"),
+						2: ctx.GetTemp("top", ""),
+						3: ctx.GetTemp("newsType", ""),
 						4: release,
 					})
 				},
