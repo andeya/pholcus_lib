@@ -72,7 +72,7 @@ var BaiduNews = &Spider{
 	Name:        "百度RSS新闻",
 	Description: "百度RSS新闻，实现轮询更新 [Auto Page] [news.baidu.com]",
 	// Pausetime: [2]uint{uint(3000), uint(1000)},
-	// Keyword:     USE,
+	// Keyword:     KEYWORD,
 	EnableCookie: false,
 	// 命名空间相对于数据库名，不依赖具体数据内容，可选
 	Namespace: nil,
@@ -155,7 +155,7 @@ var BaiduNews = &Spider{
 				},
 				ParseFunc: func(ctx *Context) {
 					// RSS标记更新
-					baiduNewsCountdownTimer.Update(ctx.GetTemp("src", "").(string))
+					baiduNewsCountdownTimer.Update(ctx.GetTemp("src").(string))
 
 					var title string
 					ctx.GetTemp("title", &title)
@@ -167,11 +167,11 @@ var BaiduNews = &Spider{
 					// 结果存入Response中转
 					ctx.Output(map[int]interface{}{
 						0: title,
-						1: ctx.GetTemp("description", ""),
+						1: ctx.GetTemp("description"),
 						2: infoStr,
-						3: ctx.GetTemp("releaseTime", ""),
-						4: ctx.GetTemp("src", ""),
-						5: ctx.GetTemp("author", ""),
+						3: ctx.GetTemp("releaseTime"),
+						4: ctx.GetTemp("src"),
+						5: ctx.GetTemp("author"),
 					})
 				},
 			},
