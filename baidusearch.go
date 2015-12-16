@@ -34,7 +34,7 @@ func init() {
 var BaiduSearch = &Spider{
 	Name:        "百度搜索",
 	Description: "百度搜索结果 [www.baidu.com]",
-	// Pausetime: [2]uint{uint(3000), uint(1000)},
+	// Pausetime: 300,
 	Keyword:      KEYWORD,
 	MaxPage:      MAXPAGE,
 	EnableCookie: false,

@@ -35,7 +35,7 @@ func init() {
 var WeiboFans = &Spider{
 	Name:         "微博粉丝列表",
 	Description:  `新浪微博粉丝 [自定义输入格式 "ID"::"Cookie"][最多支持250页，内设定时1~2s]`,
-	Pausetime:    [2]uint{uint(1000), uint(1000)},
+	Pausetime:    2000,
 	Keyword:      KEYWORD,
 	MaxPage:      MAXPAGE,
 	EnableCookie: true,

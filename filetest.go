@@ -34,7 +34,7 @@ func init() {
 var FileTest = &Spider{
 	Name:        "文件下载测试",
 	Description: "文件下载测试",
-	// Pausetime: [2]uint{uint(3000), uint(1000)},
+	// Pausetime: 300,
 	// Keyword:   USE,
 	EnableCookie: false,
 	RuleTree: &RuleTree{

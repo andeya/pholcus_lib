@@ -35,7 +35,7 @@ func init() {
 var Wangyi = &Spider{
 	Name:        "网易新闻",
 	Description: "网易排行榜新闻，含点击/跟帖排名 [Auto Page] [news.163.com/rank]",
-	// Pausetime: [2]uint{uint(3000), uint(1000)},
+	// Pausetime: 300,
 	// Keyword:   USE,
 	EnableCookie: false,
 	RuleTree: &RuleTree{

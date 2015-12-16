@@ -34,7 +34,7 @@ func init() {
 var Miyabaobei = &Spider{
 	Name:        "蜜芽宝贝",
 	Description: "蜜芽宝贝商品数据 [Auto Page] [www.miyabaobei.com]",
-	// Pausetime: [2]uint{uint(3000), uint(1000)},
+	// Pausetime: 300,
 	// Keyword:   USE,
 	EnableCookie: false,
 	RuleTree: &RuleTree{

@@ -93,7 +93,7 @@ var timer_SinaWeibo = DailyFixedTimer{
 var SinaWeibo = &Spider{
 	Name:        "IT新浪微博",
 	Description: "IT新浪微博 [weibo.com]",
-	// Pausetime: [2]uint{uint(3000), uint(1000)},
+	// Pausetime: 300,
 	// Keyword:     USE,
 	EnableCookie: true,
 	RuleTree: &RuleTree{

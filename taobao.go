@@ -36,7 +36,7 @@ var cookies_Taobao = "mt=ci%3D-1_0; swfstore=35673; thw=cn; cna=fcr5DRDmwnQCAT2Q
 var Taobao = &Spider{
 	Name:        "淘宝数据",
 	Description: "淘宝天猫商品数据 [Auto Page] [http://list.taobao.com/]",
-	// Pausetime: [2]uint{uint(3000), uint(1000)},
+	// Pausetime: 300,
 	// Keyword:   USE,
 	EnableCookie: false,
 	RuleTree: &RuleTree{

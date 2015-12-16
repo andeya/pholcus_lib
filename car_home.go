@@ -34,7 +34,7 @@ func init() {
 var CarHome = &Spider{
 	Name:        "汽车之家",
 	Description: "汽车之家帖子 [http://club.autohome.com.cn/bbs/]",
-	// Pausetime: [2]uint{uint(3000), uint(1000)},
+	// Pausetime: 300,
 	// Keyword:   USE,
 	EnableCookie: false,
 	RuleTree: &RuleTree{

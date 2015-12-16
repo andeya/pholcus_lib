@@ -34,7 +34,7 @@ func init() {
 var Lewa = &Spider{
 	Name:        "乐蛙登录测试",
 	Description: "乐蛙登录测试 [Auto Page] [http://accounts.lewaos.com]",
-	// Pausetime: [2]uint{uint(3000), uint(1000)},
+	// Pausetime: 300,
 	// Keyword:   USE,
 	EnableCookie: true,
 	RuleTree: &RuleTree{

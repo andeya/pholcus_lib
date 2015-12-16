@@ -34,7 +34,7 @@ func init() {
 var GanjiGongsi = &Spider{
 	Name:        "经典示例-赶集网企业名录",
 	Description: "**典型规则示例，具有文本与文件两种输出行为**",
-	// Pausetime: [2]uint{uint(3000), uint(1000)},
+	// Pausetime: 300,
 	// Keyword:   USE,
 	EnableCookie: false,
 	RuleTree: &RuleTree{

@@ -34,7 +34,7 @@ func init() {
 var Zolpc = &Spider{
 	Name:        "中关村笔记本",
 	Description: "中关村笔记本数据 [Auto Page] [bbs.zol.com.cn/sjbbs/d544_p]",
-	// Pausetime: [2]uint{uint(3000), uint(1000)},
+	// Pausetime: 300,
 	// Keyword:   USE,
 	EnableCookie: false,
 	RuleTree: &RuleTree{

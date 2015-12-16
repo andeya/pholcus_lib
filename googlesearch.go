@@ -47,7 +47,7 @@ var googleIp = []string{
 var GoogleSearch = &Spider{
 	Name:        "谷歌搜索",
 	Description: "谷歌搜索结果 [www.google.com镜像]",
-	// Pausetime: [2]uint{uint(3000), uint(1000)},
+	// Pausetime: 300,
 	Keyword:      KEYWORD,
 	MaxPage:      MAXPAGE,
 	EnableCookie: false,

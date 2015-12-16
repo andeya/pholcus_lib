@@ -34,7 +34,7 @@ func init() {
 var AlibabaProduct = &Spider{
 	Name:        "阿里巴巴产品搜索",
 	Description: "阿里巴巴产品搜索 [s.1688.com/selloffer/offer_search.htm]",
-	// Pausetime: [2]uint{uint(3000), uint(1000)},
+	// Pausetime: 300,
 	Keyword:      KEYWORD,
 	MaxPage:      MAXPAGE,
 	EnableCookie: false,
