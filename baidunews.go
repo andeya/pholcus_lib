@@ -24,7 +24,7 @@ import (
 	// 其他包
 	// "fmt"
 	// "math"
-	// "time"
+	"time"
 )
 
 func init() {
@@ -47,14 +47,6 @@ var rss_BaiduNews = map[string]string{
 	"科技最新":  "http://news.baidu.com/n?cmd=4&class=technnews&tn=rss",
 	"社会最新":  "http://news.baidu.com/n?cmd=4&class=socianews&tn=rss",
 }
-
-var baiduNewsCountdownTimer = NewCountdownTimer([]float64{5, 10, 20, 30, 45, 60}, func() map[string]float64 {
-	src := make(map[string]float64, len(rss_BaiduNews))
-	for k := range rss_BaiduNews {
-		src[k] = 0
-	}
-	return src
-}())
 
 type BaiduNewsData struct {
 	Item []BaiduNewsItem `xml:"item"`
@@ -82,7 +74,8 @@ var BaiduNews = &Spider{
 	},
 	RuleTree: &RuleTree{
 		Root: func(ctx *Context) {
-			for k, _ := range rss_BaiduNews {
+			for k := range rss_BaiduNews {
+				ctx.SetTimer(k, time.Minute*5, nil)
 				ctx.Aid(map[string]interface{}{"loop": k}, "LOOP")
 			}
 		},
@@ -112,7 +105,7 @@ var BaiduNews = &Spider{
 					ctx.GetTemp("src", &src)
 					defer func() {
 						// 循环请求
-						baiduNewsCountdownTimer.Wait(src)
+						ctx.RunTimer(src)
 						ctx.Aid(map[string]interface{}{"loop": src}, "LOOP")
 					}()
 
@@ -154,9 +147,6 @@ var BaiduNews = &Spider{
 					"作者",
 				},
 				ParseFunc: func(ctx *Context) {
-					// RSS标记更新
-					baiduNewsCountdownTimer.Update(ctx.GetTemp("src").(string))
-
 					var title string
 					ctx.GetTemp("title", &title)
 
