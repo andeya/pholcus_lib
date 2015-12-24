@@ -157,11 +157,11 @@ var BaiduNews = &Spider{
 					// 结果存入Response中转
 					ctx.Output(map[int]interface{}{
 						0: title,
-						1: ctx.GetTemp("description"),
+						1: ctx.GetTemp("description", ""),
 						2: infoStr,
-						3: ctx.GetTemp("releaseTime"),
-						4: ctx.GetTemp("src"),
-						5: ctx.GetTemp("author"),
+						3: ctx.GetTemp("releaseTime", ""),
+						4: ctx.GetTemp("src", ""),
+						5: ctx.GetTemp("author", ""),
 					})
 				},
 			},

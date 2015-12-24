@@ -138,12 +138,12 @@ var WeiboFans = &Spider{
 						属性[title] = detail
 					})
 					结果 := map[int]interface{}{
-						0: ctx.GetTemp("好友名"),
-						1: ctx.GetTemp("好友ID"),
-						2: ctx.GetTemp("认证"),
-						3: ctx.GetTemp("关注"),
-						4: ctx.GetTemp("粉丝"),
-						5: ctx.GetTemp("微博"),
+						0: ctx.GetTemp("好友名", ""),
+						1: ctx.GetTemp("好友ID", ""),
+						2: ctx.GetTemp("认证", ""),
+						3: ctx.GetTemp("关注", ""),
+						4: ctx.GetTemp("粉丝", ""),
+						5: ctx.GetTemp("微博", ""),
 					}
 					for k, v := range 属性 {
 						idx := ctx.UpsertItemField(k)
