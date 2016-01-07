@@ -50,12 +50,7 @@ var Lewa = &Spider{
 					// 	Url:    "http://accounts.lewaos.com",
 					// 	Rule:   "登录后",
 					// 	Method: "POST",
-					// 	PostData: url.Values{
-					// 		"username":  []string{""},
-					// 		"password":  []string{""},
-					// 		"login_btn": []string{"login_btn"},
-					// 		"submit":    []string{"login_btn"},
-					// 	},
+					// 	PostData: "username=123456@qq.com&password=123456&login_btn=login_btn&submit=login_btn",
 					// })
 					NewForm(
 						ctx,
