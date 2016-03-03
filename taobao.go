@@ -3,7 +3,7 @@ package spider_lib
 // 基础包
 import (
 	"github.com/PuerkitoBio/goquery"                        //DOM解析
-	"github.com/henrylee2cn/pholcus/app/downloader/context" //必需
+	"github.com/henrylee2cn/pholcus/app/downloader/request" //必需
 	. "github.com/henrylee2cn/pholcus/app/spider"           //必需
 	. "github.com/henrylee2cn/pholcus/app/spider/common"    //选用
 	"github.com/henrylee2cn/pholcus/logs"                   //信息输出
@@ -20,7 +20,6 @@ import (
 	"regexp"
 	"strconv"
 	"strings"
-
 	// 其他包
 	// "fmt"
 	// "math"
@@ -41,7 +40,7 @@ var Taobao = &Spider{
 	EnableCookie: false,
 	RuleTree: &RuleTree{
 		Root: func(ctx *Context) {
-			ctx.AddQueue(&context.Request{
+			ctx.AddQueue(&request.Request{
 				Url:  "http://list.taobao.com/browse/cat-0.htm",
 				Rule: "生成请求",
 				Header: http.Header{
@@ -56,7 +55,7 @@ var Taobao = &Spider{
 				AidFunc: func(ctx *Context, aid map[string]interface{}) interface{} {
 					for loop := aid["loop"].([2]int); loop[0] < loop[1]; loop[0]++ {
 						for _, loc := range loc_Taobao {
-							ctx.AddQueue(&context.Request{
+							ctx.AddQueue(&request.Request{
 								Url:  "http:" + aid["urlBase"].(string) + "&_input_charset=utf-8&json=on&viewIndex=1&as=0&atype=b&style=grid&same_info=1&tid=0&isnew=2&data-action&module=page&s=0&loc=" + loc + "&pSize=96&data-key=s&data-value=" + strconv.Itoa(loop[0]*96),
 								Rule: aid["Rule"].(string),
 								Header: http.Header{
@@ -161,7 +160,7 @@ var Taobao = &Spider{
 							22: item2["dsrScore"],
 							23: item2["spSource"],
 						}, "结果")
-						ctx.AddQueue(&context.Request{
+						ctx.AddQueue(&request.Request{
 							Url:      "http:" + item2["href"].(string),
 							Rule:     "商品详情",
 							Temp:     temp,
@@ -202,7 +201,7 @@ var Taobao = &Spider{
 						Set(ctx.GetItemField(24, "结果"), detail).
 						Set(ctx.GetItemField(25, "结果"), []interface{}{})
 
-					ctx.AddQueue(&context.Request{
+					ctx.AddQueue(&request.Request{
 						Rule: "商品评论",
 						Url: "http://rate.taobao.com/feedRateList.htm?siteID=4&rateType=&orderType=sort_weight&showContent=1&userNumId=" +
 							ctx.GetTemp("sellerId", "").(string) +
@@ -241,7 +240,7 @@ var Taobao = &Spider{
 					maxPage := infos["maxPage"].(int)
 					if currentPageNum < maxPage {
 						// 请求下一页
-						ctx.AddQueue(&context.Request{
+						ctx.AddQueue(&request.Request{
 							Rule: "商品评论",
 							Url: "http://rate.taobao.com/feedRateList.htm?siteID=4&rateType=&orderType=sort_weight&showContent=1&userNumId=" +
 								ctx.GetTemp("sellerId", "").(string) +

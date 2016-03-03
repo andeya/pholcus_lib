@@ -3,7 +3,7 @@ package spider_lib
 // 基础包
 import (
 	"github.com/PuerkitoBio/goquery"                        //DOM解析
-	"github.com/henrylee2cn/pholcus/app/downloader/context" //必需
+	"github.com/henrylee2cn/pholcus/app/downloader/request" //必需
 	. "github.com/henrylee2cn/pholcus/app/spider"           //必需
 	"github.com/henrylee2cn/pholcus/logs"                   //信息输出
 	// . "github.com/henrylee2cn/pholcus/app/spider/common"          //选用
@@ -68,7 +68,7 @@ var GoogleSearch = &Spider{
 				return
 			}
 			logs.Log.Critical("开始Google搜索……")
-			ctx.AddQueue(&context.Request{
+			ctx.AddQueue(&request.Request{
 				Url:  url,
 				Rule: "获取总页数",
 				Temp: map[string]interface{}{
@@ -82,7 +82,7 @@ var GoogleSearch = &Spider{
 			"获取总页数": {
 				AidFunc: func(ctx *Context, aid map[string]interface{}) interface{} {
 					for loop := aid["loop"].([2]int); loop[0] < loop[1]; loop[0]++ {
-						ctx.AddQueue(&context.Request{
+						ctx.AddQueue(&request.Request{
 							Url:  aid["urlBase"].(string) + strconv.Itoa(10*loop[0]),
 							Rule: aid["Rule"].(string),
 						})

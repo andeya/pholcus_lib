@@ -3,7 +3,7 @@ package spider_lib
 // 基础包
 import (
 	"github.com/PuerkitoBio/goquery"                        //DOM解析
-	"github.com/henrylee2cn/pholcus/app/downloader/context" //必需
+	"github.com/henrylee2cn/pholcus/app/downloader/request" //必需
 	// "github.com/henrylee2cn/pholcus/logs"              //信息输出
 	. "github.com/henrylee2cn/pholcus/app/spider" //必需
 	// . "github.com/henrylee2cn/pholcus/app/spider/common" //选用
@@ -20,7 +20,6 @@ import (
 	"regexp"
 	// "strconv"
 	// "strings"
-
 	// 其他包
 	// "fmt"
 	// "math"
@@ -40,7 +39,7 @@ var Shunfenghaitao = &Spider{
 	EnableCookie: false,
 	RuleTree: &RuleTree{
 		Root: func(ctx *Context) {
-			ctx.AddQueue(&context.Request{Url: "http://www.sfht.com", Rule: "获取版块URL"})
+			ctx.AddQueue(&request.Request{Url: "http://www.sfht.com", Rule: "获取版块URL"})
 		},
 
 		Trunk: map[string]*Rule{
@@ -56,7 +55,7 @@ var Shunfenghaitao = &Spider{
 							return
 						}
 						if url, ok := s.Attr("href"); ok {
-							ctx.AddQueue(&context.Request{Url: url, Rule: "商品列表", Temp: map[string]interface{}{"goodsType": s.Text()}})
+							ctx.AddQueue(&request.Request{Url: url, Rule: "商品列表", Temp: map[string]interface{}{"goodsType": s.Text()}})
 						}
 					})
 				},
@@ -68,7 +67,7 @@ var Shunfenghaitao = &Spider{
 
 					query.Find(".cms-src-item").Each(func(i int, s *goquery.Selection) {
 						if url, ok := s.Find("a").Attr("href"); ok {
-							ctx.AddQueue(&context.Request{
+							ctx.AddQueue(&request.Request{
 								Url:  url,
 								Rule: "商品详情",
 								Temp: map[string]interface{}{"goodsType": ctx.GetTemp("goodsType", "").(string)},

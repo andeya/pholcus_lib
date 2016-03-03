@@ -3,7 +3,7 @@ package spider_lib
 // 基础包
 import (
 	"github.com/PuerkitoBio/goquery"                        //DOM解析
-	"github.com/henrylee2cn/pholcus/app/downloader/context" //必需
+	"github.com/henrylee2cn/pholcus/app/downloader/request" //必需
 	. "github.com/henrylee2cn/pholcus/app/spider"           //必需
 	. "github.com/henrylee2cn/pholcus/app/spider/common"    //选用
 	"github.com/henrylee2cn/pholcus/logs"                   //信息输出
@@ -58,7 +58,7 @@ var WeiboFans = &Spider{
 				count2 = ctx.GetMaxPage()
 			}
 			for i := count1; i > 0; i-- {
-				ctx.AddQueue(&context.Request{
+				ctx.AddQueue(&request.Request{
 					Url:          "http://weibo.com/" + id + "/fans?cfs=600&relate=fans&t=1&f=1&type=&Pl_Official_RelationFans__68_page=" + strconv.Itoa(i) + "#Pl_Official_RelationFans__68",
 					Rule:         "好友列表",
 					Header:       http.Header{"Cookie": []string{cookie}},
@@ -66,7 +66,7 @@ var WeiboFans = &Spider{
 				})
 			}
 			for i := 1; i <= count2; i++ {
-				ctx.AddQueue(&context.Request{
+				ctx.AddQueue(&request.Request{
 					Url:          "http://www.weibo.com/" + id + "/fans?cfs=&relate=fans&t=5&f=1&type=&Pl_Official_RelationFans__68_page=" + strconv.Itoa(i) + "#Pl_Official_RelationFans__68",
 					Rule:         "好友列表",
 					Header:       http.Header{"Cookie": []string{cookie}},
@@ -96,7 +96,7 @@ var WeiboFans = &Spider{
 						粉丝 := s.Find(".info_connect em a").Eq(1).Text()
 						微博 := s.Find(".info_connect em a").Eq(2).Text()
 						fmt.Println(关注, 粉丝, 微博)
-						x := &context.Request{
+						x := &request.Request{
 							Url:          url,
 							Rule:         "好友资料",
 							DownloaderID: 0,

@@ -3,7 +3,7 @@ package spider_lib
 // 基础包
 import (
 	"github.com/PuerkitoBio/goquery"                        //DOM解析
-	"github.com/henrylee2cn/pholcus/app/downloader/context" //必需
+	"github.com/henrylee2cn/pholcus/app/downloader/request" //必需
 	. "github.com/henrylee2cn/pholcus/app/spider"           //必需
 	"github.com/henrylee2cn/pholcus/logs"                   //信息输出
 	// . "github.com/henrylee2cn/pholcus/app/spider/common"          //选用
@@ -39,7 +39,7 @@ var Hollandandbarrett = &Spider{
 	EnableCookie: false,
 	RuleTree: &RuleTree{
 		Root: func(ctx *Context) {
-			ctx.AddQueue(&context.Request{
+			ctx.AddQueue(&request.Request{
 				Url:  "http://www.hollandandbarrett.com/",
 				Rule: "获取版块URL",
 			},
@@ -56,7 +56,7 @@ var Hollandandbarrett = &Spider{
 					lis.Each(func(i int, s *goquery.Selection) {
 						if url, ok := s.Attr("href"); ok {
 							tit, _ := s.Attr("title")
-							ctx.AddQueue(&context.Request{
+							ctx.AddQueue(&request.Request{
 								Url:  "http://www.hollandandbarrett.com" + url + "?showAll=1&pageHa=1&es=true&vm=grid&imd=true&format=json&single=true",
 								Rule: "获取总数",
 								Temp: map[string]interface{}{
@@ -85,7 +85,7 @@ var Hollandandbarrett = &Spider{
 						logs.Log.Critical("[消息提示：| 任务：%v | 关键词：%v | 规则：%v] 没有抓取到任何数据！!!\n", ctx.GetName(), ctx.GetKeyword(), ctx.GetRuleName())
 					} else {
 
-						ctx.AddQueue(&context.Request{
+						ctx.AddQueue(&request.Request{
 							Url:  "http://www.hollandandbarrett.com" + ctx.GetTemp("baseUrl", "").(string) + "?showAll=" + total + "&pageHa=1&es=true&vm=grid&imd=true&format=json&single=true",
 							Rule: "商品详情",
 							Temp: map[string]interface{}{

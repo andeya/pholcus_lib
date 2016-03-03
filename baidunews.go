@@ -3,7 +3,7 @@ package spider_lib
 // 基础包
 import (
 	"github.com/PuerkitoBio/goquery"                        //DOM解析
-	"github.com/henrylee2cn/pholcus/app/downloader/context" //必需
+	"github.com/henrylee2cn/pholcus/app/downloader/request" //必需
 	. "github.com/henrylee2cn/pholcus/app/spider"           //必需
 	. "github.com/henrylee2cn/pholcus/app/spider/common"    //选用
 	"github.com/henrylee2cn/pholcus/logs"                   //信息输出
@@ -86,7 +86,7 @@ var BaiduNews = &Spider{
 					k := aid["loop"].(string)
 					v := rss_BaiduNews[k]
 
-					ctx.AddQueue(&context.Request{
+					ctx.AddQueue(&request.Request{
 						Url:         v,
 						Rule:        "XML列表页",
 						Header:      http.Header{"Content-Type": []string{"text/html", "charset=GB2312"}},
@@ -121,7 +121,7 @@ var BaiduNews = &Spider{
 					}
 
 					for _, v := range content.Item {
-						ctx.AddQueue(&context.Request{
+						ctx.AddQueue(&request.Request{
 							Url:  v.Link,
 							Rule: "新闻详情",
 							Temp: map[string]interface{}{

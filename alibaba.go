@@ -3,7 +3,7 @@ package spider_lib
 // 基础包
 import (
 	"github.com/PuerkitoBio/goquery"                        //DOM解析
-	"github.com/henrylee2cn/pholcus/app/downloader/context" //必需
+	"github.com/henrylee2cn/pholcus/app/downloader/request" //必需
 	. "github.com/henrylee2cn/pholcus/app/spider"           //必需
 	. "github.com/henrylee2cn/pholcus/app/spider/common"    //选用
 	"github.com/henrylee2cn/pholcus/logs"                   //信息输出
@@ -20,7 +20,6 @@ import (
 	// "regexp"
 	"strconv"
 	"strings"
-
 	// 其他包
 	// "fmt"
 	// "math"
@@ -49,7 +48,7 @@ var AlibabaProduct = &Spider{
 				AidFunc: func(ctx *Context, aid map[string]interface{}) interface{} {
 					keyword := EncodeString(ctx.GetKeyword(), "GBK")
 					for loop := aid["loop"].([2]int); loop[0] < loop[1]; loop[0]++ {
-						ctx.AddQueue(&context.Request{
+						ctx.AddQueue(&request.Request{
 							Url:    "http://s.1688.com/selloffer/offer_search.htm?enableAsync=false&earseDirect=false&button_click=top&pageSize=60&n=y&offset=3&uniqfield=pic_tag_id&keywords=" + keyword + "&beginPage=" + strconv.Itoa(loop[0]+1),
 							Rule:   aid["Rule"].(string),
 							Header: http.Header{"Content-Type": []string{"text/html", "charset=GBK"}},
@@ -65,7 +64,7 @@ var AlibabaProduct = &Spider{
 						logs.Log.Critical("[消息提示：| 任务：%v | 关键词：%v | 规则：%v] 由于跳转AJAX问题，目前只能每个子类抓取 1 页……\n", ctx.GetName(), ctx.GetKeyword(), ctx.GetRuleName())
 						query.Find(".sm-floorhead-typemore a").Each(func(i int, s *goquery.Selection) {
 							if href, ok := s.Attr("href"); ok {
-								ctx.AddQueue(&context.Request{
+								ctx.AddQueue(&request.Request{
 									Url:    href,
 									Header: http.Header{"Content-Type": []string{"text/html", "charset=GBK"}},
 									Rule:   "搜索结果",

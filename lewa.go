@@ -3,7 +3,7 @@ package spider_lib
 // 基础包
 import (
 	// "github.com/PuerkitoBio/goquery" //DOM解析
-	"github.com/henrylee2cn/pholcus/app/downloader/context" //必需
+	"github.com/henrylee2cn/pholcus/app/downloader/request" //必需
 	// "github.com/henrylee2cn/pholcus/logs"           //信息输出
 	. "github.com/henrylee2cn/pholcus/app/spider"        //必需
 	. "github.com/henrylee2cn/pholcus/app/spider/common" //选用
@@ -36,14 +36,14 @@ var Lewa = &Spider{
 	EnableCookie: true,
 	RuleTree: &RuleTree{
 		Root: func(ctx *Context) {
-			ctx.AddQueue(&context.Request{Url: "http://accounts.lewaos.com/", Rule: "登录页"})
+			ctx.AddQueue(&request.Request{Url: "http://accounts.lewaos.com/", Rule: "登录页"})
 		},
 
 		Trunk: map[string]*Rule{
 
 			"登录页": {
 				ParseFunc: func(ctx *Context) {
-					// ctx.AddQueue(&context.Request{
+					// ctx.AddQueue(&request.Request{
 					// 	Url:    "http://accounts.lewaos.com",
 					// 	Rule:   "登录后",
 					// 	Method: "POST",
@@ -67,7 +67,7 @@ var Lewa = &Spider{
 						"Body":   ctx.GetText(),
 						"Cookie": ctx.GetCookie(),
 					})
-					ctx.AddQueue(&context.Request{
+					ctx.AddQueue(&request.Request{
 						Url:    "http://accounts.lewaos.com/member",
 						Rule:   "个人中心",
 						Header: http.Header{"Referer": []string{ctx.GetUrl()}},

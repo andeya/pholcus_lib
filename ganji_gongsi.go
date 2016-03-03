@@ -3,7 +3,7 @@ package spider_lib
 // 基础包
 import (
 	"github.com/PuerkitoBio/goquery"                        //DOM解析
-	"github.com/henrylee2cn/pholcus/app/downloader/context" //必需
+	"github.com/henrylee2cn/pholcus/app/downloader/request" //必需
 	// "github.com/henrylee2cn/pholcus/logs"               //信息输出
 	. "github.com/henrylee2cn/pholcus/app/spider" //必需
 	// . "github.com/henrylee2cn/pholcus/app/spider/common"          //选用
@@ -20,7 +20,6 @@ import (
 	// "regexp"
 	"strconv"
 	"strings"
-
 	// 其他包
 	// "fmt"
 	// "math"
@@ -39,7 +38,7 @@ var GanjiGongsi = &Spider{
 	EnableCookie: false,
 	RuleTree: &RuleTree{
 		Root: func(ctx *Context) {
-			ctx.AddQueue(&context.Request{
+			ctx.AddQueue(&request.Request{
 				Url:  "http://sz.ganji.com/gongsi/o1",
 				Rule: "请求列表",
 				Temp: map[string]interface{}{"p": 1},
@@ -55,7 +54,7 @@ var GanjiGongsi = &Spider{
 					if ctx.GetDom().Find(".linkOn span").Text() != strconv.Itoa(curr) {
 						return
 					}
-					ctx.AddQueue(&context.Request{
+					ctx.AddQueue(&request.Request{
 						Url:         "http://sz.ganji.com/gongsi/o" + strconv.Itoa(curr+1),
 						Rule:        "请求列表",
 						Temp:        map[string]interface{}{"p": curr + 1},
@@ -72,13 +71,13 @@ var GanjiGongsi = &Spider{
 					ctx.GetDom().
 						Find(".com-list-2 table a").
 						Each(func(i int, s *goquery.Selection) {
-						url, _ := s.Attr("href")
-						ctx.AddQueue(&context.Request{
-							Url:         url,
-							Rule:        "输出结果",
-							ConnTimeout: -1,
+							url, _ := s.Attr("href")
+							ctx.AddQueue(&request.Request{
+								Url:         url,
+								Rule:        "输出结果",
+								ConnTimeout: -1,
+							})
 						})
-					})
 				},
 			},
 
@@ -122,7 +121,7 @@ var GanjiGongsi = &Spider{
 
 						case "联系电话：":
 							if img, ok := s.Find("img").Attr("src"); ok {
-								ctx.AddQueue(&context.Request{
+								ctx.AddQueue(&request.Request{
 									Url:         "http://www.ganji.com" + img,
 									Rule:        "联系方式",
 									Temp:        map[string]interface{}{"n": 公司 + "(" + 联系人 + ").png"},

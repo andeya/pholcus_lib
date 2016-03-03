@@ -3,7 +3,7 @@ package spider_lib
 // 基础包
 import (
 	"github.com/PuerkitoBio/goquery"                        //DOM解析
-	"github.com/henrylee2cn/pholcus/app/downloader/context" //必需
+	"github.com/henrylee2cn/pholcus/app/downloader/request" //必需
 	// "github.com/henrylee2cn/pholcus/logs"               //信息输出
 	. "github.com/henrylee2cn/pholcus/app/spider" //必需
 	// . "github.com/henrylee2cn/pholcus/app/spider/common"          //选用
@@ -20,7 +20,6 @@ import (
 	// "regexp"
 	"strconv"
 	"strings"
-
 	// 其他包
 	// "fmt"
 	// "math"
@@ -39,7 +38,7 @@ var CarHome = &Spider{
 	EnableCookie: false,
 	RuleTree: &RuleTree{
 		Root: func(ctx *Context) {
-			ctx.AddQueue(&context.Request{
+			ctx.AddQueue(&request.Request{
 				Url:  "http://club.autohome.com.cn/bbs/forum-o-200042-1.html?qaType=-1#pvareaid=101061",
 				Rule: "请求列表",
 				Temp: map[string]interface{}{"p": 1},
@@ -56,7 +55,7 @@ var CarHome = &Spider{
 						// Log.Printf("当前列表页不存在 %v", c)
 						return
 					}
-					ctx.AddQueue(&context.Request{
+					ctx.AddQueue(&request.Request{
 						Url:  "http://club.autohome.com.cn/bbs/forum-o-200042-" + strconv.Itoa(curr+1) + ".html?qaType=-1#pvareaid=101061",
 						Rule: "请求列表",
 						Temp: map[string]interface{}{"p": curr + 1},
@@ -72,13 +71,13 @@ var CarHome = &Spider{
 					ctx.GetDom().
 						Find(".list_dl").
 						Each(func(i int, s *goquery.Selection) {
-						url, _ := s.Find("dt a").Attr("href")
-						ctx.AddQueue(&context.Request{
-							Url:      "http://club.autohome.com.cn" + url,
-							Rule:     "输出结果",
-							Priority: 1,
+							url, _ := s.Find("dt a").Attr("href")
+							ctx.AddQueue(&request.Request{
+								Url:      "http://club.autohome.com.cn" + url,
+								Rule:     "输出结果",
+								Priority: 1,
+							})
 						})
-					})
 				},
 			},
 

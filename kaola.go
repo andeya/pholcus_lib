@@ -3,24 +3,20 @@ package spider_lib
 // 基础包
 import (
 	"github.com/PuerkitoBio/goquery"                        //DOM解析
-	"github.com/henrylee2cn/pholcus/app/downloader/context" //必需
+	"github.com/henrylee2cn/pholcus/app/downloader/request" //必需
 	// "github.com/henrylee2cn/pholcus/logs"              //信息输出
 	. "github.com/henrylee2cn/pholcus/app/spider" //必需
 	// . "github.com/henrylee2cn/pholcus/app/spider/common" //选用
-
 	// net包
 	// "net/http" //设置http.Header
 	// "net/url"
-
 	// 编码包
 	// "encoding/xml"
 	// "encoding/json"
-
 	// 字符串处理包
 	// "regexp"
 	// "strconv"
 	// "strings"
-
 	// 其他包
 	// "fmt"
 	// "math"
@@ -40,7 +36,7 @@ var Kaola = &Spider{
 	EnableCookie: false,
 	RuleTree: &RuleTree{
 		Root: func(ctx *Context) {
-			ctx.AddQueue(&context.Request{Url: "http://www.kaola.com", Rule: "获取版块URL"})
+			ctx.AddQueue(&request.Request{Url: "http://www.kaola.com", Rule: "获取版块URL"})
 		},
 
 		Trunk: map[string]*Rule{
@@ -54,7 +50,7 @@ var Kaola = &Spider{
 							return
 						}
 						if url, ok := s.Attr("href"); ok {
-							ctx.AddQueue(&context.Request{Url: url, Rule: "商品列表", Temp: map[string]interface{}{"goodsType": s.Text()}})
+							ctx.AddQueue(&request.Request{Url: url, Rule: "商品列表", Temp: map[string]interface{}{"goodsType": s.Text()}})
 						}
 					})
 				},
@@ -65,7 +61,7 @@ var Kaola = &Spider{
 					query := ctx.GetDom()
 					query.Find(".proinfo").Each(func(i int, s *goquery.Selection) {
 						if url, ok := s.Find("a").Attr("href"); ok {
-							ctx.AddQueue(&context.Request{
+							ctx.AddQueue(&request.Request{
 								Url:  "http://www.kaola.com" + url,
 								Rule: "商品详情",
 								Temp: map[string]interface{}{"goodsType": ctx.GetTemp("goodsType", "").(string)},

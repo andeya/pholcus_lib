@@ -3,7 +3,7 @@ package spider_lib
 // 基础包
 import (
 	// "github.com/PuerkitoBio/goquery" //DOM解析
-	"github.com/henrylee2cn/pholcus/app/downloader/context" //必需
+	"github.com/henrylee2cn/pholcus/app/downloader/request" //必需
 	. "github.com/henrylee2cn/pholcus/app/spider"           //必需
 	. "github.com/henrylee2cn/pholcus/app/spider/common"    //选用
 	"github.com/henrylee2cn/pholcus/logs"                   //信息输出
@@ -20,7 +20,6 @@ import (
 	"regexp"
 	"strconv"
 	"strings"
-
 	// 其他包
 	// "fmt"
 	// "math"
@@ -48,7 +47,7 @@ var TaobaoSearch = &Spider{
 			"生成请求": {
 				AidFunc: func(ctx *Context, aid map[string]interface{}) interface{} {
 					for loop := aid["loop"].([2]int); loop[0] < loop[1]; loop[0]++ {
-						ctx.AddQueue(&context.Request{
+						ctx.AddQueue(&request.Request{
 							Url:  "http://s.taobao.com/search?q=" + ctx.GetKeyword() + "&ie=utf8&cps=yes&app=vproduct&cd=false&v=auction&tab=all&vlist=1&bcoffset=1&s=" + strconv.Itoa(loop[0]*44),
 							Rule: aid["Rule"].(string),
 						})
@@ -118,7 +117,7 @@ var TaobaoSearch = &Spider{
 						return
 					} else {
 						for _, info := range infos {
-							ctx.AddQueue(&context.Request{
+							ctx.AddQueue(&request.Request{
 								Url:  "http:" + info["detail_url"].(string),
 								Rule: "商品详情",
 								Temp: ctx.CreatItem(map[int]interface{}{

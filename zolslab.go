@@ -3,7 +3,7 @@ package spider_lib
 import (
 	// 基础包
 	"github.com/PuerkitoBio/goquery"                        //DOM解析
-	"github.com/henrylee2cn/pholcus/app/downloader/context" //必需
+	"github.com/henrylee2cn/pholcus/app/downloader/request" //必需
 	// "github.com/henrylee2cn/pholcus/logs"           //信息输出
 	. "github.com/henrylee2cn/pholcus/app/spider" //必需
 	// . "github.com/henrylee2cn/pholcus/app/spider/common" //选用
@@ -20,7 +20,6 @@ import (
 	// "regexp"
 	"strconv"
 	// "strings"
-
 	// 其他包
 	// "fmt"
 	// "math"
@@ -47,7 +46,7 @@ var Zolslab = &Spider{
 			"生成请求": {
 				AidFunc: func(ctx *Context, aid map[string]interface{}) interface{} {
 					for loop := aid["loop"].([2]int); loop[0] < loop[1]; loop[0]++ {
-						ctx.AddQueue(&context.Request{
+						ctx.AddQueue(&request.Request{
 							Url:  "http://bbs.zol.com.cn/padbbs/p" + strconv.Itoa(loop[0]) + ".html#c",
 							Rule: aid["Rule"].(string),
 						})
@@ -58,7 +57,7 @@ var Zolslab = &Spider{
 					query := ctx.GetDom()
 					ss := query.Find("tbody").Find("tr[id]")
 					ss.Each(func(i int, goq *goquery.Selection) {
-						ctx.SetOriginTemp("html", goq)
+						ctx.SetTemp("html", goq)
 						ctx.Parse("获取结果")
 
 					})

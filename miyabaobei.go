@@ -3,7 +3,7 @@ package spider_lib
 // 基础包
 import (
 	"github.com/PuerkitoBio/goquery"                        //DOM解析
-	"github.com/henrylee2cn/pholcus/app/downloader/context" //必需
+	"github.com/henrylee2cn/pholcus/app/downloader/request" //必需
 	// "github.com/henrylee2cn/pholcus/logs"              //信息输出
 	. "github.com/henrylee2cn/pholcus/app/spider" //必需
 	// . "github.com/henrylee2cn/pholcus/app/spider/common" //选用
@@ -20,7 +20,6 @@ import (
 	"regexp"
 	"strconv"
 	"strings"
-
 	// 其他包
 	// "fmt"
 	// "math"
@@ -39,7 +38,7 @@ var Miyabaobei = &Spider{
 	EnableCookie: false,
 	RuleTree: &RuleTree{
 		Root: func(ctx *Context) {
-			ctx.AddQueue(&context.Request{Url: "http://www.miyabaobei.com/", Rule: "获取版块URL"})
+			ctx.AddQueue(&request.Request{Url: "http://www.miyabaobei.com/", Rule: "获取版块URL"})
 		},
 
 		Trunk: map[string]*Rule{
@@ -70,7 +69,7 @@ var Miyabaobei = &Spider{
 
 			"生成请求": {
 				AidFunc: func(ctx *Context, aid map[string]interface{}) interface{} {
-					req := aid["req"].(*context.Request)
+					req := aid["req"].(*request.Request)
 					for loop := aid["loop"].([2]int); loop[0] < loop[1]; loop[0]++ {
 						req.Url = aid["urlBase"].(string) + "&per_page=" + strconv.Itoa(loop[0]*40)
 						ctx.AddQueue(req)
