@@ -11,16 +11,13 @@ import (
 	// net包
 	"net/http" //设置http.Header
 	// "net/url"
-
 	// 编码包
 	// "encoding/xml"
 	// "encoding/json"
-
 	// 字符串处理包
 	// "regexp"
 	// "strconv"
 	// "strings"
-
 	// 其他包
 	// "fmt"
 	// "math"
@@ -64,14 +61,11 @@ var Lewa = &Spider{
 				},
 			},
 			"登录后": {
-				//注意：有无字段语义和是否输出数据必须保持一致
-				ItemFields: []string{
-					"全部",
-				},
 				ParseFunc: func(ctx *Context) {
 					// 结果存入Response中转
-					ctx.Output(map[int]interface{}{
-						0: ctx.GetText(),
+					ctx.Output(map[string]interface{}{
+						"Body":   ctx.GetText(),
+						"Cookie": ctx.GetCookie(),
 					})
 					ctx.AddQueue(&context.Request{
 						Url:    "http://accounts.lewaos.com/member",
@@ -81,14 +75,11 @@ var Lewa = &Spider{
 				},
 			},
 			"个人中心": {
-				//注意：有无字段语义和是否输出数据必须保持一致
-				ItemFields: []string{
-					"全部",
-				},
 				ParseFunc: func(ctx *Context) {
 					// 结果存入Response中转
-					ctx.Output(map[int]interface{}{
-						0: ctx.GetText(),
+					ctx.Output(map[string]interface{}{
+						"Body":   ctx.GetText(),
+						"Cookie": ctx.GetCookie(),
 					})
 				},
 			},
