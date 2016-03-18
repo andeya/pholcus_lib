@@ -36,7 +36,8 @@ var Taobao = &Spider{
 	Name:        "淘宝数据",
 	Description: "淘宝天猫商品数据 [Auto Page] [http://list.taobao.com/]",
 	// Pausetime: 300,
-	// Keyword:   USE,
+	// Keyin:   KEYIN,
+	// Limit:        LIMIT,
 	EnableCookie: false,
 	RuleTree: &RuleTree{
 		Root: func(ctx *Context) {
@@ -103,7 +104,7 @@ var Taobao = &Spider{
 					total = strings.Trim(total, " \t\n")
 					totalPage, _ := strconv.Atoi(total)
 					if total == "0" {
-						logs.Log.Critical("[消息提示：| 任务：%v | 关键词：%v | 规则：%v] 没有抓取到任何数据！!!\n", ctx.GetName(), ctx.GetKeyword(), ctx.GetRuleName())
+						logs.Log.Critical("[消息提示：| 任务：%v | 关键词：%v | 规则：%v] 没有抓取到任何数据！!!\n", ctx.GetName(), ctx.GetKeyin(), ctx.GetRuleName())
 					} else {
 						ctx.Aid(map[string]interface{}{
 							"loop":    [2]int{1, totalPage},

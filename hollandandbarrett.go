@@ -35,7 +35,8 @@ var Hollandandbarrett = &Spider{
 	Name:        "Hollandandbarrett",
 	Description: "Hollandand&Barrett商品数据 [Auto Page] [www.Hollandandbarrett.com]",
 	// Pausetime: 300,
-	// Keyword:   USE,
+	// Keyin:   KEYIN,
+	// Limit:        LIMIT,
 	EnableCookie: false,
 	RuleTree: &RuleTree{
 		Root: func(ctx *Context) {
@@ -82,7 +83,7 @@ var Hollandandbarrett = &Spider{
 					total = strings.Trim(total, " \t\n")
 
 					if total == "0" {
-						logs.Log.Critical("[消息提示：| 任务：%v | 关键词：%v | 规则：%v] 没有抓取到任何数据！!!\n", ctx.GetName(), ctx.GetKeyword(), ctx.GetRuleName())
+						logs.Log.Critical("[消息提示：| 任务：%v | 关键词：%v | 规则：%v] 没有抓取到任何数据！!!\n", ctx.GetName(), ctx.GetKeyin(), ctx.GetRuleName())
 					} else {
 
 						ctx.AddQueue(&request.Request{

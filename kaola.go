@@ -32,7 +32,8 @@ var Kaola = &Spider{
 	Name:        "考拉海淘",
 	Description: "考拉海淘商品数据 [Auto Page] [www.kaola.com]",
 	// Pausetime: 300,
-	// Keyword:   USE,
+	// Keyin:   KEYIN,
+	// Limit:        LIMIT,
 	EnableCookie: false,
 	RuleTree: &RuleTree{
 		Root: func(ctx *Context) {

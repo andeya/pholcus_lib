@@ -34,7 +34,8 @@ var Zolpc = &Spider{
 	Name:        "中关村笔记本",
 	Description: "中关村笔记本数据 [Auto Page] [bbs.zol.com.cn/sjbbs/d544_p]",
 	// Pausetime: 300,
-	// Keyword:   USE,
+	// Keyin:   KEYIN,
+	// Limit:        LIMIT,
 	EnableCookie: false,
 	RuleTree: &RuleTree{
 		Root: func(ctx *Context) {

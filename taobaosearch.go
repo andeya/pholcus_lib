@@ -34,8 +34,8 @@ var TaobaoSearch = &Spider{
 	Name:        "淘宝搜索",
 	Description: "淘宝天猫搜索结果 [s.taobao.com]",
 	// Pausetime: 300,
-	Keyword:      KEYWORD,
-	MaxPage:      MAXPAGE,
+	Keyin:        KEYIN,
+	Limit:        LIMIT,
 	EnableCookie: false,
 	RuleTree: &RuleTree{
 		Root: func(ctx *Context) {
@@ -48,7 +48,7 @@ var TaobaoSearch = &Spider{
 				AidFunc: func(ctx *Context, aid map[string]interface{}) interface{} {
 					for loop := aid["loop"].([2]int); loop[0] < loop[1]; loop[0]++ {
 						ctx.AddQueue(&request.Request{
-							Url:  "http://s.taobao.com/search?q=" + ctx.GetKeyword() + "&ie=utf8&cps=yes&app=vproduct&cd=false&v=auction&tab=all&vlist=1&bcoffset=1&s=" + strconv.Itoa(loop[0]*44),
+							Url:  "http://s.taobao.com/search?q=" + ctx.GetKeyin() + "&ie=utf8&cps=yes&app=vproduct&cd=false&v=auction&tab=all&vlist=1&bcoffset=1&s=" + strconv.Itoa(loop[0]*44),
 							Rule: aid["Rule"].(string),
 						})
 					}
@@ -58,7 +58,7 @@ var TaobaoSearch = &Spider{
 					query := ctx.GetDom()
 					src := query.Find("script").Text()
 					if strings.Contains(src, "抱歉！没有找到与") {
-						logs.Log.Critical(" ********************** 淘宝关键词 [%v] 的搜索结果不存在！ ********************** ", ctx.GetKeyword())
+						logs.Log.Critical(" ********************** 淘宝关键词 [%v] 的搜索结果不存在！ ********************** ", ctx.GetKeyin())
 						return
 					}
 
@@ -73,16 +73,16 @@ var TaobaoSearch = &Spider{
 						maxPage++
 					}
 
-					if ctx.GetMaxPage() > maxPage || ctx.GetMaxPage() == 0 {
-						ctx.SetMaxPage(maxPage)
-					} else if ctx.GetMaxPage() == 0 {
-						logs.Log.Critical("[消息提示：| 任务：%v | 关键词：%v | 规则：%v] 没有抓取到任何数据！!!\n", ctx.GetName(), ctx.GetKeyword(), ctx.GetRuleName())
+					if ctx.GetLimit() > maxPage || ctx.GetLimit() == 0 {
+						ctx.SetLimit(maxPage)
+					} else if ctx.GetLimit() == 0 {
+						logs.Log.Critical("[消息提示：| 任务：%v | KEYIN：%v | 规则：%v] 没有抓取到任何数据！!!\n", ctx.GetName(), ctx.GetKeyin(), ctx.GetRuleName())
 						return
 					}
 
-					logs.Log.Critical(" ********************** 淘宝关键词 [%v] 的搜索结果共有 %v 页，计划抓取 %v 页 **********************", ctx.GetKeyword(), maxPage, ctx.GetMaxPage())
+					logs.Log.Critical(" ********************** 淘宝关键词 [%v] 的搜索结果共有 %v 页，计划抓取 %v 页 **********************", ctx.GetKeyin(), maxPage, ctx.GetLimit())
 					// 调用指定规则下辅助函数
-					ctx.Aid(map[string]interface{}{"loop": [2]int{1, ctx.GetMaxPage()}, "Rule": "搜索结果"})
+					ctx.Aid(map[string]interface{}{"loop": [2]int{1, ctx.GetLimit()}, "Rule": "搜索结果"})
 					// 用指定规则解析响应流
 					ctx.Parse("搜索结果")
 				},

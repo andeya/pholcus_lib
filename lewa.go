@@ -32,7 +32,8 @@ var Lewa = &Spider{
 	Name:        "乐蛙登录测试",
 	Description: "乐蛙登录测试 [Auto Page] [http://accounts.lewaos.com]",
 	// Pausetime: 300,
-	// Keyword:   USE,
+	// Keyin:   KEYIN,
+	// Limit:        LIMIT,
 	EnableCookie: true,
 	RuleTree: &RuleTree{
 		Root: func(ctx *Context) {

@@ -36,12 +36,12 @@ var WeiboFans = &Spider{
 	Name:         "微博粉丝列表",
 	Description:  `新浪微博粉丝 [自定义输入格式 "ID"::"Cookie"][最多支持250页，内设定时1~2s]`,
 	Pausetime:    2000,
-	Keyword:      KEYWORD,
-	MaxPage:      MAXPAGE,
+	Keyin:        KEYIN,
+	Limit:        LIMIT,
 	EnableCookie: true,
 	RuleTree: &RuleTree{
 		Root: func(ctx *Context) {
-			param := strings.Split(ctx.GetKeyword(), "::")
+			param := strings.Split(ctx.GetKeyin(), "::")
 			if len(param) != 2 {
 				logs.Log.Error("自定义输入的参数不正确！")
 				return
@@ -51,11 +51,11 @@ var WeiboFans = &Spider{
 
 			var count1 = 250
 			var count2 = 50
-			if ctx.GetMaxPage() < count1 {
-				count1 = ctx.GetMaxPage()
+			if ctx.GetLimit() < count1 {
+				count1 = ctx.GetLimit()
 			}
-			if ctx.GetMaxPage() < count2 {
-				count2 = ctx.GetMaxPage()
+			if ctx.GetLimit() < count2 {
+				count2 = ctx.GetLimit()
 			}
 			for i := count1; i > 0; i-- {
 				ctx.AddQueue(&request.Request{

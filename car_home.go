@@ -34,7 +34,8 @@ var CarHome = &Spider{
 	Name:        "汽车之家",
 	Description: "汽车之家帖子 [http://club.autohome.com.cn/bbs/]",
 	// Pausetime: 300,
-	// Keyword:   USE,
+	// Keyin:   KEYIN,
+	// Limit:        LIMIT,
 	EnableCookie: false,
 	RuleTree: &RuleTree{
 		Root: func(ctx *Context) {

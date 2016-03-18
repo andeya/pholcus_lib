@@ -34,8 +34,8 @@ var AlibabaProduct = &Spider{
 	Name:        "阿里巴巴产品搜索",
 	Description: "阿里巴巴产品搜索 [s.1688.com/selloffer/offer_search.htm]",
 	// Pausetime: 300,
-	Keyword:      KEYWORD,
-	MaxPage:      MAXPAGE,
+	Keyin:        KEYIN,
+	Limit:        LIMIT,
 	EnableCookie: false,
 	RuleTree: &RuleTree{
 		Root: func(ctx *Context) {
@@ -46,10 +46,10 @@ var AlibabaProduct = &Spider{
 
 			"生成请求": {
 				AidFunc: func(ctx *Context, aid map[string]interface{}) interface{} {
-					keyword := EncodeString(ctx.GetKeyword(), "GBK")
+					keyin := EncodeString(ctx.GetKeyin(), "GBK")
 					for loop := aid["loop"].([2]int); loop[0] < loop[1]; loop[0]++ {
 						ctx.AddQueue(&request.Request{
-							Url:    "http://s.1688.com/selloffer/offer_search.htm?enableAsync=false&earseDirect=false&button_click=top&pageSize=60&n=y&offset=3&uniqfield=pic_tag_id&keywords=" + keyword + "&beginPage=" + strconv.Itoa(loop[0]+1),
+							Url:    "http://s.1688.com/selloffer/offer_search.htm?enableAsync=false&earseDirect=false&button_click=top&pageSize=60&n=y&offset=3&uniqfield=pic_tag_id&keyins=" + keyin + "&beginPage=" + strconv.Itoa(loop[0]+1),
 							Rule:   aid["Rule"].(string),
 							Header: http.Header{"Content-Type": []string{"text/html", "charset=GBK"}},
 						})
@@ -61,7 +61,7 @@ var AlibabaProduct = &Spider{
 					pageTag := query.Find("#sm-pagination div[data-total-page]")
 					// 跳转
 					if len(pageTag.Nodes) == 0 {
-						logs.Log.Critical("[消息提示：| 任务：%v | 关键词：%v | 规则：%v] 由于跳转AJAX问题，目前只能每个子类抓取 1 页……\n", ctx.GetName(), ctx.GetKeyword(), ctx.GetRuleName())
+						logs.Log.Critical("[消息提示：| 任务：%v | KEYIN：%v | 规则：%v] 由于跳转AJAX问题，目前只能每个子类抓取 1 页……\n", ctx.GetName(), ctx.GetKeyin(), ctx.GetRuleName())
 						query.Find(".sm-floorhead-typemore a").Each(func(i int, s *goquery.Selection) {
 							if href, ok := s.Attr("href"); ok {
 								ctx.AddQueue(&request.Request{
@@ -76,10 +76,10 @@ var AlibabaProduct = &Spider{
 					total1, _ := pageTag.First().Attr("data-total-page")
 					total1 = strings.Trim(total1, " \t\n")
 					total, _ := strconv.Atoi(total1)
-					if total > ctx.GetMaxPage() {
-						total = ctx.GetMaxPage()
+					if total > ctx.GetLimit() {
+						total = ctx.GetLimit()
 					} else if total == 0 {
-						logs.Log.Critical("[消息提示：| 任务：%v | 关键词：%v | 规则：%v] 没有抓取到任何数据！！！\n", ctx.GetName(), ctx.GetKeyword(), ctx.GetRuleName())
+						logs.Log.Critical("[消息提示：| 任务：%v | KEYIN：%v | 规则：%v] 没有抓取到任何数据！！！\n", ctx.GetName(), ctx.GetKeyin(), ctx.GetRuleName())
 						return
 					}
 

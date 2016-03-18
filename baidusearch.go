@@ -35,8 +35,8 @@ var BaiduSearch = &Spider{
 	Name:        "百度搜索",
 	Description: "百度搜索结果 [www.baidu.com]",
 	// Pausetime: 300,
-	Keyword:      KEYWORD,
-	MaxPage:      MAXPAGE,
+	Keyin:        KEYIN,
+	Limit:        LIMIT,
 	EnableCookie: false,
 	// 命名空间相对于数据库名，不依赖具体数据内容，可选
 	Namespace: nil,
@@ -59,7 +59,7 @@ var BaiduSearch = &Spider{
 							duplicatable = false
 						}
 						ctx.AddQueue(&request.Request{
-							Url:        "http://www.baidu.com/s?ie=utf-8&nojc=1&wd=" + ctx.GetKeyword() + "&rn=50&pn=" + strconv.Itoa(50*loop[0]),
+							Url:        "http://www.baidu.com/s?ie=utf-8&nojc=1&wd=" + ctx.GetKeyin() + "&rn=50&pn=" + strconv.Itoa(50*loop[0]),
 							Rule:       aid["Rule"].(string),
 							Reloadable: duplicatable,
 						})
@@ -73,10 +73,10 @@ var BaiduSearch = &Spider{
 					total1 = re.ReplaceAllString(total1, "")
 					total2, _ := strconv.Atoi(total1)
 					total := int(math.Ceil(float64(total2) / 50))
-					if total > ctx.GetMaxPage() {
-						total = ctx.GetMaxPage()
+					if total > ctx.GetLimit() {
+						total = ctx.GetLimit()
 					} else if total == 0 {
-						logs.Log.Critical("[消息提示：| 任务：%v | 关键词：%v | 规则：%v] 没有抓取到任何数据！!!\n", ctx.GetName(), ctx.GetKeyword(), ctx.GetRuleName())
+						logs.Log.Critical("[消息提示：| 任务：%v | KEYIN：%v | 规则：%v] 没有抓取到任何数据！!!\n", ctx.GetName(), ctx.GetKeyin(), ctx.GetRuleName())
 						return
 					}
 					// 调用指定规则下辅助函数

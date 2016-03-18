@@ -31,7 +31,8 @@ var FileTest = &Spider{
 	Name:        "文件下载测试",
 	Description: "文件下载测试",
 	// Pausetime: 300,
-	// Keyword:   USE,
+	// Keyin:   KEYIN,
+	// Limit:        LIMIT,
 	EnableCookie: false,
 	RuleTree: &RuleTree{
 		Root: func(ctx *Context) {

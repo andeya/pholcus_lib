@@ -34,8 +34,8 @@ var JDSearch = &Spider{
 	Name:        "京东搜索",
 	Description: "京东搜索结果 [search.jd.com]",
 	// Pausetime: 300,
-	Keyword:      KEYWORD,
-	MaxPage:      MAXPAGE,
+	Keyin:        KEYIN,
+	Limit:        LIMIT,
 	EnableCookie: false,
 	RuleTree: &RuleTree{
 		Root: func(ctx *Context) {
@@ -49,13 +49,13 @@ var JDSearch = &Spider{
 					for loop := aid["loop"].([2]int); loop[0] < loop[1]; loop[0]++ {
 						ctx.AddQueue(
 							&request.Request{
-								Url:  "http://search.jd.com/Search?keyword=" + ctx.GetKeyword() + "&enc=utf-8&qrst=1&rt=1&stop=1&click=&psort=&page=" + strconv.Itoa(2*loop[0]+1),
+								Url:  "http://search.jd.com/Search?keyin=" + ctx.GetKeyin() + "&enc=utf-8&qrst=1&rt=1&stop=1&click=&psort=&page=" + strconv.Itoa(2*loop[0]+1),
 								Rule: aid["Rule"].(string),
 							},
 						)
 						ctx.AddQueue(
 							&request.Request{
-								Url:  "http://search.jd.com/Search?keyword=" + ctx.GetKeyword() + "&enc=utf-8&qrst=1&rt=1&stop=1&click=&psort=&page=" + strconv.Itoa(2*loop[0]+2),
+								Url:  "http://search.jd.com/Search?keyin=" + ctx.GetKeyin() + "&enc=utf-8&qrst=1&rt=1&stop=1&click=&psort=&page=" + strconv.Itoa(2*loop[0]+2),
 								Rule: aid["Rule"].(string),
 							},
 						)
@@ -71,10 +71,10 @@ var JDSearch = &Spider{
 					total1 = re.FindString(total1)
 					total, _ := strconv.Atoi(total1)
 
-					if total > ctx.GetMaxPage() {
-						total = ctx.GetMaxPage()
+					if total > ctx.GetLimit() {
+						total = ctx.GetLimit()
 					} else if total == 0 {
-						logs.Log.Critical("[消息提示：| 任务：%v | 关键词：%v | 规则：%v] 没有抓取到任何数据！!!\n", ctx.GetName(), ctx.GetKeyword(), ctx.GetRuleName())
+						logs.Log.Critical("[消息提示：| 任务：%v | KEYIN：%v | 规则：%v] 没有抓取到任何数据！!!\n", ctx.GetName(), ctx.GetKeyin(), ctx.GetRuleName())
 						return
 					}
 					// 调用指定规则下辅助函数

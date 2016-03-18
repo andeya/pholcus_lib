@@ -48,8 +48,8 @@ var GoogleSearch = &Spider{
 	Name:        "谷歌搜索",
 	Description: "谷歌搜索结果 [www.google.com镜像]",
 	// Pausetime: 300,
-	Keyword:      KEYWORD,
-	MaxPage:      MAXPAGE,
+	Keyin:        KEYIN,
+	Limit:        LIMIT,
 	EnableCookie: false,
 	RuleTree: &RuleTree{
 		Root: func(ctx *Context) {
@@ -57,7 +57,7 @@ var GoogleSearch = &Spider{
 			var success bool
 			logs.Log.Critical("正在查找可用的Google镜像，该过程可能需要几分钟……")
 			for _, ip := range googleIp {
-				url = "http://" + ip + "/search?q=" + ctx.GetKeyword() + "&newwindow=1&biw=1600&bih=398&start="
+				url = "http://" + ip + "/search?q=" + ctx.GetKeyin() + "&newwindow=1&biw=1600&bih=398&start="
 				if _, err := goquery.NewDocument(url); err == nil {
 					success = true
 					break
@@ -98,10 +98,10 @@ var GoogleSearch = &Spider{
 					txt = re.FindString(txt)
 					num, _ := strconv.Atoi(txt)
 					total := int(math.Ceil(float64(num) / 10))
-					if total > ctx.GetMaxPage() {
-						total = ctx.GetMaxPage()
+					if total > ctx.GetLimit() {
+						total = ctx.GetLimit()
 					} else if total == 0 {
-						logs.Log.Critical("[消息提示：| 任务：%v | 关键词：%v | 规则：%v] 没有抓取到任何数据！!!\n", ctx.GetName(), ctx.GetKeyword(), ctx.GetRuleName())
+						logs.Log.Critical("[消息提示：| 任务：%v | KEYIN：%v | 规则：%v] 没有抓取到任何数据！!!\n", ctx.GetName(), ctx.GetKeyin(), ctx.GetRuleName())
 						return
 					}
 					// 调用指定规则下辅助函数

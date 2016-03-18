@@ -34,7 +34,8 @@ var Miyabaobei = &Spider{
 	Name:        "蜜芽宝贝",
 	Description: "蜜芽宝贝商品数据 [Auto Page] [www.miyabaobei.com]",
 	// Pausetime: 300,
-	// Keyword:   USE,
+	// Keyin:   KEYIN,
+	// Limit:        LIMIT,
 	EnableCookie: false,
 	RuleTree: &RuleTree{
 		Root: func(ctx *Context) {

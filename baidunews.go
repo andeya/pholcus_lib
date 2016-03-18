@@ -64,8 +64,9 @@ var BaiduNews = &Spider{
 	Name:        "百度RSS新闻",
 	Description: "百度RSS新闻，实现轮询更新 [Auto Page] [news.baidu.com]",
 	// Pausetime: 300,
-	// Keyword:     KEYWORD,
+	// Keyin:     KEYIN,
 	EnableCookie: false,
+	// Limit:        LIMIT,
 	// 命名空间相对于数据库名，不依赖具体数据内容，可选
 	Namespace: nil,
 	// 子命名空间相对于表名，可依赖具体数据内容，可选
