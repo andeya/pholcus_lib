@@ -38,6 +38,8 @@ var BaiduSearch = &Spider{
 	Keyin:        KEYIN,
 	Limit:        LIMIT,
 	EnableCookie: false,
+	// 禁止输出默认字段 Url/ParentUrl/DownloadTime
+	NotDefaultField: true,
 	// 命名空间相对于数据库名，不依赖具体数据内容，可选
 	Namespace: nil,
 	// 子命名空间相对于表名，可依赖具体数据内容，可选
