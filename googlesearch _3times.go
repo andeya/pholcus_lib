@@ -22,7 +22,7 @@ import (
 	"strings"
 
 	// 其他包
-	// "fmt"
+	"fmt"
 	"math"
 	// "time"
 )
@@ -56,13 +56,20 @@ var GoogleSearch = &Spider{
 		Root: func(ctx *Context) {
 			var url string
 			var success bool
+			var timess int
 			logs.Log.Critical("正在查找可用的Google镜像，该过程可能需要几分钟……")
-			for _, ip := range googleIp {
-				// url = "http://" + ip + "/search?q=" + ctx.GetKeyin() + "&newwindow=1&biw=1600&bih=398&start="
-				url = "http://" + ip + "/?gws_rd=ssl#q=" + ctx.GetKeyin()
-				if _, err := goquery.NewDocument(url); err == nil {
-					success = true
-					break
+			for timess = 0; timess < 3; timess++ {
+				for _, ip := range googleIp {
+					// url = "http://" + ip + "/search?q=" + ctx.GetKeyin() + "&newwindow=1&biw=1600&bih=398&start="
+					url = "http://" + ip + "/?gws_rd=ssl#q=" + ctx.GetKeyin()
+					fmt.Println(timess,url)
+					if _, err := goquery.NewDocument(url); err == nil {
+						success = true
+						break
+					}
+				}
+				if success{
+					break;
 				}
 			}
 			if !success {
