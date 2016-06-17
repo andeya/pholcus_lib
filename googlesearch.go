@@ -42,6 +42,7 @@ var googleIp = []string{
 	"210.242.125.115",
 	"58.123.102.28",
 	"210.242.125.70",
+	"220.255.2.153",
 }
 
 var GoogleSearch = &Spider{
@@ -57,7 +58,8 @@ var GoogleSearch = &Spider{
 			var success bool
 			logs.Log.Critical("正在查找可用的Google镜像，该过程可能需要几分钟……")
 			for _, ip := range googleIp {
-				url = "http://" + ip + "/search?q=" + ctx.GetKeyin() + "&newwindow=1&biw=1600&bih=398&start="
+				// url = "http://" + ip + "/search?q=" + ctx.GetKeyin() + "&newwindow=1&biw=1600&bih=398&start="
+				url = "http://" + ip + "/?gws_rd=ssl#q=" + ctx.GetKeyin()
 				if _, err := goquery.NewDocument(url); err == nil {
 					success = true
 					break
