@@ -198,9 +198,9 @@ var Taobao = &Spider{
 						})
 					}
 
-					temp := ctx.CopyTemps().
-						Set(ctx.GetItemField(24, "结果"), detail).
-						Set(ctx.GetItemField(25, "结果"), []interface{}{})
+					temp := ctx.CopyTemps()
+					temp[ctx.GetItemField(24, "结果")] = detail
+					temp[ctx.GetItemField(25, "结果")] = []interface{}{}
 
 					ctx.AddQueue(&request.Request{
 						Rule: "商品评论",

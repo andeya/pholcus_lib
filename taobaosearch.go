@@ -172,7 +172,7 @@ var TaobaoSearch = &Spider{
 							}
 
 							ctx.UpsertItemField(feild[0])
-							r.Set(feild[0], feild[1])
+							r[feild[0]] = feild[1]
 						}
 
 					} else {
@@ -191,7 +191,7 @@ var TaobaoSearch = &Spider{
 								for _, attr := range info["attrs"].([]interface{}) {
 									a := attr.(map[string]interface{})
 									ctx.UpsertItemField(a["name"].(string))
-									r.Set(a["name"].(string), a["value"])
+									r[a["name"].(string)] = a["value"]
 								}
 							}
 						}
