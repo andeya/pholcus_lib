@@ -46,18 +46,19 @@ var AlibabaProduct = &Spider{
 
 			"生成请求": {
 				AidFunc: func(ctx *Context, aid map[string]interface{}) interface{} {
-					keyin := EncodeString(ctx.GetKeyin(), "GBK")
+					keyin := EncodeString(ctx.GetKeyin(), "gbk")
 					for loop := aid["loop"].([2]int); loop[0] < loop[1]; loop[0]++ {
 						ctx.AddQueue(&request.Request{
 							Url:    "http://s.1688.com/selloffer/offer_search.htm?enableAsync=false&earseDirect=false&button_click=top&pageSize=60&n=y&offset=3&uniqfield=pic_tag_id&keyins=" + keyin + "&beginPage=" + strconv.Itoa(loop[0]+1),
 							Rule:   aid["Rule"].(string),
-							Header: http.Header{"Content-Type": []string{"text/html", "charset=GBK"}},
+							Header: http.Header{"Content-Type": []string{"text/html; charset=gbk"}},
 						})
 					}
 					return nil
 				},
 				ParseFunc: func(ctx *Context) {
 					query := ctx.GetDom()
+					// logs.Log.Debug(ctx.GetText())
 					pageTag := query.Find("#sm-pagination div[data-total-page]")
 					// 跳转
 					if len(pageTag.Nodes) == 0 {
@@ -66,7 +67,7 @@ var AlibabaProduct = &Spider{
 							if href, ok := s.Attr("href"); ok {
 								ctx.AddQueue(&request.Request{
 									Url:    href,
-									Header: http.Header{"Content-Type": []string{"text/html", "charset=GBK"}},
+									Header: http.Header{"Content-Type": []string{"text/html; charset=gbk"}},
 									Rule:   "搜索结果",
 								})
 							}
