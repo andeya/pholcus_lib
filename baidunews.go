@@ -90,7 +90,7 @@ var BaiduNews = &Spider{
 					ctx.AddQueue(&request.Request{
 						Url:    v,
 						Rule:   "XML列表页",
-						Header: http.Header{"Content-Type": []string{"text/html", "charset=GB2312"}},
+						Header: http.Header{"Content-Type": []string{"text/html; charset=GB2312"}},
 						Temp:   map[string]interface{}{"src": k},
 						// DialTimeout: -1,
 						// ConnTimeout: -1,
@@ -110,8 +110,7 @@ var BaiduNews = &Spider{
 						ctx.Aid(map[string]interface{}{"loop": src}, "LOOP")
 					}()
 
-					page := GBKToUTF8(ctx.GetText())
-					page = strings.TrimLeft(page, `<?xml version="1.0" encoding="gb2312"?>`)
+					page := strings.TrimLeft(ctx.GetText(), `<?xml version="1.0" encoding="gb2312"?>`)
 					re, _ := regexp.Compile(`\<[\/]?rss\>`)
 					page = re.ReplaceAllString(page, "")
 
