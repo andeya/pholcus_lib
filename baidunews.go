@@ -102,8 +102,7 @@ var BaiduNews = &Spider{
 			},
 			"XML列表页": {
 				ParseFunc: func(ctx *Context) {
-					var src string
-					ctx.GetTemp("src", &src)
+					var src = ctx.GetTemp("src", "").(string)
 					defer func() {
 						// 循环请求
 						ctx.RunTimer(src)
@@ -147,8 +146,7 @@ var BaiduNews = &Spider{
 					"作者",
 				},
 				ParseFunc: func(ctx *Context) {
-					var title string
-					ctx.GetTemp("title", &title)
+					var title = ctx.GetTemp("title", "").(string)
 
 					infoStr, isReload := baiduNewsFn.prase(ctx)
 					if isReload {

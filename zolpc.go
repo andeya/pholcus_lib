@@ -78,8 +78,7 @@ var Zolpc = &Spider{
 					"最后回复时间",
 				},
 				ParseFunc: func(ctx *Context) {
-					var selectObj *goquery.Selection
-					ctx.GetTemp("html", selectObj)
+					var selectObj = ctx.GetTemp("html", &goquery.Selection{}).(*goquery.Selection)
 
 					//url
 					outUrls := selectObj.Find("td").Eq(1)

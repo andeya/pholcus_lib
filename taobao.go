@@ -231,8 +231,7 @@ var Taobao = &Spider{
 						return
 					}
 					discussSlice := infos["comments"].([]interface{})
-					var discussAll []interface{}
-					ctx.GetTemp(ctx.GetItemField(25, "结果"), &discussAll)
+					var discussAll = ctx.GetTemp(ctx.GetItemField(25, "结果"), []interface{}{}).([]interface{})
 					discussAll = append(discussAll, discussSlice...)
 					temp := ctx.CopyTemps()
 					temp[ctx.GetItemField(25, "结果")] = discussAll

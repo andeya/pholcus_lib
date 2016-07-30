@@ -50,8 +50,7 @@ var GanjiGongsi = &Spider{
 
 			"请求列表": {
 				ParseFunc: func(ctx *Context) {
-					var curr int
-					ctx.GetTemp("p", &curr)
+					var curr = ctx.GetTemp("p", int(0)).(int)
 					if ctx.GetDom().Find(".linkOn span").Text() != strconv.Itoa(curr) {
 						return
 					}
