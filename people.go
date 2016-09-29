@@ -4,7 +4,7 @@ package spider_lib
 import (
 	"log"
 
-	// "github.com/PuerkitoBio/goquery"                        //DOM解析
+	// "github.com/henrylee2cn/pholcus/common/goquery"                        //DOM解析
 	"github.com/henrylee2cn/pholcus/app/downloader/request" //必需
 	// "github.com/henrylee2cn/pholcus/logs"               //信息输出
 	. "github.com/henrylee2cn/pholcus/app/spider" //必需
@@ -18,7 +18,6 @@ import (
 
 	// "encoding/xml"
 	"encoding/json"
-
 	// 字符串处理包
 	// "regexp"
 	// "strconv"
