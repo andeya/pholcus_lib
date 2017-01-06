@@ -1,4 +1,4 @@
-package spider_lib
+package pholcus_lib
 
 import (
 	// 基础包
