@@ -45,6 +45,7 @@ var JDSpider = &Spider{
 		},
 
 		Trunk: map[string]*Rule{
+			//只判断关键字商品一共有多少页
 			"判断页数": {
 				AidFunc: func(ctx *Context, aid map[string]interface{}) interface{} {
 					ctx.AddQueue(
@@ -72,6 +73,7 @@ var JDSpider = &Spider{
 			},
 
 			"生成请求": {
+				//单数页是url直接返回,双数页是异步加载,两个url在下面有写
 				AidFunc: func(ctx *Context, aid map[string]interface{}) interface{} {
 					//Url:  "http://search.jd.com/Search?keyword=" + ctx.GetKeyin() + "&enc=utf-8&qrst=1&rt=1&stop=1&vt=2&bs=1&s=1&click=0&page=" + strconv.Itoa(pageNum),
 					//Url:  "http://search.jd.com/s_new.php?keyword=" + ctx.GetKeyin() + "&enc=utf-8&qrst=1&rt=1&stop=1&vt=2&bs=1&s=31&scrolling=y&pos=30&page=" + strconv.Itoa(pageNum),
@@ -96,7 +98,7 @@ var JDSpider = &Spider{
 			},
 
 			"搜索结果": {
-				//注意：有无字段语义和是否输出数据必须保持一致
+				//从返回中解析出数据。注：异步返回的结果页面结构是和单数页的一样的，所以就一套解析就可以了。
 				ItemFields: []string{
 					"标题",
 					"价格",
