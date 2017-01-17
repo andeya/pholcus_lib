@@ -31,7 +31,7 @@ func init() {
 }
 
 var TaobaoSearch = &Spider{
-	Name:        "淘宝搜索",
+	Name:        "淘宝天猫搜索",
 	Description: "淘宝天猫搜索结果 [s.taobao.com]",
 	// Pausetime: 300,
 	Keyin:        KEYIN,
