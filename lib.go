@@ -1,5 +1,5 @@
 package pholcus_lib
 
 import (
-	_ "github.com/liguoqinjim/pholcus_lib/jingdong"
+	_ "github.com/henrylee2cn/pholcus_lib/jingdong"
 )
