@@ -4,7 +4,7 @@
 
 ## 维护规范
 
-- 欢迎每个用户分享自己的爬虫规则
+- 欢迎每位用户都来分享自己的爬虫规则
 - 每个规则放在单一个独的子目录
 - 新增规则最好提供README.md
 - 新增规则时，须在根目录 `pholcus_lib.go` 文件的import组中添加类似`_ "github.com/henrylee2cn/pholcus_lib/jingdong"`的包引用声明
