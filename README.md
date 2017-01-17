@@ -2,6 +2,18 @@
 
 [Pholcus](https://github.com/henrylee2cn/pholcus) 用户公共维护的spider爬虫规则库。
 
+## 维护规范
+
+- 欢迎每个用户分享自己的爬虫规则
+- 每个规则放在单一个独的子目录
+- 新增规则最好提供README.md
+- 新增规则时，须在根目录 `pholcus_lib.go` 文件的import组中添加类似`_ "github.com/henrylee2cn/pholcus_lib/jingdong"`的包引用声明
+- 新增规则时，须在根目录README.md（本文档）的 `爬虫规则列表` 中按子目录名`a-z`的顺序插入一条相应的规则记录
+- 维护旧规则时，应在规则文件或相应README.md中增加修改说明：如修改原因、修改时间、署名等
+
+
+## 爬虫规则列表
+
 |文件(夹)名称|爬虫规则描述|
 |---|---|
 |alibaba|阿里巴巴产品搜索|
