@@ -2,7 +2,7 @@
 
 [Pholcus](https://github.com/henrylee2cn/pholcus) 用户公共维护的spider爬虫规则库。
 
-|文件夹名|爬虫作用|
+|文件(夹)名称|爬虫规则描述|
 |---|---|
 |alibaba|阿里巴巴产品搜索|
 |baidunews|百度RSS新闻|
