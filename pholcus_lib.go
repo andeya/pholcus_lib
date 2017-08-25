@@ -24,4 +24,5 @@ import (
 	_ "github.com/henrylee2cn/pholcus_lib/zolpc"
 	_ "github.com/henrylee2cn/pholcus_lib/zolphone"
 	_ "github.com/henrylee2cn/pholcus_lib/zolslab"
+	_ "github.com/henrylee2cn/pholcus_lib/chinanews"
 )
