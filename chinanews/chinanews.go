@@ -108,7 +108,7 @@ var FileTest = &Spider{
 					//来源
 					from := query.Find(".left-t").Text()
 					i := strings.LastIndex(from,"来源")
-
+					//来源字符串特殊处理
 					if i == -1{
 						from = "未知"
 					}else{
