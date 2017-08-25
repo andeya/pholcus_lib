@@ -16,13 +16,9 @@ import (
 	// 字符串处理包
 	//"regexp"
 	// "strconv"
-	//	"strings"
-	// 其他包
 	// "fmt"
 	// "math"
 	// "time"
-	//"github.com/henrylee2cn/pholcus/common/goquery"
-	//"github.com/henrylee2cn/pholcus/common/goquery"
 	"github.com/henrylee2cn/pholcus/common/goquery"
 	"strings"
 )
@@ -33,7 +29,7 @@ func init() {
 
 var FileTest = &Spider{
 	Name:        "中国新闻网",
-	Description: "测试滚动新闻 http://www.chinanews.com/scroll-news/news1.html",
+	Description: "测试 [http://www.chinanews.com/scroll-news/news1.html]",
 	// Pausetime: 300,
 	// Keyin:   KEYIN,
 	// Limit:        LIMIT,
@@ -42,23 +38,22 @@ var FileTest = &Spider{
 		Root: func(ctx *Context) {
 			ctx.AddQueue(&request.Request{
 				Url:          "http://www.chinanews.com/scroll-news/news1.html",
-				Rule:         "滚动新闻分页",
+				Rule:         "滚动新闻",
 			})
 		},
 
 		Trunk: map[string]*Rule{
 
-			"滚动新闻分页": {
+			"滚动新闻": {
 				ParseFunc: func(ctx *Context) {
 					query := ctx.GetDom()
-					str := query.Find(".pagebox a")
-					str.Each(func(i int, s *goquery.Selection) {
-
+					//获取分页导航
+					navBox := query.Find(".pagebox a")
+					navBox.Each(func(i int, s *goquery.Selection) {
 						if url, ok := s.Attr("href"); ok {
-							println(url)
 							ctx.AddQueue(&request.Request{
 								Url:  "http://www.chinanews.com" +  url,
-								Rule: "滚动新闻",
+								Rule: "新闻列表",
 
 							})
 						}
@@ -68,27 +63,26 @@ var FileTest = &Spider{
 				},
 			},
 
-			"滚动新闻": {
+			"新闻列表": {
 				ParseFunc: func(ctx *Context) {
 					query := ctx.GetDom()
-					str := query.Find(".content_list li")
-					str.Each(func(i int, s *goquery.Selection) {
-
+					//获取新闻列表
+					newList := query.Find(".content_list li")
+					newList.Each(func(i int, s *goquery.Selection) {
 						//新闻类型
 						newsType := s.Find(".dd_lm a").Text()
-						//新闻标题
+						//标题
 						newsTitle := s.Find(".dd_bt a").Text()
-						//新闻时间
+						//时间
 						newsTime := s.Find(".dd_time").Text()
-
 						if url, ok := s.Find(".dd_bt a").Attr("href"); ok {
 							ctx.AddQueue(&request.Request{
 								Url:  "http://" + url[2:len(url)],
 								Rule: "新闻内容",
 								Temp: map[string]interface{}{
-									"Type":  newsType,
-									"Title": newsTitle,
-									"Time":  newsTime,
+									"newsType":  newsType,
+									"newsTitle": newsTitle,
+									"newsTime":  newsTime,
 								},
 							})
 						}
@@ -97,6 +91,7 @@ var FileTest = &Spider{
 
 				},
 			},
+
 			"新闻内容": {
 				ItemFields: []string{
 					"类别",
@@ -127,11 +122,11 @@ var FileTest = &Spider{
 
 					//输出格式
 					ctx.Output(map[int]interface{}{
-						0: ctx.GetTemp("Type",""),
+						0: ctx.GetTemp("newsType",""),
 						1: from,
-						2: ctx.GetTemp("Title",""),
+						2: ctx.GetTemp("newsTitle",""),
 						3: content,
-						4: ctx.GetTemp("Time", ""),
+						4: ctx.GetTemp("newsTime", ""),
 					})
 				},
 			},
