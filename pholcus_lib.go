@@ -25,4 +25,5 @@ import (
 	_ "github.com/henrylee2cn/pholcus_lib/zolphone"
 	_ "github.com/henrylee2cn/pholcus_lib/zolslab"
 	_ "github.com/henrylee2cn/pholcus_lib/chinanews"
+	_ "github.com/henrylee2cn/pholcus_lib/fang_resell_list"
 )
