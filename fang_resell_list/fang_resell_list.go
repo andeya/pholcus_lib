@@ -110,7 +110,7 @@ var fangList = &Spider{
 								remoteId = strings.Replace(remoteAttr[1],".htm","",1);
 							}
 
-							logs.Log.Critical("当前房源id: ", remoteId)
+							logs.Log.Critical("当前房源id: %v", remoteId)
 							//解析传入的片段
 							// 结果存入Response中转
 							ctx.Output(map[int]interface{}{
