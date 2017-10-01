@@ -17,9 +17,9 @@ import (
 	"encoding/xml"
 
 	// 字符串处理包
-	"regexp"
+	// "regexp"
 	// "strconv"
-	"strings"
+	// "strings"
 
 	// 其他包
 	// "fmt"
@@ -48,17 +48,21 @@ var rss_BaiduNews = map[string]string{
 	"社会最新":  "http://news.baidu.com/n?cmd=4&class=socianews&tn=rss",
 }
 
-type BaiduNewsData struct {
-	Item []BaiduNewsItem `xml:"item"`
-}
-
-type BaiduNewsItem struct {
-	Title       string `xml:"title"`
-	Link        string `xml:"link"`
-	Description string `xml:"description"`
-	PubDate     string `xml:"pubDate"`
-	Author      string `xml:"author"`
-}
+type (
+	BaiduNewsRss struct {
+		Channel BaiduNewsData `xml:"channel"`
+	}
+	BaiduNewsData struct {
+		Item []BaiduNewsItem `xml:"item"`
+	}
+	BaiduNewsItem struct {
+		Title       string `xml:"title"`
+		Link        string `xml:"link"`
+		Description string `xml:"description"`
+		PubDate     string `xml:"pubDate"`
+		Author      string `xml:"author"`
+	}
+)
 
 var BaiduNews = &Spider{
 	Name:        "百度RSS新闻",
@@ -90,7 +94,7 @@ var BaiduNews = &Spider{
 					ctx.AddQueue(&request.Request{
 						Url:    v,
 						Rule:   "XML列表页",
-						Header: http.Header{"Content-Type": []string{"text/html; charset=GB2312"}},
+						Header: http.Header{"Content-Type": []string{"application/xml"}},
 						Temp:   map[string]interface{}{"src": k},
 						// DialTimeout: -1,
 						// ConnTimeout: -1,
@@ -109,16 +113,13 @@ var BaiduNews = &Spider{
 						ctx.Aid(map[string]interface{}{"loop": src}, "LOOP")
 					}()
 
-					page := strings.TrimLeft(ctx.GetText(), `<?xml version="1.0" encoding="gb2312"?>`)
-					re, _ := regexp.Compile(`\<[\/]?rss\>`)
-					page = re.ReplaceAllString(page, "")
-
-					content := new(BaiduNewsData)
-					if err := xml.Unmarshal([]byte(page), content); err != nil {
+					page := ctx.GetText()
+					rss := new(BaiduNewsRss)
+					if err := xml.Unmarshal([]byte(page), rss); err != nil {
 						logs.Log.Error("XML列表页: %v", err)
 						return
 					}
-
+					content := rss.Channel
 					for _, v := range content.Item {
 						ctx.AddQueue(&request.Request{
 							Url:  v.Link,

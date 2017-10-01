@@ -21,6 +21,7 @@
 |baidunews|百度RSS新闻|
 |baidusearch|百度搜索|
 |car_home|汽车之家|
+|chinanews|中国新闻网-滚动新闻|
 |filetest|文件下载测试|
 |ganji_gongsi|经典示例-赶集网企业名录|
 |googlesearch|谷歌搜索|

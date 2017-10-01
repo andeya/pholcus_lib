@@ -46,8 +46,8 @@ var googleIp = []string{
 }
 
 var GoogleSearch = &Spider{
-	Name:        "谷歌搜索",
-	Description: "谷歌搜索结果 [www.google.com镜像]",
+	Name:        "Google search",
+	Description: "Crawls pages from [www.google.com]",
 	// Pausetime: 300,
 	Keyin:        KEYIN,
 	Limit:        LIMIT,
@@ -56,10 +56,12 @@ var GoogleSearch = &Spider{
 		Root: func(ctx *Context) {
 			var url string
 			var success bool
-			logs.Log.Critical("正在查找可用的Google镜像，该过程可能需要几分钟……")
+			logs.Log.Informational("Running google spider，this may take some time...")
 
 			for _, ip := range googleIp {
 				// url = "http://" + ip + "/search?q=" + ctx.GetKeyin() + "&newwindow=1&biw=1600&bih=398&start="
+				// Beware of redirections, if it doesnt work use google domain:
+				// url = "https://google.co.uk/search?q=" + ctx.GetKeyin()
 				url = "http://" + ip + "/?gws_rd=ssl#q=" + ctx.GetKeyin()
 				logs.Log.Informational("测试 " + ip)
 				if _, err := goquery.NewDocument(url); err == nil {
@@ -68,13 +70,13 @@ var GoogleSearch = &Spider{
 				}
 			}
 			if !success {
-				logs.Log.Critical("没有可用的Google镜像IP！！")
+				logs.Log.Critical("Could not reach any of the Google mirrors")
 				return
 			}
-			logs.Log.Critical("开始Google搜索……")
+			logs.Log.Critical("Starting Google search ...")
 			ctx.AddQueue(&request.Request{
 				Url:  url,
-				Rule: "获取总页数",
+				Rule: "total_pages",
 				Temp: map[string]interface{}{
 					"baseUrl": url,
 				},
@@ -83,11 +85,11 @@ var GoogleSearch = &Spider{
 
 		Trunk: map[string]*Rule{
 
-			"获取总页数": {
+			"total_pages": {
 				AidFunc: func(ctx *Context, aid map[string]interface{}) interface{} {
 					for loop := aid["loop"].([2]int); loop[0] < loop[1]; loop[0]++ {
 						ctx.AddQueue(&request.Request{
-							Url:  aid["urlBase"].(string) + strconv.Itoa(10*loop[0]),
+							Url:  aid["urlBase"].(string) +"&start="+ strconv.Itoa(10 * loop[0]),
 							Rule: aid["Rule"].(string),
 						})
 					}
@@ -105,33 +107,34 @@ var GoogleSearch = &Spider{
 					if total > ctx.GetLimit() {
 						total = ctx.GetLimit()
 					} else if total == 0 {
-						logs.Log.Critical("[消息提示：| 任务：%v | KEYIN：%v | 规则：%v] 没有抓取到任何数据！!!\n", ctx.GetName(), ctx.GetKeyin(), ctx.GetRuleName())
+						logs.Log.Critical("[ERROR：| Spider：%v | KEYIN：%v | Rule：%v] Did not fetch any data！!!\n", ctx.GetName(), ctx.GetKeyin(), ctx.GetRuleName())
 						return
 					}
 					// 调用指定规则下辅助函数
 					ctx.Aid(map[string]interface{}{
 						"loop":    [2]int{1, total},
 						"urlBase": ctx.GetTemp("baseUrl", ""),
-						"Rule":    "搜索结果",
+						"Rule":    "search_results",
 					})
 					// 用指定规则解析响应流
-					ctx.Parse("搜索结果")
+					ctx.Parse("search_results")
 				},
 			},
 
-			"搜索结果": {
+			"search_results": {
 				//注意：有无字段语义和是否输出数据必须保持一致
 				ItemFields: []string{
-					"标题",
-					"内容",
-					"链接",
+					"title",
+					"content",
+					"href",
 				},
 				ParseFunc: func(ctx *Context) {
 					query := ctx.GetDom()
-					query.Find("#ires li.g").Each(func(i int, s *goquery.Selection) {
+					query.Find("#ires .g").Each(func(i int, s *goquery.Selection) {
 						t := s.Find(".r > a")
 						href, _ := t.Attr("href")
 						href = strings.TrimLeft(href, "/url?q=")
+						logs.Log.Informational(href)
 						title := t.Text()
 						content := s.Find(".st").Text()
 						ctx.Output(map[int]interface{}{
