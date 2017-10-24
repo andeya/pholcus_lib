@@ -119,7 +119,7 @@ var JDSpider = &Spider{
 						title = strings.Trim(title, " \t\n")
 
 						// 获取价格
-						price, _ := s.Find("strong[data-price]").First().Attr("data-price")
+						price := s.Find(".p-price > strong > i").Text()
 
 						// 获取评论数
 						//#J_goodsList > ul > li:nth-child(1) > div > div.p-commit
