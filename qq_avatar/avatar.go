@@ -1,4 +1,4 @@
-package main
+package pholcus_lib
 
 // 基础包
 import (
