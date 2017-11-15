@@ -18,6 +18,7 @@
 |子目录|规则描述|
 |---|---|
 |alibaba|阿里巴巴产品搜索|
+|avatar|我要个性网-头像昵称搜索下载|
 |baidunews|百度RSS新闻|
 |baidusearch|百度搜索|
 |car_home|汽车之家|
