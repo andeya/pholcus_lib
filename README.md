@@ -30,6 +30,7 @@
 |IJGUC|IJGUC期刊|
 |jdsearch|京东搜索|
 |jingdong|京东搜索(修复版)|
+|jiban|羁绊动漫|
 |kaola|考拉海淘|
 |lewa|乐蛙登录测试|
 |miyabaobei|蜜芽宝贝|
