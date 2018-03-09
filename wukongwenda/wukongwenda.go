@@ -1,32 +1,31 @@
 package wukongwenda
 
 import (
-// 基础包
-"github.com/henrylee2cn/pholcus/app/downloader/request" //必需
-//"github.com/henrylee2cn/pholcus/common/goquery"         //DOM解析
-// "github.com/henrylee2cn/pholcus/logs"           //信息输出
-. "github.com/henrylee2cn/pholcus/app/spider" //必需
-// . "github.com/henrylee2cn/pholcus/app/spider/common" //选用
+	// 基础包
+	"github.com/henrylee2cn/pholcus/app/downloader/request" //必需
+	//"github.com/henrylee2cn/pholcus/common/goquery"         //DOM解析
+	// "github.com/henrylee2cn/pholcus/logs"           //信息输出
+	. "github.com/henrylee2cn/pholcus/app/spider" //必需
+	// . "github.com/henrylee2cn/pholcus/app/spider/common" //选用
 
-// net包
-// "net/http" //设置http.Header
-// "net/url"
+	// net包
+	"net/http" //设置http.Header
+	// "net/url"
 
-// 编码包
-// "encoding/xml"
-// "encoding/json"
+	// 编码包
+	// "encoding/xml"
+	// "encoding/json"
 
-// 字符串处理包
-// "regexp"
-"strconv"
-// "strings"
-// 其他包
-// "fmt"
-// "math"
-// "time"
-"time"
-"net/http"
-"github.com/tidwall/gjson" //引用的json处理的包
+	// 字符串处理包
+	// "regexp"
+	"strconv"
+	"strings"
+
+	// 其他包
+	// "math"
+	"time"
+	"github.com/tidwall/gjson" //引用的json处理的包
+
 )
 
 func init() {
@@ -60,7 +59,7 @@ var domains = []string{
 }
 
 const (
-	wukong_normal_url = "https://www.wukong.com/wenda/web/nativefeed/brow/?concern_id=" //不同栏目访问地址
+	WUKONG_NORMAL_URL = "https://www.wukong.com/wenda/web/nativefeed/brow/?concern_id=" //不同栏目访问地址
 	UA = "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_12_6) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/62.0.3202.94 Safari/537.36"
 )
 
@@ -76,7 +75,7 @@ var WukongWenda = &Spider{
 		Root: func(ctx *Context) {
 			//处理解析结构相同的领域
 			for _,  domain := range domains{
-				url := wukong_normal_url + domain + "&t=" +
+				url := WUKONG_NORMAL_URL + domain + "&t=" +
 					strconv.FormatInt(time.Now().UnixNano()/1e6, 10)
 				header := http.Header{}
 				header.Add("User-Agent", UA)
@@ -102,22 +101,56 @@ var WukongWenda = &Spider{
 				},
 				ParseFunc: func(ctx *Context) {
 
+					type question struct{
+						title string
+						content string
+						answer string
+						url string
+						offset string
+					}
+
+					var questionlist []question
 					data := gjson.Get(ctx.GetText(), "data")
+					more := gjson.Get(ctx.GetText(), "has_more").String()
 
 					data.ForEach(func(key, value gjson.Result) bool{
-						title := gjson.Get(value.String(), "question.title").String()
-						content := gjson.Get(value.String(), "question.content.text").String()
-						answer := gjson.Get(value.String(), "answer.content").String()
-						url := "https://www.wukong.com/question/" + gjson.Get(value.String(), "question.qid").String() + "/"
-
-						ctx.Output(map[int]interface{}{
-							0:title,
-							1:content,
-							2:answer,
-							3:url,
-						})
+						questionlist = append(questionlist,
+							question{
+								title:gjson.Get(value.String(), "question.title").String(),
+								content:gjson.Get(value.String(), "question.content.text").String(),
+								answer:gjson.Get(value.String(), "answer.content").String(),
+								url:"https://www.wukong.com/question/" + gjson.Get(value.String(), "question.qid").String() + "/",
+								offset:gjson.Get(value.String(), "behot_time").String(),
+							})
 						return true
 					})
+
+					if more == "true"{
+						newOffset := questionlist[len(questionlist) - 1].offset
+						header := http.Header{}
+						header.Add("User-Agent", UA)
+
+						visit_url := ctx.GetUrl()
+						if strings.Contains(visit_url, "&max_behot_time="){
+							visit_url = strings.Split(visit_url, "&max_behot_time=")[0]
+						}
+
+						ctx.AddQueue(&request.Request{
+							Url: visit_url + "&max_behot_time=" + newOffset,
+							Header: header,
+							Rule: "获取结果",
+						})
+
+					}
+
+					for _, v := range questionlist{
+						ctx.Output(map[int]interface{}{
+							0:v.title,
+							1:v.content,
+							2:v.answer,
+							3:v.url,
+						})
+					}
 
 				},
 			},
