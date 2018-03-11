@@ -44,4 +44,5 @@
 |zolpc|中关村笔记本|
 |zolphone|中关村手机|
 |zolslab|中关村平板|
-|zhihu|知乎编辑推荐|
+|zhihu_bianji|知乎编辑推荐|
+|zhihu_daily|知乎每日推荐|
