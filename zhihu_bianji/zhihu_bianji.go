@@ -46,7 +46,7 @@ var ZhihuBianji = &Spider{
 	RuleTree: &RuleTree{
 		Root: func(ctx *Context) {
 			ctx.AddQueue(&request.Request{
-				Url: "https://www.zhihu_bianji.com/explore/recommendations",
+				Url: "https://www.zhihu.com/explore/recommendations",
 				Rule: "知乎编辑推荐",
 			})
 
@@ -84,7 +84,7 @@ var ZhihuBianji = &Spider{
 						header := make(http.Header)
 						header.Set("Content-Type", "application/x-www-form-urlencoded")
 						ctx.AddQueue(&request.Request{
-							Url:  "https://www.zhihu_bianji.com/node/ExploreRecommendListV2",
+							Url:  "https://www.zhihu.com/node/ExploreRecommendListV2",
 							Rule: aid["Rule"].(string),
 							Method: "POST",
 							Header: header,
@@ -205,10 +205,10 @@ func changeToAbspath(url string)string{
 	if strings.HasPrefix(url, "https://"){
 		return url
 	}
-	return "https://www.zhihu_bianji.com" + url
+	return "https://www.zhihu.com" + url
 }
 
 //判断是用户回答的问题，还是知乎专栏作家书写的文章
 func filterZhihuAnswerURL(url string) bool{
-	return regexp.MustCompile(`^https:\/\/www\.zhihu_bianji\.com\/question\/\d{1,}(\/answer\/\d{1,})?$`).MatchString(url)
+	return regexp.MustCompile(`^https:\/\/www\.zhihu\.com\/question\/\d{1,}(\/answer\/\d{1,})?$`).MatchString(url)
 }
