@@ -1,4 +1,4 @@
-package zhihu
+package zhihu_bianji
 
 // 基础包
 import (
